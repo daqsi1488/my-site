@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фиджитал центр НТПТиС | КиберКачалка</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='photos/logo.jpg') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='photos/logo.jpg') }}" alt="Логотип КиберКачалка">
+    </div>
+    <div class="header-title">Фиджитал центр "КиберКачалка"</div>
+    <nav>
+        <a href="{{ url_for('index') }}">Главная</a>
+        <a href="{{ url_for('index') }}#services">Услуги</a>
+        <a href="{{ url_for('index') }}#map">Карта</a>
+        <a href="{{ url_for('index') }}#contacts" class="contacts-nav-btn">Контакты</a>
+        <a href="{{ url_for('news_page') }}" class="news-nav-btn">Новости</a>
+        
+        {% if session.user_role == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-nav-btn">Админка</a>
+        {% endif %}
+        
+        {% if session.user_id %}
+            <a href="{{ url_for('logout') }}" class="logout-nav-btn">Выйти ({{ session.user_name }})</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="login-nav-btn">Вход</a>
+            <a href="{{ url_for('register') }}" class="register-nav-btn">Регистрация</a>
+        {% endif %}
+    </nav>
+</header>
+
+<section id="home" class="hero">
+    <h1>Добро пожаловать в КиберКачалку!</h1>
+    <p>Уникальное пространство, где киберспорт встречается с реальным спортом</p>
+    <button class="hero-button" id="bookBtn">
+        <i class="fas fa-calendar-check"></i>
+        Записаться сейчас
+        <i class="fas fa-arrow-right"></i>
+    </button>
+</section>
+
+<div class="content">
+    <div id="about" class="section">
+        <h2>📖 О нас</h2>
+        <p>Фиджитал центр "КиберКачалка" — это современное пространство, объединяющее виртуальный и реальный спорт. У нас вы можете насладиться игрой на PlayStation 5 в FIFA и другие игры, а также поиграть в живой футбол, баскетбол и другие виды спорта. Мы создали уникальную атмосферу для активного отдыха и развития киберспортивных навыков.</p>
+        <p>Наш центр находится в Норильске и ждёт всех, кто хочет провести время с пользой и удовольствием!</p>
+    </div>
+
+    <div id="services" class="section">
+        <h2>🎮 Наши услуги</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fas fa-gamepad"></i>
+                <h3>PS5 Зона</h3>
+                <p>Играйте в FIFA, NBA, UFC и другие спортивные игры</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-futbol"></i>
+                <h3>Мини-футбол</h3>
+                <p>Живые матчи на профессиональном покрытии. Собирайте команду и приходите!</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-basketball-ball"></i>
+                <h3>Баскетбол</h3>
+                <p>Играйте в баскетбол с друзьями или участвуйте в турнирах</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-chess-board"></i>
+                <h3>Настольные игры</h3>
+                <p>Монополия, Джанга, Шахматы, Шашки, Уно, Мафия и множество других настольных игр</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-trophy"></i>
+                <h3>Турниры</h3>
+                <p>Регулярные киберспортивные и спортивные турниры с призами</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="gaming" class="section">
+        <h2>🕹️ Киберзона</h2>
+        <p>В нашей киберзоне установлены современные PlayStation 5 с огромным выбором игр. Уютные кресла, мощные 4K-мониторы и отличная акустика создают идеальные условия для погружения в виртуальный мир. Мы регулярно обновляем библиотеку игр и проводим киберспортивные турниры по FIFA, eFootball и другим дисциплинам.</p>
+        <p><strong>Часы работы киберзоны:</strong> Ежедневно с 12:00 до 23:00</p>
+        <p><strong>Стоимость:</strong> 300₽/час, абонементы со скидкой</p>
+    </div>
+
+    <div id="sports" class="section">
+        <h2>⚽ Спортивная зона</h2>
+        <p>Для любителей активного отдыха у нас есть отличные спортивные площадки. Мини-футбол, баскетбол, волейбол и даже настольный теннис — выбирайте то, что вам по душе! Мы проводим любительские лиги, турниры и просто даём возможность поиграть с друзьями в любое удобное время.</p>
+        <p><strong>Спортивные секции:</strong> взрослые и детские группы, индивидуальные тренировки</p>
+        <p><strong>Аренда площадки:</strong> от 1000₽/час</p>
+    </div>
+
+    <div id="map" class="section map-section">
+        <h2>🗺️ Наше местоположение</h2>
+        <div class="map-title">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>📍 Мы на карте</span>
+        </div>
+        <div class="map-container">
+            <iframe 
+                src="https://yandex.ru/map-widget/v1/?ll=88.215353,69.349858&z=18&pt=88.215353,69.349858,pm2rdm" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <div class="map-buttons">
+            <a href="https://yandex.ru/maps/?ll=88.215353,69.349858&z=18&pt=88.215353,69.349858&mode=search" class="map-button yandex-btn" target="_blank">
+                <i class="fab fa-yandex"></i>
+                Открыть полную карту в Яндекс.Картах
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+    </div>
+
+    <div id="contacts" class="section">
+        <h2>Контакты</h2>
+        <p><i class="fas fa-map-pin"></i> <strong>Адрес:</strong> г. Норильск, ул. Павлова, 13 (НТПТиС)</p>
+        <p><i class="fas fa-phone"></i> <strong>Телефон:</strong> +7 (123) 456-78-90</p>
+        <p><i class="fas fa-envelope"></i> <strong>Email:</strong> info@fidgetalcenter.ru</p>
+        <p><i class="fas fa-clock"></i> <strong>Режим работы:</strong> Пн-Сб: 15:00 - 20:00</p>
+        
+        <button class="contact-button" id="showFormBtn" style="margin-top: 30px;">
+            <i class="fas fa-paper-plane"></i>
+            Написать нам
+        </button>
+        
+        <div id="contactForm" style="display: none;">
+            <form class="contact-form" id="feedbackForm">
+                <input type="text" class="form-input" id="contactName" placeholder="Ваше имя" required>
+                <input type="tel" class="form-input" id="contactPhone" placeholder="Ваш телефон" required>
+                <textarea class="form-textarea" id="contactMessage" placeholder="Ваше сообщение..." required></textarea>
+                <button type="submit" class="submit-btn">Отправить сообщение</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <h3>Фиджитал Центр "КиберКачалка"</h3>
+        <p>Почта: <a href="mailto:info@fidgetalcenter.ru">info@fidgetalcenter.ru</a> | Телефон: +7 (123) 456-78-90</p>
+        <div class="footer-row">
+            <a href="https://ntptis.ru" class="site-link" target="_blank">сайт НТПТиС</a>
+            <div class="social-icons">
+                <a href="https://t.me/fidgital_Norilsk" aria-label="Telegram" target="_blank" rel="noopener">
+                    <i class="fab fa-telegram"></i>
+                </a>
+                <a href="https://vk.com/ntptis_nrk" aria-label="VK" target="_blank" rel="noopener">
+                    <i class="fab fa-vk"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Новые кнопки в футере -->
+        <div class="footer-links">
+            <button class="footer-link-btn" onclick="openPolicyModal()">
+                <i class="fas fa-shield-alt"></i> Политика конфиденциальности
+            </button>
+            <span class="footer-link-separator">•</span>
+            <button class="footer-link-btn" onclick="openTermsModal()">
+                <i class="fas fa-file-contract"></i> Условия пользования
+            </button>
+        </div>
+        
+        <p class="copyright">&copy; 2026 КиберКачалка. Все права защищены.</p>
+    </div>
+</footer>
+
+<!-- Модальное окно для Политики конфиденциальности -->
+<div id="policyModal" class="legal-modal">
+    <div class="legal-modal-content">
+        <span class="legal-modal-close" onclick="closePolicyModal()">&times;</span>
+        <div class="legal-modal-header">
+            <i class="fas fa-shield-alt"></i>
+            <h2>Политика конфиденциальности</h2>
+        </div>
+        <div class="legal-modal-body">
+            <p>Настоящая Политика конфиденциальности определяет порядок сбора, использования и защиты персональных данных пользователей Фиджитал центра "КиберКачалка".</p>
+            
+            <h3>1. Собираемая информация</h3>
+            <p>При использовании нашего сайта мы можем собирать следующую информацию: имя, контактный телефон, адрес электронной почты, а также данные о записях на услуги.</p>
+            
+            <h3>2. Использование информации</h3>
+            <p>Собранная информация используется для:<br>
+            - Обработки заявок на запись<br>
+            - Связи с вами для подтверждения записи<br>
+            - Отправки уведомлений о новостях и акциях<br>
+            - Улучшения качества обслуживания</p>
+            
+            <h3>3. Защита данных</h3>
+            <p>Мы принимаем все необходимые меры для защиты ваших персональных данных от несанкционированного доступа, изменения или уничтожения.</p>
+            
+            <h3>4. Передача третьим лицам</h3>
+            <p>Ваши персональные данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
+            
+            <h3>5. Контакты</h3>
+            <p>По вопросам, связанным с обработкой персональных данных, вы можете обратиться по email: <a href="mailto:privacy@fidgetalcenter.ru">privacy@fidgetalcenter.ru</a></p>
+        </div>
+        <div class="legal-modal-footer">
+            <button class="legal-close-btn" onclick="closePolicyModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для Условий пользования -->
+<div id="termsModal" class="legal-modal">
+    <div class="legal-modal-content">
+        <span class="legal-modal-close" onclick="closeTermsModal()">&times;</span>
+        <div class="legal-modal-header">
+            <i class="fas fa-file-contract"></i>
+            <h2>Условия пользования</h2>
+        </div>
+        <div class="legal-modal-body">
+            <p>Настоящие Условия пользования регулируют порядок использования сайта Фиджитал центра "КиберКачалка".</p>
+            
+            <h3>1. Общие положения</h3>
+            <p>Используя наш сайт, вы соглашаетесь с данными условиями. Если вы не согласны с какими-либо пунктами, пожалуйста, прекратите использование сайта.</p>
+            
+            <h3>2. Правила записи</h3>
+            <p>- Запись на услуги осуществляется через форму на сайте или по телефону.<br>
+            - Время бронирования считается подтвержденным после получения уведомления.<br>
+            - Отмена записи возможна не менее чем за 2 часа до начала.</p>
+            
+            <h3>3. Оплата услуг</h3>
+            <p>Оплата услуг производится на месте после оказания услуги. Возможна предоплата при онлайн-бронировании.</p>
+            
+            <h3>4. Правила поведения</h3>
+            <p>Посетители обязаны соблюдать правила техники безопасности и уважительно относиться к другим гостям и персоналу центра.</p>
+            
+            <h3>5. Ответственность</h3>
+            <p>Администрация не несет ответственности за личные вещи, оставленные без присмотра. За порчу оборудования предусмотрена материальная ответственность.</p>
+            
+            <h3>6. Изменение условий</h3>
+            <p>Администрация оставляет за собой право вносить изменения в условия пользования без предварительного уведомления.</p>
+        </div>
+        <div class="legal-modal-footer">
+            <button class="legal-close-btn" onclick="closeTermsModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Модальное окно для записи -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" id="closeModalBtn">&times;</span>
+        <h3><i class="fas fa-calendar-alt"></i> Запись в КиберКачалку</h3>
+        <form class="contact-form" id="bookingForm">
+            <input type="text" class="form-input" id="bookingName" placeholder="Ваше имя" required>
+            <input type="tel" class="form-input" id="bookingPhone" placeholder="Ваш телефон" required>
+            <select class="form-input" id="bookingService" required>
+                <option value="">Выберите услугу</option>
+                <option value="PS5 Зона">PS5 Зона</option>
+                <option value="Мини-футбол">Мини-футбол</option>
+                <option value="Баскетбол">Баскетбол</option>
+                <option value="Настольные игры">Настольные игры</option>
+                <option value="Турнир">Турнир</option>
+            </select>
+            <input type="date" class="form-input" id="bookingDate" required>
+            <input type="time" class="form-input" id="bookingTime" required>
+            <button type="submit" class="submit-btn">Отправить заявку</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Дополнительные стили для кнопок навигации */
+    .admin-nav-btn, .login-nav-btn, .register-nav-btn, .logout-nav-btn {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(0, 255, 136, 0.1));
+        border-color: rgba(76, 175, 80, 0.4);
+    }
+    .admin-nav-btn:hover {
+        background: linear-gradient(135deg, #ff9800, #ff5722);
+    }
+    .login-nav-btn:hover {
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+    }
+    .register-nav-btn:hover {
+        background: linear-gradient(135deg, #4CAF50, #388e3c);
+    }
+    .logout-nav-btn:hover {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+    }
+    
+    /* Флэш сообщения */
+    .flash-messages {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .flash {
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        animation: slideIn 0.3s ease;
+    }
+    .flash-success { background: #4CAF50; color: white; }
+    .flash-error { background: #f44336; color: white; }
+    .flash-info { background: #2196f3; color: white; }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+</style>
+
+<script>
+    // Модальное окно записи
+    const modal = document.getElementById('bookingModal');
+    const bookBtn = document.getElementById('bookBtn');
+    const closeModal = document.getElementById('closeModalBtn');
+
+    bookBtn.addEventListener('click', function() {
+        modal.style.display = 'flex';
+    });
+
+    closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Отправка заявки на запись через API
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('bookingName').value,
+            phone: document.getElementById('bookingPhone').value,
+            service: document.getElementById('bookingService').value,
+            date: document.getElementById('bookingDate').value,
+            time: document.getElementById('bookingTime').value
+        };
+        
+        try {
+            const response = await fetch('/create_booking', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            alert(result.message);
+            if (result.success) {
+                modal.style.display = 'none';
+                this.reset();
+            }
+        } catch (error) {
+            alert('Ошибка отправки. Попробуйте позже.');
+        }
+    });
+
+    // Отправка формы обратной связи
+    document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('contactName').value,
+            phone: document.getElementById('contactPhone').value,
+            message: document.getElementById('contactMessage').value
+        };
+        
+        try {
+            const response = await fetch('/send_contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            alert(result.message);
+            if (result.success) {
+                this.reset();
+                document.getElementById('contactForm').style.display = 'none';
+                document.getElementById('showFormBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Написать нам';
+            }
+        } catch (error) {
+            alert('Ошибка отправки. Попробуйте позже.');
+        }
+    });
+
+    // Форма обратной связи (показать/скрыть)
+    document.getElementById('showFormBtn').addEventListener('click', function() {
+        var form = document.getElementById('contactForm');
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+            this.innerHTML = '<i class="fas fa-times"></i> Закрыть форму';
+        } else {
+            form.style.display = 'none';
+            this.innerHTML = '<i class="fas fa-paper-plane"></i> Написать нам';
+        }
+    });
+
+     function openPolicyModal() {
+        document.getElementById('policyModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closePolicyModal() {
+        document.getElementById('policyModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    function openTermsModal() {
+        document.getElementById('termsModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeTermsModal() {
+        document.getElementById('termsModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // Закрытие по клику вне модального окна
+    window.addEventListener('click', function(e) {
+        const policyModal = document.getElementById('policyModal');
+        const termsModal = document.getElementById('termsModal');
+        if (e.target === policyModal) closePolicyModal();
+        if (e.target === termsModal) closeTermsModal();
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (document.getElementById('policyModal').style.display === 'flex') closePolicyModal();
+            if (document.getElementById('termsModal').style.display === 'flex') closeTermsModal();
+        }
+    });
+</script>
+
+</body>
+</html>

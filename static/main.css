@@ -1,0 +1,1187 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #0f0c1f 0%, #1a1a2e 50%, #0d1117 100%);
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* ============ АУТЕНТИФИКАЦИЯ ============ */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background: rgba(20, 20, 40, 0.8);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.auth-card h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #4CAF50;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.auth-form input {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    padding: 14px 20px;
+    border-radius: 14px;
+    color: white;
+    font-size: 16px;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4CAF50, #00ff88);
+    color: #0a0a1a;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+}
+
+.auth-card p {
+    text-align: center;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.auth-card a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.auth-card a:hover {
+    text-decoration: underline;
+}
+
+/* ============ АДМИН ПАНЕЛЬ ============ */
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    padding: 12px 28px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 600;
+}
+
+.admin-tab-btn.active {
+    background: linear-gradient(135deg, #4CAF50, #00ff88);
+    color: #0a0a1a;
+    border-color: transparent;
+}
+
+.admin-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-table th {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-new { background: #ff9800; color: #000; }
+.status-confirmed { background: #4CAF50; color: #fff; }
+.status-cancelled { background: #f44336; color: #fff; }
+.status-completed { background: #2196f3; color: #fff; }
+
+.delete-btn {
+    color: #f44336;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.admin-news-form {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 25px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+.admin-news-form input,
+.admin-news-form textarea {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.flash {
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.flash-success { background: rgba(76, 175, 80, 0.2); border: 1px solid #4CAF50; }
+.flash-error { background: rgba(244, 67, 54, 0.2); border: 1px solid #f44336; }
+.flash-info { background: rgba(33, 150, 243, 0.2); border: 1px solid #2196f3; }
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(76, 175, 80, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 50px;
+    background: rgba(15, 12, 41, 0.85);
+    backdrop-filter: blur(15px);
+    color: white;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+header:hover {
+    background: rgba(15, 12, 41, 0.95);
+    border-bottom-color: #4CAF50;
+}
+
+.logo img {
+    width: 75px;
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.logo img:hover {
+    transform: scale(1.08) rotate(3deg);
+    box-shadow: 0 0 35px rgba(76, 175, 80, 0.7);
+}
+
+.header-title {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: 'Orbitron', 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffffff, #4CAF50, #00ff88, #4CAF50);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+
+.header-title:hover {
+    transform: scale(1.05);
+    letter-spacing: 3px;
+    background-position: 100% center;
+}
+
+nav {
+    display: flex;
+    gap: 10px;
+}
+
+/* Красивое оформление всех кнопок в навигации */
+nav a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    margin-left: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    padding: 10px 24px;
+    border-radius: 40px;
+    position: relative;
+    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.5px;
+}
+
+/* Главная - голубой градиент */
+nav a[href="#home"],
+nav a[href="index.html"] {
+    background: linear-gradient(135deg, rgba(0, 188, 212, 0.15), rgba(0, 150, 136, 0.1));
+    border-color: rgba(0, 188, 212, 0.3);
+}
+
+nav a[href="#home"]:hover,
+nav a[href="index.html"]:hover {
+    background: linear-gradient(135deg, #00bcd4, #009688);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 188, 212, 0.4);
+    border-color: transparent;
+}
+
+/* Услуги - синий градиент */
+nav a[href="#services"],
+nav a[href="index.html#services"] {
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.15), rgba(25, 118, 210, 0.1));
+    border-color: rgba(33, 150, 243, 0.3);
+}
+
+nav a[href="#services"]:hover,
+nav a[href="index.html#services"]:hover {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4);
+    border-color: transparent;
+}
+
+/* Карта - фиолетовый градиент */
+nav a[href="#map"],
+nav a[href="index.html#map"] {
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(123, 31, 162, 0.1));
+    border-color: rgba(156, 39, 176, 0.3);
+}
+
+nav a[href="#map"]:hover,
+nav a[href="index.html#map"]:hover {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(156, 39, 176, 0.4);
+    border-color: transparent;
+}
+
+/* Контакты - зелёный градиент */
+nav a[href="#contacts"],
+nav a[href="index.html#contacts"] {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(56, 142, 60, 0.1));
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+nav a[href="#contacts"]:hover,
+nav a[href="index.html#contacts"]:hover {
+    background: linear-gradient(135deg, #4CAF50, #388e3c);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+    border-color: transparent;
+}
+
+/* Новости - оранжево-красный градиент */
+nav a.news-nav-btn,
+nav a[href="news.html"] {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 87, 34, 0.1));
+    border-color: rgba(255, 152, 0, 0.3);
+}
+
+nav a.news-nav-btn:hover,
+nav a[href="news.html"]:hover {
+    background: linear-gradient(135deg, #ff9800, #ff5722);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 87, 34, 0.4);
+    border-color: transparent;
+}
+
+/* Убираем старую анимацию подчёркивания */
+nav a::before {
+    display: none;
+}
+
+/* Общий hover для всех ссылок (на случай, если не подошли по селектору) */
+nav a:hover {
+    background: linear-gradient(135deg, #4CAF50, #388e3c);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+    border-color: transparent;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    nav a {
+        padding: 6px 16px;
+        font-size: 12px;
+        margin: 3px;
+    }
+}
+
+/* Эффект активной кнопки (при нажатии) */
+nav a:active {
+    transform: translateY(0px);
+    transition: 0.05s;
+}
+
+/* Hero секция */
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    background: linear-gradient(125deg, rgba(15, 12, 41, 0.7) 0%, rgba(26, 26, 46, 0.7) 50%, rgba(13, 17, 23, 0.7) 100%);
+    margin-bottom: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(76, 175, 80, 0.1) 0%, transparent 70%);
+    animation: rotateBg 20s linear infinite;
+    pointer-events: none;
+}
+
+/* Кнопка новостей в header */
+.news-nav-btn {
+    background: linear-gradient(135deg, #ff9800, #ff5722);
+    color: white !important;
+    box-shadow: 0 2px 10px rgba(255, 87, 34, 0.3);
+}
+
+.news-nav-btn:hover {
+    background: linear-gradient(135deg, #ff5722, #ff9800);
+    box-shadow: 0 5px 20px rgba(255, 87, 34, 0.5);
+    color: white !important;
+}
+
+.news-nav-btn::before {
+    display: none;
+}
+
+@keyframes rotateBg {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.hero h1 {
+    font-size: 56px;
+    font-family: 'Orbitron', monospace;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff, #4CAF50, #00ff88);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: fadeInUp 0.8s ease;
+}
+
+.hero p {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    animation: fadeInUp 0.8s ease 0.1s backwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.toc-grid {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.toc-item {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    font-size: 14px;
+}
+
+.toc-item:hover {
+    background: linear-gradient(135deg, #4CAF50, #00ff88);
+    color: #0a0a1a;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+    border-color: transparent;
+}
+
+/* Контент */
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    position: relative;
+    z-index: 1;
+}
+
+.section {
+    background: rgba(20, 20, 40, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 45px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.section:hover {
+    transform: translateY(-8px);
+    border-color: rgba(76, 175, 80, 0.5);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    background: rgba(25, 25, 50, 0.7);
+}
+
+.section h2 {
+    font-size: 34px;
+    margin-bottom: 28px;
+    color: #4CAF50;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 1px;
+    display: inline-block;
+    border-left: 4px solid #4CAF50;
+    padding-left: 20px;
+}
+
+/* Карточки услуг */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+    margin-top: 25px;
+}
+
+.service-card {
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.6), rgba(20, 20, 40, 0.8));
+    padding: 30px 25px;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    cursor: pointer;
+    border: 1px solid rgba(76, 175, 80, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.service-card:hover {
+    transform: translateY(-12px);
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(0, 255, 136, 0.05));
+    box-shadow: 0 20px 40px rgba(76, 175, 80, 0.15);
+    border-color: rgba(76, 175, 80, 0.4);
+}
+
+.service-card i {
+    font-size: 55px;
+    color: #4CAF50;
+    margin-bottom: 18px;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover i {
+    transform: scale(1.1);
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+.service-card h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.service-card p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Кнопка записи */
+.hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #4CAF50, #00ff88);
+    color: #0a0a1a;
+    padding: 16px 45px;
+    border-radius: 60px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    margin-top: 35px;
+    animation: heroPulse 2s infinite;
+    box-shadow: 0 5px 25px rgba(76, 175, 80, 0.4);
+    position: relative;
+    z-index: 1;
+}
+
+.hero-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 40px rgba(76, 175, 80, 0.7);
+    gap: 18px;
+}
+
+@keyframes heroPulse {
+    0%, 100% { box-shadow: 0 5px 25px rgba(76, 175, 80, 0.4); }
+    50% { box-shadow: 0 5px 35px rgba(76, 175, 80, 0.8); }
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1e1e3a, #16162e);
+    padding: 45px;
+    border-radius: 30px;
+    max-width: 520px;
+    width: 90%;
+    border: 1px solid #4CAF50;
+    position: relative;
+    animation: modalSlideIn 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-60px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    font-size: 32px;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.3s;
+}
+
+.modal-close:hover {
+    color: #4CAF50;
+    transform: rotate(90deg);
+}
+
+.modal h3 {
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #4CAF50;
+    font-family: 'Orbitron', monospace;
+}
+
+/* Карта */
+.map-section {
+    scroll-margin-top: 20px;
+}
+
+.map-container {
+    margin-top: 15px;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 2px solid rgba(76, 175, 80, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.map-container:hover {
+    border-color: #4CAF50;
+    box-shadow: 0 20px 45px rgba(76, 175, 80, 0.2);
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 420px;
+    border: none;
+    display: block;
+}
+
+.map-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.map-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.map-button:hover {
+    transform: translateY(-4px);
+}
+
+.yandex-btn {
+    background: linear-gradient(135deg, #cc0000, #ff2a2a);
+    color: white;
+    box-shadow: 0 5px 20px rgba(204, 0, 0, 0.3);
+}
+
+.yandex-btn:hover {
+    box-shadow: 0 10px 30px rgba(204, 0, 0, 0.5);
+}
+
+.map-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.map-title i {
+    color: #4CAF50;
+    font-size: 32px;
+    background: rgba(76, 175, 80, 0.15);
+    padding: 12px;
+    border-radius: 18px;
+}
+
+.map-title span {
+    background: linear-gradient(135deg, #fff, #4CAF50);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Кнопка связи */
+.contact-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #4CAF50, #2e7d32);
+    color: white;
+    padding: 14px 35px;
+    border-radius: 60px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.contact-button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+    gap: 16px;
+}
+
+/* Формы */
+.contact-form {
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-input, .form-textarea, select.form-input {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    padding: 14px 20px;
+    border-radius: 14px;
+    color: white;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus, .form-textarea:focus, select.form-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.form-textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #4CAF50, #00ff88);
+    color: #0a0a1a;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Футер */
+.footer {
+    background: linear-gradient(135deg, #0a0a1a 0%, #12122a 100%);
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    padding: 35px 20px;
+    margin-top: auto;
+    border-top: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer h3 {
+    margin-bottom: 18px;
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, #4CAF50);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.footer p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.footer a {
+    color: #4CAF50;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer a:hover {
+    color: #00ff88;
+}
+
+.footer-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+    color: #fff;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.social-icons a:hover {
+    background: linear-gradient(135deg, #4CAF50, #00ff88);
+    transform: translateY(-6px);
+    color: #0a0a1a;
+}
+
+.site-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #4CAF50;
+    padding: 12px 28px;
+    border-radius: 60px;
+    background: rgba(76, 175, 80, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.site-link::before {
+    content: "🌐";
+    font-size: 18px;
+}
+
+.site-link:hover {
+    transform: translateY(-3px);
+    background: #4CAF50;
+    color: #0a0a1a;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    border-color: transparent;
+}
+
+.copyright {
+    margin-top: 25px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Адаптация */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 15px 20px;
+        gap: 12px;
+    }
+    
+    .header-title {
+        font-size: 16px;
+        text-align: center;
+    }
+    
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    nav a {
+        margin: 0 5px;
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+    
+    .hero h1 {
+        font-size: 32px;
+    }
+    
+    .hero p {
+        font-size: 16px;
+    }
+    
+    .hero {
+        padding: 60px 15px;
+    }
+    
+    .section {
+        padding: 25px 20px;
+    }
+    
+    .section h2 {
+        font-size: 24px;
+    }
+    
+    .map-container iframe {
+        height: 280px;
+    }
+    
+    .footer-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .hero-button {
+        padding: 12px 30px;
+        font-size: 16px;
+    }
+    
+    .modal-content {
+        padding: 30px 25px;
+    }
+    
+    .modal h3 {
+        font-size: 22px;
+    }
+}
+
+.footer-links {
+        margin: 20px 0 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .footer-link-btn {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        font-size: 13px;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 30px;
+    }
+    
+    .footer-link-btn:hover {
+        color: #4CAF50;
+        background: rgba(76, 175, 80, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .footer-link-btn i {
+        font-size: 12px;
+    }
+    
+    .footer-link-separator {
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 12px;
+    }
+    
+    /* Стили для модальных окон документов */
+    .legal-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1002;
+        justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+        padding: 20px;
+    }
+    
+    .legal-modal-content {
+        background: linear-gradient(135deg, #1e1e3a, #16162e);
+        border-radius: 30px;
+        max-width: 650px;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        position: relative;
+        animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .legal-modal-header {
+        padding: 25px 30px 15px;
+        border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .legal-modal-header i {
+        font-size: 32px;
+        color: #4CAF50;
+    }
+    
+    .legal-modal-header h2 {
+        font-size: 24px;
+        margin: 0;
+        color: #fff;
+        font-family: 'Orbitron', monospace;
+    }
+    
+    .legal-modal-body {
+        padding: 25px 30px;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+    }
+    
+    .legal-modal-body h3 {
+        color: #4CAF50;
+        font-size: 18px;
+        margin: 20px 0 10px;
+    }
+    
+    .legal-modal-body h3:first-of-type {
+        margin-top: 0;
+    }
+    
+    .legal-modal-body p {
+        margin-bottom: 15px;
+    }
+    
+    .legal-modal-body a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+    
+    .legal-modal-body a:hover {
+        text-decoration: underline;
+    }
+    
+    .legal-modal-footer {
+        padding: 15px 30px 25px;
+        border-top: 1px solid rgba(76, 175, 80, 0.2);
+        text-align: right;
+    }
+    
+    .legal-close-btn {
+        background: linear-gradient(135deg, #4CAF50, #00ff88);
+        color: #0a0a1a;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .legal-close-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+    
+    .legal-modal-close {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        font-size: 32px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.6);
+        transition: 0.3s;
+        z-index: 10;
+    }
+    
+    .legal-modal-close:hover {
+        color: #ff5722;
+        transform: rotate(90deg);
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .legal-modal-header {
+            padding: 20px 20px 10px;
+        }
+        .legal-modal-header h2 {
+            font-size: 18px;
+        }
+        .legal-modal-header i {
+            font-size: 24px;
+        }
+        .legal-modal-body {
+            padding: 20px;
+            font-size: 14px;
+        }
+        .legal-modal-footer {
+            padding: 15px 20px 20px;
+        }
+        .footer-link-btn {
+            font-size: 11px;
+            padding: 6px 10px;
+        }
+    }

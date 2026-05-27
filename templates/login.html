@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | КиберКачалка</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='photos/logo.jpg') }}" alt="Логотип">
+    </div>
+    <div class="header-title">Фиджитал центр "КиберКачалка"</div>
+    <nav>
+        <a href="{{ url_for('index') }}">Главная</a>
+        <a href="{{ url_for('news_page') }}">Новости</a>
+        <a href="{{ url_for('register') }}">Регистрация</a>
+    </nav>
+</header>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Вход</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; background: {% if category == 'success' %}#4CAF50{% elif category == 'error' %}#f44336{% else %}#2196f3{% endif %}; color: white;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="post" class="auth-form">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit" class="btn-primary">Войти</button>
+        </form>
+        <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться</a></p>
+        <p><a href="{{ url_for('index') }}">← На главную</a></p>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <p>© 2026 КиберКачалка</p>
+    </div>
+</footer>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        padding: 40px 20px;
+    }
+    .auth-card {
+        background: rgba(20, 20, 40, 0.8);
+        backdrop-filter: blur(12px);
+        border-radius: 28px;
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+    .auth-card h2 {
+        font-size: 32px;
+        margin-bottom: 30px;
+        text-align: center;
+        color: #4CAF50;
+    }
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+    .auth-form input {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        padding: 14px 20px;
+        border-radius: 14px;
+        color: white;
+        font-size: 16px;
+    }
+    .auth-form input:focus {
+        outline: none;
+        border-color: #4CAF50;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #4CAF50, #00ff88);
+        color: #0a0a1a;
+        padding: 14px;
+        border: none;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+    }
+    .auth-card p {
+        text-align: center;
+        margin-top: 20px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .auth-card a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+</style>
+
+</body>
+</html>
