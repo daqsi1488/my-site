@@ -109,6 +109,36 @@ def logout():
     flash('Вы вышли из системы', 'info')
     return redirect(url_for('index'))
 
+# ============ ПОЛУЧЕНИЕ ПРЕЙСКУРАНТА ============
+@app.route('/api/prices')
+def get_prices():
+    try:
+        response = supabase.table('prices')\
+            .select('*')\
+            .eq('is_active', True)\
+            .order('sort_order')\
+            .execute()
+        return jsonify(response.data)
+    except Exception as e:
+        logger.error(f"Ошибка загрузки цен: {e}")
+        return jsonify([])
+
+# ============ ПОЛУЧЕНИЕ ДОКУМЕНТА ============
+@app.route('/api/document/<doc_key>')
+def get_document(doc_key):
+    try:
+        response = supabase.table('documents')\
+            .select('*')\
+            .eq('doc_key', doc_key)\
+            .eq('is_active', True)\
+            .execute()
+        if response.data:
+            return jsonify(response.data[0])
+        return jsonify({'error': 'Document not found'}), 404
+    except Exception as e:
+        logger.error(f"Ошибка загрузки документа: {e}")
+        return jsonify({'error': str(e)}), 500
+    
 # ============ СОЗДАНИЕ ЗАЯВКИ ============
 @app.route('/create_booking', methods=['POST'])
 def create_booking():
