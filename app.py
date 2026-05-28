@@ -3,16 +3,29 @@ from supabase_client import supabase
 from datetime import datetime
 import hashlib
 import os
+import json
 import logging 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Flask сам найдёт папки templates и static, если они рядом
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here")
 
-# ============ ХЭШИРОВАНИЕ ПАРОЛЕЙ ============
+# Добавьте в app.py после создания app = Flask(__name__)
+
+from jinja2 import Environment
+
+# Фильтр для парсинга JSON в шаблонах
+def from_json_filter(value):
+    import json
+    try:
+        return json.loads(value) if value else []
+    except:
+        return []
+
+app.jinja_env.filters['from_json'] = from_json_filter
+
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -139,27 +152,49 @@ def get_document(doc_key):
         logger.error(f"Ошибка загрузки документа: {e}")
         return jsonify({'error': str(e)}), 500
     
-# ============ СОЗДАНИЕ ЗАЯВКИ ============
+# ============ СОЗДАНИЕ ЗАЯВКИ (ОБНОВЛЕНО ДЛЯ МНОЖЕСТВЕННЫХ УСЛУГ) ============
 @app.route('/create_booking', methods=['POST'])
 def create_booking():
     data = request.get_json() or request.form
     
+    # Преобразуем услуги в строку, если это массив
+    services = data.get('services', '')
+    if isinstance(services, list):
+        services = ', '.join(services)
+    
+    # Сохраняем детали услуг в JSON формате для админа
+    services_details = data.get('services_details', [])
+    if isinstance(services_details, list):
+        services_details_json = json.dumps(services_details, ensure_ascii=False)
+    else:
+        services_details_json = services_details
+    
     booking_data = {
         'user_id': session.get('user_id'),
-        'customer_name': data['name'],
-        'phone': data['phone'],
-        'service': data['service'],
-        'booking_date': data['date'],
-        'booking_time': data['time'],
+        'customer_name': data.get('name', ''),
+        'phone': data.get('phone', ''),
+        'email': data.get('email', ''),
+        'service': services,  # Строка с перечислением услуг
+        'services_details': services_details_json,  # Детальный JSON с ценами
+        'total_price': data.get('total_price', 0),
+        'booking_date': data.get('date', ''),
+        'booking_time': data.get('time', ''),
+        'duration': data.get('duration', '1'),
+        'comment': data.get('comment', ''),
         'status': 'new',
-        'comment': data.get('comment', '')
+        'created_at': datetime.now().isoformat()
     }
     
-    response = supabase.table('bookings').insert(booking_data).execute()
-    
-    if response.data:
-        return jsonify({'success': True, 'message': 'Заявка отправлена!'})
-    return jsonify({'success': False, 'message': 'Ошибка отправки'})
+    try:
+        response = supabase.table('bookings').insert(booking_data).execute()
+        
+        if response.data:
+            return jsonify({'success': True, 'message': 'Заявка успешно отправлена! Администратор свяжется с вами для подтверждения.'})
+        else:
+            return jsonify({'success': False, 'message': 'Ошибка при сохранении заявки'})
+    except Exception as e:
+        logger.error(f"Ошибка создания заявки: {e}")
+        return jsonify({'success': False, 'message': f'Ошибка сервера: {str(e)}'})
 
 # ============ ОТПРАВКА СООБЩЕНИЯ ============
 @app.route('/send_contact', methods=['POST'])
@@ -167,16 +202,21 @@ def send_contact():
     data = request.get_json() or request.form
     
     contact_data = {
-        'name': data['name'],
-        'phone': data['phone'],
-        'message': data['message']
+        'name': data.get('name', ''),
+        'phone': data.get('phone', ''),
+        'message': data.get('message', ''),
+        'created_at': datetime.now().isoformat()
     }
     
-    response = supabase.table('contacts').insert(contact_data).execute()
-    
-    if response.data:
-        return jsonify({'success': True, 'message': 'Сообщение отправлено!'})
-    return jsonify({'success': False, 'message': 'Ошибка отправки'})
+    try:
+        response = supabase.table('contacts').insert(contact_data).execute()
+        
+        if response.data:
+            return jsonify({'success': True, 'message': 'Сообщение отправлено!'})
+        return jsonify({'success': False, 'message': 'Ошибка отправки'})
+    except Exception as e:
+        logger.error(f"Ошибка отправки контакта: {e}")
+        return jsonify({'success': False, 'message': str(e)})
 
 # ============ АДМИН ПАНЕЛЬ ============
 @app.route('/admin')
@@ -185,33 +225,31 @@ def admin_dashboard():
         flash('Доступ запрещен', 'error')
         return redirect(url_for('index'))
     
-    # Пытаемся загрузить данные с повторными попытками
-    for attempt in range(3):  # 3 попытки
+    for attempt in range(3):
         try:
             logger.info(f"Попытка {attempt+1} загрузки админ-панели")
             
-            # Загружаем данные с лимитами и таймаутом
             bookings = supabase.table('bookings')\
                 .select('*')\
                 .order('created_at', desc=True)\
-                .limit(50)\
+                .limit(100)\
                 .execute()
             
             contacts = supabase.table('contacts')\
                 .select('*')\
                 .order('created_at', desc=True)\
-                .limit(50)\
+                .limit(100)\
                 .execute()
             
             news = supabase.table('news')\
                 .select('*')\
                 .order('date_published', desc=True)\
-                .limit(50)\
+                .limit(100)\
                 .execute()
             
             users = supabase.table('users')\
                 .select('*')\
-                .limit(50)\
+                .limit(100)\
                 .execute()
             
             logger.info("Данные успешно загружены")
@@ -223,16 +261,15 @@ def admin_dashboard():
                                  
         except Exception as e:
             logger.error(f"Ошибка при попытке {attempt+1}: {e}")
-            if attempt == 2:  # Последняя попытка
+            if attempt == 2:
                 flash('Ошибка загрузки данных админ-панели. Попробуйте позже.', 'error')
-                # Возвращаем пустые данные вместо ошибки
                 return render_template('admin.html', 
                                      bookings=[],
                                      contacts=[],
                                      news=[],
                                      users=[])
             import time
-            time.sleep(2)  # Ждем 2 секунды перед повторной попыткой
+            time.sleep(2)
 
 # ============ АДМИН: ОБНОВЛЕНИЕ СТАТУСА ЗАЯВКИ ============
 @app.route('/admin/update_booking/<int:booking_id>', methods=['POST'])
@@ -258,7 +295,7 @@ def add_news():
     news_data = {
         'title': request.form['title'],
         'content': request.form['content'],
-        'excerpt': request.form['excerpt'][:200],
+        'excerpt': request.form['excerpt'][:200] if request.form.get('excerpt') else request.form['title'][:100],
         'image_emoji': request.form.get('image_emoji', '📢'),
         'date_published': datetime.now().strftime('%d %B %Y'),
         'is_active': True,
@@ -296,6 +333,5 @@ def delete_user(user_id):
     flash('Пользователь удален', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# Для Render (Gunicorn использует переменную app)
 if __name__ == '__main__':
     app.run(debug=True)

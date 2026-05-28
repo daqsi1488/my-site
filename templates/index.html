@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <!-- ОБНОВЛЕННАЯ КИБЕРЗОНА с ценами из прейскуранта -->
+    <!-- КИБЕРЗОНА -->
     <div id="gaming" class="section gaming-section">
         <div class="gaming-header">
             <h2><i class="fas fa-desktop"></i> Киберзона (Digital-пространство)</h2>
@@ -118,22 +118,10 @@
         <div class="gaming-content">
             <div class="gaming-info">
                 <div class="gaming-features">
-                    <div class="feature">
-                        <i class="fas fa-playstation"></i>
-                        <span>PlayStation 5</span>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-tv"></i>
-                        <span>4K-мониторы</span>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-headphones"></i>
-                        <span>Игровая акустика</span>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-couch"></i>
-                        <span>Удобные кресла</span>
-                    </div>
+                    <div class="feature"><i class="fas fa-playstation"></i><span>PlayStation 5</span></div>
+                    <div class="feature"><i class="fas fa-tv"></i><span>4K-мониторы</span></div>
+                    <div class="feature"><i class="fas fa-headphones"></i><span>Игровая акустика</span></div>
+                    <div class="feature"><i class="fas fa-couch"></i><span>Удобные кресла</span></div>
                 </div>
                 <p class="gaming-desc">В нашей киберзоне установлены современные PlayStation 5 с огромным выбором игр. Уютные кресла, мощные 4K-мониторы и отличная акустика создают идеальные условия для погружения в виртуальный мир. Мы регулярно обновляем библиотеку игр и проводим киберспортивные турниры по FIFA, eFootball и другим дисциплинам.</p>
             </div>
@@ -158,11 +146,11 @@
         </div>
         <div class="gaming-hours">
             <i class="fas fa-clock"></i>
-            <span><strong>Часы работы киберзоны:</strong> Ежедневно с 12:00 до 23:00</span>
+            <span><strong>Часы работы киберзоны:</strong> Пн-Сб с 15:00 до 20:00</span>
         </div>
     </div>
 
-    <!-- ОБНОВЛЕННАЯ СПОРТИВНАЯ ЗОНА -->
+    <!-- СПОРТИВНАЯ ЗОНА -->
     <div id="sports" class="section sports-section">
         <h2><i class="fas fa-futbol"></i> Спортивная зона</h2>
         <div class="sports-content">
@@ -239,7 +227,7 @@
 <footer class="footer">
     <div class="footer-content">
         <h3>Фиджитал Центр "КиберКачалка"</h3>
-        <p>Почта: <a href="mailto:info@fidgetalcenter.ru">info@fidgetalcenter.ru</a> | Телефон: +7 (123) 456-78-90</p>
+        <p>Почта: <a href="mailto:info@fidgetalcenter.ru">pu105ur@mail.ru</a> | Телефон: +7 (913) 531-57-60</p>
         <div class="footer-row">
             <a href="https://ntptis.ru" class="site-link" target="_blank">сайт НТПТиС</a>
             <div class="social-icons">
@@ -268,35 +256,750 @@
     </div>
 </footer>
 
-<!-- Модальные окна (оставляем без изменений, они уже есть в вашем файле) -->
-<div id="policyModal" class="legal-modal">...</div>
-<div id="termsModal" class="legal-modal">...</div>
-<div id="procedureModal" class="legal-modal">...</div>
-<div id="bookingModal" class="modal">...</div>
+<!-- Модальное окно для Политики конфиденциальности -->
+<div id="policyModal" class="legal-modal">
+    <div class="legal-modal-content">
+        <span class="legal-modal-close" onclick="closePolicyModal()">&times;</span>
+        <div class="legal-modal-header">
+            <i class="fas fa-shield-alt"></i>
+            <h2>Политика конфиденциальности</h2>
+        </div>
+        <div class="legal-modal-body">
+            <p>Настоящая Политика конфиденциальности определяет порядок сбора, использования и защиты персональных данных пользователей Фиджитал центра "КиберКачалка".</p>
+            
+            <h3>1. Собираемая информация</h3>
+            <p>При использовании нашего сайта мы можем собирать следующую информацию: имя, контактный телефон, адрес электронной почты, а также данные о записях на услуги.</p>
+            
+            <h3>2. Использование информации</h3>
+            <p>Собранная информация используется для:<br>
+            - Обработки заявок на запись<br>
+            - Связи с вами для подтверждения записи<br>
+            - Отправки уведомлений о новостях и акциях<br>
+            - Улучшения качества обслуживания</p>
+            
+            <h3>3. Защита данных</h3>
+            <p>Мы принимаем все необходимые меры для защиты ваших персональных данных от несанкционированного доступа, изменения или уничтожения.</p>
+            
+            <h3>4. Передача третьим лицам</h3>
+            <p>Ваши персональные данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
+            
+            <h3>5. Контакты</h3>
+            <p>По вопросам, связанным с обработкой персональных данных, вы можете обратиться по email: <a href="mailto:privacy@fidgetalcenter.ru">privacy@fidgetalcenter.ru</a></p>
+        </div>
+        <div class="legal-modal-footer">
+            <button class="legal-close-btn" onclick="closePolicyModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для Условий пользования -->
+<div id="termsModal" class="legal-modal">
+    <div class="legal-modal-content">
+        <span class="legal-modal-close" onclick="closeTermsModal()">&times;</span>
+        <div class="legal-modal-header">
+            <i class="fas fa-file-contract"></i>
+            <h2>Условия пользования</h2>
+        </div>
+        <div class="legal-modal-body">
+            <p>Настоящие Условия пользования регулируют порядок использования сайта Фиджитал центра "КиберКачалка".</p>
+            
+            <h3>1. Общие положения</h3>
+            <p>Используя наш сайт, вы соглашаетесь с данными условиями. Если вы не согласны с какими-либо пунктами, пожалуйста, прекратите использование сайта.</p>
+            
+            <h3>2. Правила записи</h3>
+            <p>- Запись на услуги осуществляется через форму на сайте или по телефону.<br>
+            - Время бронирования считается подтвержденным после получения уведомления.<br>
+            - Отмена записи возможна не менее чем за 2 часа до начала.</p>
+            
+            <h3>3. Оплата услуг</h3>
+            <p>Оплата услуг производится на месте после оказания услуги. Возможна предоплата при онлайн-бронировании.</p>
+            
+            <h3>4. Правила поведения</h3>
+            <p>Посетители обязаны соблюдать правила техники безопасности и уважительно относиться к другим гостям и персоналу центра.</p>
+            
+            <h3>5. Ответственность</h3>
+            <p>Администрация не несет ответственности за личные вещи, оставленные без присмотра. За порчу оборудования предусмотрена материальная ответственность.</p>
+            
+            <h3>6. Изменение условий</h3>
+            <p>Администрация оставляет за собой право вносить изменения в условия пользования без предварительного уведомления.</p>
+        </div>
+        <div class="legal-modal-footer">
+            <button class="legal-close-btn" onclick="closeTermsModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для Порядка функционирования -->
+<div id="procedureModal" class="legal-modal">
+    <div class="legal-modal-content">
+        <span class="legal-modal-close" onclick="closeProcedureModal()">&times;</span>
+        <div class="legal-modal-header">
+            <i class="fas fa-building"></i>
+            <h2>Порядок функционирования ФЦ «Киберкачалка»</h2>
+        </div>
+        <div class="legal-modal-body" id="procedureModalBody">
+            <p>Загрузка документа...</p>
+        </div>
+        <div class="legal-modal-footer">
+            <button class="legal-close-btn" onclick="closeProcedureModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ЗАПИСИ С МНОЖЕСТВЕННЫМ ВЫБОРОМ УСЛУГ И КЛИКОМ ПО БЛОКУ -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content modal-large">
+        <span class="modal-close" id="closeModalBtn">&times;</span>
+        <h3><i class="fas fa-calendar-alt"></i> Запись в КиберКачалку</h3>
+        
+        <div class="booking-steps" id="bookingSteps">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">Контакты</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">Выбор услуг</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">Дата и время</div>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-label">Подтверждение</div>
+            </div>
+        </div>
+        
+        <form class="booking-form" id="bookingForm">
+            <!-- ШАГ 1: Контактные данные -->
+            <div class="booking-step-content" id="step1">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Ваше имя <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="bookingName" placeholder="Иван Иванов" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Ваш телефон <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="bookingPhone" placeholder="+7 (999) 123-45-67" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email (необязательно)</label>
+                    <input type="email" class="form-input" id="bookingEmail" placeholder="ivan@example.com">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-comment"></i> Комментарий</label>
+                    <textarea class="form-textarea" id="bookingComment" placeholder="Дополнительная информация..."></textarea>
+                </div>
+            </div>
+            
+            <!-- ШАГ 2: Выбор услуг - КЛИКАБЕЛЬНЫЕ КАРТОЧКИ -->
+            <div class="booking-step-content" id="step2" style="display: none;">
+                <p class="step-description">Кликните на любую услугу, чтобы выбрать её. Можно выбрать несколько.</p>
+                
+                <div class="services-selection" id="servicesSelection">
+                    <div class="services-loading">
+                        <i class="fas fa-spinner fa-spin"></i> Загрузка услуг...
+                    </div>
+                </div>
+                
+                <div class="selected-services-summary" id="selectedServicesSummary" style="display: none;">
+                    <h4><i class="fas fa-check-circle"></i> Выбранные услуги:</h4>
+                    <div id="selectedServicesList"></div>
+                </div>
+            </div>
+            
+            <!-- ШАГ 3: Дата и время -->
+            <div class="booking-step-content" id="step3" style="display: none;">
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label><i class="fas fa-calendar-day"></i> Дата посещения <span class="required">*</span></label>
+                        <input type="date" class="form-input" id="bookingDate" required>
+                    </div>
+                    <div class="form-group half">
+                        <label><i class="fas fa-clock"></i> Время <span class="required">*</span></label>
+                        <input type="time" class="form-input" id="bookingTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-hourglass-half"></i> Продолжительность (часов)</label>
+                    <select class="form-input" id="bookingDuration">
+                        <option value="1">1 час</option>
+                        <option value="2">2 часа</option>
+                        <option value="3">3 часа</option>
+                        <option value="4">4+ часа (уточнить)</option>
+                    </select>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Часы работы: Вторник-Суббота с 15:00 до 20:00</span>
+                </div>
+            </div>
+            
+            <!-- ШАГ 4: Подтверждение -->
+            <div class="booking-step-content" id="step4" style="display: none;">
+                <div class="confirmation-box" id="confirmationBox">
+                    <h4><i class="fas fa-clipboard-list"></i> Проверьте данные записи:</h4>
+                    <div class="confirmation-details">
+                        <div class="confirmation-item">
+                            <span class="conf-label">Клиент:</span>
+                            <span class="conf-value" id="confName">—</span>
+                        </div>
+                        <div class="confirmation-item">
+                            <span class="conf-label">Телефон:</span>
+                            <span class="conf-value" id="confPhone">—</span>
+                        </div>
+                        <div class="confirmation-item">
+                            <span class="conf-label">Услуги:</span>
+                            <span class="conf-value" id="confServices">—</span>
+                        </div>
+                        <div class="confirmation-item">
+                            <span class="conf-label">Дата:</span>
+                            <span class="conf-value" id="confDate">—</span>
+                        </div>
+                        <div class="confirmation-item">
+                            <span class="conf-label">Время:</span>
+                            <span class="conf-value" id="confTime">—</span>
+                        </div>
+                        <div class="confirmation-item">
+                            <span class="conf-label">Длительность:</span>
+                            <span class="conf-value" id="confDuration">—</span>
+                        </div>
+                        <div class="confirmation-item" id="confCommentItem" style="display: none;">
+                            <span class="conf-label">Комментарий:</span>
+                            <span class="conf-value" id="confComment">—</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>После отправки заявки с вами свяжется администратор для подтверждения.</span>
+                </div>
+            </div>
+            
+            <!-- Кнопки навигации -->
+            <div class="form-navigation">
+                <button type="button" class="nav-btn prev-btn" id="prevBtn" style="display: none;">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <button type="button" class="nav-btn next-btn" id="nextBtn">
+                    Далее <i class="fas fa-arrow-right"></i>
+                </button>
+                <button type="submit" class="submit-btn" id="submitBtn" style="display: none;">
+                    <i class="fas fa-paper-plane"></i> Отправить заявку
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
-    // ... (весь существующий JavaScript оставляем, добавляем только обновленные функции)
+    // ============ ПЕРЕМЕННЫЕ ДЛЯ МНОЖЕСТВЕННОГО ВЫБОРА УСЛУГ ============
+    let availableServices = [];
+    let selectedServices = [];
+    let currentStep = 1;
+    const totalSteps = 4;
     
-    // Загрузка прейскуранта в красивом виде
-    async function loadPrices() {
+    // ============ МОДАЛЬНОЕ ОКНО ЗАПИСИ ============
+    const modal = document.getElementById('bookingModal');
+    const bookBtn = document.getElementById('bookBtn');
+    const closeModal = document.getElementById('closeModalBtn');
+    
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    const steps = document.querySelectorAll('.step');
+    const stepContents = {
+        1: document.getElementById('step1'),
+        2: document.getElementById('step2'),
+        3: document.getElementById('step3'),
+        4: document.getElementById('step4')
+    };
+    
+    if (bookBtn) {
+        bookBtn.addEventListener('click', function() {
+            resetBookingForm();
+            modal.style.display = 'flex';
+            loadServicesForSelection();
+        });
+    }
+    
+    if (closeModal) {
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+    
+    window.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    function resetBookingForm() {
+        currentStep = 1;
+        selectedServices = [];
+        document.getElementById('bookingForm').reset();
+        updateStepDisplay();
+        updateSelectedServicesSummary();
+    }
+    
+    function updateStepDisplay() {
+        steps.forEach((step, index) => {
+            const stepNum = index + 1;
+            step.classList.remove('active', 'completed');
+            if (stepNum < currentStep) {
+                step.classList.add('completed');
+            } else if (stepNum === currentStep) {
+                step.classList.add('active');
+            }
+        });
+        
+        for (let i = 1; i <= totalSteps; i++) {
+            if (stepContents[i]) {
+                stepContents[i].style.display = i === currentStep ? 'block' : 'none';
+            }
+        }
+        
+        if (currentStep === 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'flex';
+            submitBtn.style.display = 'none';
+        } else if (currentStep === totalSteps) {
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'flex';
+            updateConfirmation();
+        } else {
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'flex';
+            submitBtn.style.display = 'none';
+        }
+    }
+    
+    function nextStep() {
+        if (validateCurrentStep()) {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepDisplay();
+            }
+        }
+    }
+    
+    function prevStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStepDisplay();
+        }
+    }
+    
+    function validateCurrentStep() {
+        switch(currentStep) {
+            case 1:
+                const name = document.getElementById('bookingName').value.trim();
+                const phone = document.getElementById('bookingPhone').value.trim();
+                if (!name) {
+                    alert('Пожалуйста, введите ваше имя');
+                    return false;
+                }
+                if (!phone) {
+                    alert('Пожалуйста, введите номер телефона');
+                    return false;
+                }
+                return true;
+            case 2:
+                if (selectedServices.length === 0) {
+                    alert('Пожалуйста, выберите хотя бы одну услугу');
+                    return false;
+                }
+                return true;
+            case 3:
+                const date = document.getElementById('bookingDate').value;
+                const time = document.getElementById('bookingTime').value;
+                if (!date) {
+                    alert('Пожалуйста, выберите дату');
+                    return false;
+                }
+                if (!time) {
+                    alert('Пожалуйста, выберите время');
+                    return false;
+                }
+                return true;
+            default:
+                return true;
+        }
+    }
+    
+    function updateConfirmation() {
+        document.getElementById('confName').textContent = document.getElementById('bookingName').value || '—';
+        document.getElementById('confPhone').textContent = document.getElementById('bookingPhone').value || '—';
+        
+        const servicesList = selectedServices.map(s => s.service_name).join(', ');
+        document.getElementById('confServices').textContent = servicesList || '—';
+        
+        const date = document.getElementById('bookingDate').value;
+        const time = document.getElementById('bookingTime').value;
+        document.getElementById('confDate').textContent = date || '—';
+        document.getElementById('confTime').textContent = time || '—';
+        
+        const durationSelect = document.getElementById('bookingDuration');
+        const durationText = durationSelect.options[durationSelect.selectedIndex]?.text || '1 час';
+        document.getElementById('confDuration').textContent = durationText;
+        
+        const comment = document.getElementById('bookingComment').value;
+        if (comment) {
+            document.getElementById('confComment').textContent = comment;
+            document.getElementById('confCommentItem').style.display = 'flex';
+        } else {
+            document.getElementById('confCommentItem').style.display = 'none';
+        }
+    }
+    
+    // ============ ЗАГРУЗКА УСЛУГ С ВОЗМОЖНОСТЬЮ КЛИКА ПО ВСЕМУ БЛОКУ ============
+    async function loadServicesForSelection() {
+        const container = document.getElementById('servicesSelection');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="services-loading"><i class="fas fa-spinner fa-spin"></i> Загрузка услуг...</div>';
+        
         try {
             const response = await fetch('/api/prices');
             const prices = await response.json();
-            const container = document.getElementById('pricesGrid');
+            availableServices = prices;
+            
+            if (prices.length === 0) {
+                container.innerHTML = '<div class="services-empty">Услуги временно недоступны</div>';
+                return;
+            }
+            
+            // Группировка по категориям
+            const categories = {
+                'Аренда помещений': prices.filter(p => p.service_name && (p.service_name.includes('Аренда помещения') || p.service_name.includes('Экскурсия'))),
+                'Интерактивные зоны': prices.filter(p => p.service_name && p.service_name.includes('игровой зоны')),
+                'Мероприятия и турниры': prices.filter(p => p.service_name && (p.service_name.includes('мероприятия') || p.service_name.includes('турнира'))),
+                'Дополнительные услуги': prices.filter(p => !p.service_name.includes('Аренда помещения') && !p.service_name.includes('Экскурсия') && !p.service_name.includes('игровой зоны') && !p.service_name.includes('мероприятия') && !p.service_name.includes('турнира'))
+            };
+            
+            let html = '';
+            
+            for (const [category, services] of Object.entries(categories)) {
+                if (services.length === 0) continue;
+                
+                html += `
+                    <div class="service-category">
+                        <div class="service-category-title">${getCategoryIcon(category)} ${category}</div>
+                        <div class="service-category-items">
+                `;
+                
+                services.forEach(service => {
+                    const isSelected = selectedServices.some(s => s.id === service.id);
+                    html += `
+                        <div class="service-select-item ${isSelected ? 'selected' : ''}" data-service-id="${service.id}">
+                            <input type="checkbox" class="service-checkbox" value="${service.id}" ${isSelected ? 'checked' : ''}>
+                            <div class="service-select-info">
+                                <div class="service-select-name">${escapeHtml(service.service_name)}</div>
+                                <div class="service-select-desc">${escapeHtml(service.description || '—')}</div>
+                                <div class="service-select-price">${Number(service.price).toLocaleString()} ₽<span>${service.max_persons ? ' / до ' + service.max_persons + ' чел' : '/час'}</span></div>
+                            </div>
+                            <div class="service-select-indicator">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            
+            // ПРИВЯЗКА ОБРАБОТЧИКОВ - КЛИК ПО ВСЕМУ БЛОКУ ПЕРЕКЛЮЧАЕТ ЧЕКБОКС
+            document.querySelectorAll('.service-select-item').forEach(item => {
+                const checkbox = item.querySelector('.service-checkbox');
+                const serviceId = parseInt(item.dataset.serviceId);
+                const service = availableServices.find(s => s.id === serviceId);
+                
+                // КЛИК ПО ВСЕЙ КАРТОЧКЕ
+                item.addEventListener('click', function(e) {
+                    // Если кликнули прямо по чекбоксу или по иконке - не перехватываем
+                    if (e.target.type === 'checkbox') return;
+                    if (e.target.tagName === 'I' && e.target.parentElement?.classList.contains('service-select-indicator')) return;
+                    
+                    const cb = this.querySelector('.service-checkbox');
+                    if (cb) {
+                        cb.checked = !cb.checked;
+                        const changeEvent = new Event('change', { bubbles: true });
+                        cb.dispatchEvent(changeEvent);
+                    }
+                });
+                
+                // Обработчик изменения чекбокса
+                if (checkbox) {
+                    checkbox.addEventListener('change', function(e) {
+                        e.stopPropagation();
+                        const parentItem = this.closest('.service-select-item');
+                        if (this.checked) {
+                            if (!selectedServices.some(s => s.id === serviceId)) {
+                                selectedServices.push(service);
+                            }
+                            parentItem.classList.add('selected');
+                        } else {
+                            selectedServices = selectedServices.filter(s => s.id !== serviceId);
+                            parentItem.classList.remove('selected');
+                        }
+                        updateSelectedServicesSummary();
+                    });
+                }
+            });
+            
+            updateSelectedServicesSummary();
+            
+        } catch (error) {
+            console.error('Ошибка загрузки услуг:', error);
+            container.innerHTML = '<div class="services-empty">Ошибка загрузки услуг. Попробуйте позже.</div>';
+        }
+    }
+    
+    function getCategoryIcon(category) {
+        const icons = {
+            'Аренда помещений': '<i class="fas fa-building"></i>',
+            'Интерактивные зоны': '<i class="fas fa-gamepad"></i>',
+            'Мероприятия и турниры': '<i class="fas fa-trophy"></i>',
+            'Дополнительные услуги': '<i class="fas fa-ellipsis-h"></i>'
+        };
+        return icons[category] || '<i class="fas fa-tag"></i>';
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function updateSelectedServicesSummary() {
+        const summaryDiv = document.getElementById('selectedServicesSummary');
+        const listDiv = document.getElementById('selectedServicesList');
+        
+        if (selectedServices.length > 0) {
+            summaryDiv.style.display = 'block';
+            let totalPrice = 0;
+            let html = '<ul class="selected-services-ul">';
+            selectedServices.forEach(service => {
+                html += `<li>
+                    <i class="fas fa-tag"></i>
+                    <span>${escapeHtml(service.service_name)}</span>
+                    <strong>${Number(service.price).toLocaleString()} ₽</strong>
+                </li>`;
+                totalPrice += Number(service.price);
+            });
+            html += `</ul>`;
+            if (selectedServices.length > 1) {
+                html += `<div class="total-price"><i class="fas fa-calculator"></i> Итого: ${totalPrice.toLocaleString()} ₽</div>`;
+            }
+            listDiv.innerHTML = html;
+        } else {
+            summaryDiv.style.display = 'none';
+        }
+    }
+    
+    // Обработчики навигации
+    if (prevBtn) prevBtn.addEventListener('click', prevStep);
+    if (nextBtn) nextBtn.addEventListener('click', nextStep);
+    
+    // ============ ОТПРАВКА ЗАЯВКИ ============
+    const bookingForm = document.getElementById('bookingForm');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const servicesList = selectedServices.map(s => s.service_name).join(', ');
+            const totalPrice = selectedServices.reduce((sum, s) => sum + Number(s.price), 0);
+            
+            const data = {
+                name: document.getElementById('bookingName').value,
+                phone: document.getElementById('bookingPhone').value,
+                email: document.getElementById('bookingEmail').value,
+                services: servicesList,
+                services_details: selectedServices.map(s => ({
+                    id: s.id,
+                    name: s.service_name,
+                    price: s.price
+                })),
+                total_price: totalPrice,
+                date: document.getElementById('bookingDate').value,
+                time: document.getElementById('bookingTime').value,
+                duration: document.getElementById('bookingDuration').value,
+                comment: document.getElementById('bookingComment').value
+            };
+            
+            const submitButton = document.getElementById('submitBtn');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+            submitButton.disabled = true;
+            
+            try {
+                const response = await fetch('/create_booking', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                alert(result.message);
+                if (result.success) {
+                    modal.style.display = 'none';
+                    bookingForm.reset();
+                    selectedServices = [];
+                    currentStep = 1;
+                }
+            } catch (error) {
+                alert('Ошибка отправки. Попробуйте позже.');
+            } finally {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        });
+    }
+    
+    // Обновление подтверждения при изменении полей
+    document.getElementById('bookingDate')?.addEventListener('change', updateConfirmation);
+    document.getElementById('bookingTime')?.addEventListener('change', updateConfirmation);
+    document.getElementById('bookingDuration')?.addEventListener('change', updateConfirmation);
+    document.getElementById('bookingName')?.addEventListener('input', updateConfirmation);
+    document.getElementById('bookingPhone')?.addEventListener('input', updateConfirmation);
+    document.getElementById('bookingComment')?.addEventListener('input', updateConfirmation);
+    
+    // ============ ОТПРАВКА ФОРМЫ ОБРАТНОЙ СВЯЗИ ============
+    const feedbackForm = document.getElementById('feedbackForm');
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('contactName').value,
+                phone: document.getElementById('contactPhone').value,
+                message: document.getElementById('contactMessage').value
+            };
+            
+            try {
+                const response = await fetch('/send_contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                alert(result.message);
+                if (result.success) {
+                    this.reset();
+                    document.getElementById('contactForm').style.display = 'none';
+                    document.getElementById('showFormBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Написать нам';
+                }
+            } catch (error) {
+                alert('Ошибка отправки. Попробуйте позже.');
+            }
+        });
+    }
+    
+    // ============ ПОКАЗАТЬ/СКРЫТЬ ФОРМУ ОБРАТНОЙ СВЯЗИ ============
+    const showFormBtn = document.getElementById('showFormBtn');
+    if (showFormBtn) {
+        showFormBtn.addEventListener('click', function() {
+            var form = document.getElementById('contactForm');
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+                this.innerHTML = '<i class="fas fa-times"></i> Закрыть форму';
+            } else {
+                form.style.display = 'none';
+                this.innerHTML = '<i class="fas fa-paper-plane"></i> Написать нам';
+            }
+        });
+    }
+    
+    // ============ МОДАЛЬНЫЕ ОКНА ДОКУМЕНТОВ ============
+    function openPolicyModal() {
+        document.getElementById('policyModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closePolicyModal() {
+        document.getElementById('policyModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    function openTermsModal() {
+        document.getElementById('termsModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeTermsModal() {
+        document.getElementById('termsModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    async function openProcedureModal() {
+        const modalEl = document.getElementById('procedureModal');
+        const body = document.getElementById('procedureModalBody');
+        modalEl.style.display = 'flex';
+        body.innerHTML = '<p>Загрузка...</p>';
+        document.body.style.overflow = 'hidden';
+        
+        try {
+            const response = await fetch('/api/document/operating_procedure');
+            const doc = await response.json();
+            body.innerHTML = doc.content || '<p>Документ временно недоступен</p>';
+        } catch (error) {
+            body.innerHTML = '<p>Ошибка загрузки документа</p>';
+        }
+    }
+    
+    function closeProcedureModal() {
+        document.getElementById('procedureModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    window.addEventListener('click', function(e) {
+        const policyModal = document.getElementById('policyModal');
+        const termsModal = document.getElementById('termsModal');
+        const procedureModal = document.getElementById('procedureModal');
+        if (e.target === policyModal) closePolicyModal();
+        if (e.target === termsModal) closeTermsModal();
+        if (e.target === procedureModal) closeProcedureModal();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (document.getElementById('policyModal').style.display === 'flex') closePolicyModal();
+            if (document.getElementById('termsModal').style.display === 'flex') closeTermsModal();
+            if (document.getElementById('procedureModal').style.display === 'flex') closeProcedureModal();
+        }
+    });
+    
+    // ============ ЗАГРУЗКА ПРЕЙСКУРАНТА ============
+    async function loadPrices() {
+        const container = document.getElementById('pricesGrid');
+        if (!container) return;
+        
+        try {
+            const response = await fetch('/api/prices');
+            const prices = await response.json();
+            
             if (prices.length === 0) {
                 container.innerHTML = '<div class="price-empty">Цены временно недоступны</div>';
                 return;
             }
             
-            // Группируем услуги
-            const rentalServices = prices.filter(p => p.service_name.includes('Аренда помещения') || p.service_name.includes('Экскурсия'));
-            const gamingServices = prices.filter(p => p.service_name.includes('игровой зоны'));
-            const eventServices = prices.filter(p => p.service_name.includes('мероприятия') || p.service_name.includes('турнира'));
+            const rentalServices = prices.filter(p => p.service_name && (p.service_name.includes('Аренда помещения') || p.service_name.includes('Экскурсия')));
+            const gamingServices = prices.filter(p => p.service_name && p.service_name.includes('игровой зоны'));
+            const eventServices = prices.filter(p => p.service_name && (p.service_name.includes('мероприятия') || p.service_name.includes('турнира')));
             const otherServices = prices.filter(p => !rentalServices.includes(p) && !gamingServices.includes(p) && !eventServices.includes(p));
             
             let html = '';
             
-            // Аренда помещений
             if (rentalServices.length) {
                 html += `
                     <div class="price-category">
@@ -310,7 +1013,7 @@
                                         <div class="price-card-desc">${escapeHtml(p.description || '—')}</div>
                                         <div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div>
                                     </div>
-                                    <div class="price-card-value">${p.price.toLocaleString()} <span>₽</span></div>
+                                    <div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div>
                                 </div>
                             `).join('')}
                         </div>
@@ -318,21 +1021,20 @@
                 `;
             }
             
-            // Игровые зоны
             if (gamingServices.length) {
                 html += `
                     <div class="price-category">
                         <div class="price-category-title"><i class="fas fa-gamepad"></i> Интерактивные зоны</div>
                         <div class="price-category-grid">
                             ${gamingServices.map(p => `
-                                <div class="price-card-modern ${p.service_name.includes('Льготная') ? 'discount-card' : ''}">
-                                    <div class="price-card-icon"><i class="fas ${p.service_name.includes('Льготная') ? 'fa-hand-holding-heart' : 'fa-tv'}"></i></div>
+                                <div class="price-card-modern ${p.service_name && p.service_name.includes('Льготная') ? 'discount-card' : ''}">
+                                    <div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('Льготная') ? 'fa-hand-holding-heart' : 'fa-tv'}"></i></div>
                                     <div class="price-card-details">
                                         <div class="price-card-name">${escapeHtml(p.service_name)}</div>
                                         <div class="price-card-desc">${escapeHtml(p.description || 'Аренда телевизора с приставкой')}</div>
                                         <div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || 'до 8 человек')}</div>
                                     </div>
-                                    <div class="price-card-value ${p.service_name.includes('Льготная') ? 'discount-price' : ''}">${p.price.toLocaleString()} <span>₽</span></div>
+                                    <div class="price-card-value ${p.service_name && p.service_name.includes('Льготная') ? 'discount-price' : ''}">${Number(p.price).toLocaleString()} <span>₽</span></div>
                                 </div>
                             `).join('')}
                         </div>
@@ -340,7 +1042,6 @@
                 `;
             }
             
-            // Мероприятия и турниры
             if (eventServices.length) {
                 html += `
                     <div class="price-category">
@@ -354,7 +1055,7 @@
                                         <div class="price-card-desc">${escapeHtml(p.description || 'Организация и проведение')}</div>
                                         <div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div>
                                     </div>
-                                    <div class="price-card-value">${p.price.toLocaleString()} <span>₽</span></div>
+                                    <div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div>
                                 </div>
                             `).join('')}
                         </div>
@@ -362,7 +1063,6 @@
                 `;
             }
             
-            // Прочие услуги
             if (otherServices.length) {
                 html += `
                     <div class="price-category">
@@ -370,13 +1070,13 @@
                         <div class="price-category-grid">
                             ${otherServices.map(p => `
                                 <div class="price-card-modern">
-                                    <div class="price-card-icon"><i class="fas ${p.service_name.includes('фуршет') ? 'fa-utensils' : 'fa-chalkboard-user'}"></i></div>
+                                    <div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('фуршет') ? 'fa-utensils' : 'fa-chalkboard-user'}"></i></div>
                                     <div class="price-card-details">
                                         <div class="price-card-name">${escapeHtml(p.service_name)}</div>
                                         <div class="price-card-desc">${escapeHtml(p.description || '—')}</div>
                                         <div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div>
                                     </div>
-                                    <div class="price-card-value">${p.price.toLocaleString()} <span>₽</span></div>
+                                    <div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div>
                                 </div>
                             `).join('')}
                         </div>
@@ -387,27 +1087,11 @@
             container.innerHTML = html;
         } catch (error) {
             console.error('Ошибка загрузки цен:', error);
-            document.getElementById('pricesGrid').innerHTML = '<div class="price-empty">Ошибка загрузки цен</div>';
+            container.innerHTML = '<div class="price-empty">Ошибка загрузки цен</div>';
         }
     }
     
-    function escapeHtml(text) {
-        if (!text) return '';
-        return text.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        loadPrices();
-        // ... остальной код модальных окон
-    });
-    
-    // Функции для модальных окон (оставляем существующие)
-    // ...
+    document.addEventListener('DOMContentLoaded', loadPrices);
 </script>
 
 </body>

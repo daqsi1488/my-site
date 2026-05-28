@@ -6,6 +6,79 @@
     <title>Админ панель | КиберКачалка</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Дополнительные стили для админ-панели */
+        .services-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .services-list li {
+            padding: 4px 0;
+            font-size: 13px;
+            border-bottom: 1px dashed rgba(84, 253, 246, 0.1);
+        }
+        .services-list li:last-child {
+            border-bottom: none;
+        }
+        .services-list li i {
+            color: #54fdf6;
+            margin-right: 6px;
+            font-size: 11px;
+        }
+        .booking-details {
+            background: rgba(84, 253, 246, 0.05);
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        .booking-details .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .booking-details .detail-label {
+            color: #888;
+        }
+        .booking-details .detail-value {
+            color: #ff68ff;
+            font-weight: 500;
+        }
+        .admin-table td {
+            vertical-align: top;
+        }
+        .expand-btn {
+            background: none;
+            border: none;
+            color: #54fdf6;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .expand-btn:hover {
+            background: rgba(84, 253, 246, 0.1);
+        }
+        .price-badge {
+            display: inline-block;
+            background: rgba(255, 104, 255, 0.15);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #ff68ff;
+        }
+        .booking-email {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+        .booking-email i {
+            margin-right: 4px;
+        }
+    </style>
 </head>
 <body>
 
@@ -26,9 +99,10 @@
         <button class="admin-tab-btn" data-tab="news">Новости</button>
         <button class="admin-tab-btn" data-tab="contacts">Сообщения</button>
         <button class="admin-tab-btn" data-tab="users">Пользователи</button>
+        <button class="admin-tab-btn" data-tab="prices">Цены</button>
     </div>
 
-    <!-- Вкладка: Заявки -->
+    <!-- Вкладка: Заявки (УЛУЧШЕННАЯ) -->
     <div id="tab-bookings" class="admin-tab active">
         <h2>Заявки на запись</h2>
         <div class="admin-table">
@@ -37,9 +111,11 @@
                     <tr style="border-bottom:1px solid #333;">
                         <th>ID</th>
                         <th>Клиент</th>
-                        <th>Телефон</th>
-                        <th>Услуга</th>
+                        <th>Контакты</th>
+                        <th>Услуги</th>
                         <th>Дата/Время</th>
+                        <th>Длит.</th>
+                        <th>Сумма</th>
                         <th>Статус</th>
                         <th>Действие</th>
                     </tr>
@@ -47,12 +123,72 @@
                 <tbody>
                     {% for booking in bookings %}
                     <tr style="border-bottom:1px solid #222;">
-                        <td>{{ booking.id }}</td>
-                        <td>{{ booking.customer_name }}</td>
-                        <td>{{ booking.phone }}</td>
-                        <td>{{ booking.service }}</td>
-                        <td>{{ booking.booking_date }} {{ booking.booking_time }}</td>
-                        <td>
+                        <td style="vertical-align: top;">{{ booking.id }}</td>
+                        <td style="vertical-align: top;">
+                            <strong>{{ booking.customer_name }}</strong>
+                            {% if booking.comment %}
+                                <div class="booking-details" style="margin-top: 8px;">
+                                    <i class="fas fa-comment"></i> {{ booking.comment[:50] }}{% if booking.comment|length > 50 %}...{% endif %}
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td style="vertical-align: top;">
+                            <i class="fas fa-phone"></i> {{ booking.phone }}<br>
+                            {% if booking.email %}
+                                <div class="booking-email">
+                                    <i class="fas fa-envelope"></i> {{ booking.email }}
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td style="vertical-align: top;">
+                            {% if booking.services_details and booking.services_details != '[]' %}
+                                {% set services = booking.services_details | from_json %}
+                                <ul class="services-list">
+                                    {% for service in services %}
+                                        <li>
+                                            <i class="fas fa-tag"></i> 
+                                            {{ service.name }}
+                                            <span class="price-badge">{{ service.price }} ₽</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                {% if services|length > 1 %}
+                                    <div class="booking-details" style="margin-top: 8px;">
+                                        <span class="detail-label">Количество услуг:</span>
+                                        <span class="detail-value">{{ services|length }}</span>
+                                    </div>
+                                {% endif %}
+                            {% elif booking.service %}
+                                <ul class="services-list">
+                                    {% for service in booking.service.split(',') %}
+                                        <li><i class="fas fa-tag"></i> {{ service.strip() }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <span style="color: #888;">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="vertical-align: top;">
+                            <i class="fas fa-calendar-day"></i> {{ booking.booking_date }}<br>
+                            <i class="fas fa-clock"></i> {{ booking.booking_time }}
+                        </td>
+                        <td style="vertical-align: top;">
+                            {% if booking.duration %}
+                                {{ booking.duration }} ч
+                            {% else %}
+                                1 ч
+                            {% endif %}
+                        </td>
+                        <td style="vertical-align: top;">
+                            {% if booking.total_price and booking.total_price > 0 %}
+                                <span style="color: #ff68ff; font-weight: 700;">
+                                    {{ booking.total_price }} ₽
+                                </span>
+                            {% else %}
+                                <span style="color: #888;">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="vertical-align: top;">
                             <span class="status-badge status-{{ booking.status }}">
                                 {% if booking.status == 'new' %}Новая
                                 {% elif booking.status == 'confirmed' %}Подтверждена
@@ -60,7 +196,7 @@
                                 {% else %}Завершена{% endif %}
                             </span>
                         </td>
-                        <td>
+                        <td style="vertical-align: top;">
                             <select onchange="updateStatus({{ booking.id }}, this.value)">
                                 <option value="new" {% if booking.status == 'new' %}selected{% endif %}>Новая</option>
                                 <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>Подтвердить</option>
@@ -72,6 +208,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% if bookings|length == 0 %}
+                <div style="text-align: center; padding: 40px; color: #888;">
+                    <i class="fas fa-inbox"></i> Нет заявок
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -109,7 +250,7 @@
                         <td>
                             <a href="{{ url_for('delete_news', news_id=item.id) }}" 
                                onclick="return confirm('Удалить новость?')" style="color:#f44336; text-decoration:none;">
-                                Удалить
+                                <i class="fas fa-trash"></i> Удалить
                             </a>
                         </td>
                     </tr>
@@ -139,7 +280,7 @@
                         <td>{{ contact.id }}</td>
                         <td>{{ contact.name }}</td>
                         <td>{{ contact.phone }}</td>
-                        <td>{{ contact.message[:50] }}{% if contact.message|length > 50 %}...{% endif %}</td>
+                        <td style="max-width: 300px;">{{ contact.message[:100] }}{% if contact.message|length > 100 %}...{% endif %}</td>
                         <td>{{ contact.created_at[:16] if contact.created_at else '' }}</td>
                     </tr>
                     {% endfor %}
@@ -175,14 +316,44 @@
                             {% if user.role != 'admin' %}
                             <a href="{{ url_for('delete_user', user_id=user.id) }}" 
                                onclick="return confirm('Удалить пользователя {{ user.email }}?')" style="color:#f44336; text-decoration:none;">
-                                Удалить
+                                <i class="fas fa-user-minus"></i> Удалить
                             </a>
                             {% else %}
-                                <span>👑</span>
+                                <span style="color: #ffc107;">👑 Администратор</span>
                             {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Вкладка: Цены (управление прайс-листом) -->
+    <div id="tab-prices" class="admin-tab">
+        <h2>Управление прайс-листом</h2>
+        <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+            <p><i class="fas fa-info-circle"></i> Для управления ценами используйте Supabase Dashboard или добавьте услуги через SQL.</p>
+            <p><small>Таблица: <code>prices</code>. Поля: service_name, description, price, max_persons, is_active, sort_order</small></p>
+        </div>
+        <div class="admin-table">
+            <table border="0" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr style="border-bottom:1px solid #333;">
+                        <th>ID</th>
+                        <th>Название услуги</th>
+                        <th>Описание</th>
+                        <th>Цена</th>
+                        <th>Макс. человек</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody id="pricesTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin"></i> Загрузка цен...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -218,10 +389,14 @@
         border-radius: 30px;
         color: white;
         font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .admin-tab-btn:hover {
+        background: rgba(84, 253, 246, 0.2);
     }
     .admin-tab-btn.active {
-        background: #4CAF50;
-        color: #000;
+        background: #54fdf6;
+        color: #0a0a14;
     }
     .admin-news-form {
         background: rgba(255,255,255,0.05);
@@ -235,25 +410,30 @@
         margin-bottom: 15px;
         padding: 12px;
         background: rgba(255,255,255,0.1);
-        border: 1px solid #4CAF50;
+        border: 1px solid rgba(84, 253, 246, 0.3);
         border-radius: 10px;
         color: white;
     }
     .admin-news-form button {
-        background: #4CAF50;
+        background: linear-gradient(135deg, #54fdf6, #2bb8b2);
         border: none;
         padding: 12px 30px;
         border-radius: 30px;
-        color: #000;
+        color: #0a0a14;
         font-weight: bold;
         cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .admin-news-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(84, 253, 246, 0.3);
     }
     select {
         padding: 5px 10px;
         border-radius: 8px;
         background: #1a1a2e;
         color: white;
-        border: 1px solid #4CAF50;
+        border: 1px solid #54fdf6;
     }
     .status-badge {
         display: inline-block;
@@ -261,15 +441,31 @@
         border-radius: 20px;
         font-size: 12px;
     }
-    .status-new { background: #ff9800; color: #000; }
-    .status-confirmed { background: #4CAF50; color: #fff; }
-    .status-cancelled { background: #f44336; color: #fff; }
-    .status-completed { background: #2196f3; color: #fff; }
+    .status-new { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+    .status-confirmed { background: rgba(84, 253, 246, 0.2); color: #54fdf6; }
+    .status-cancelled { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+    .status-completed { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
     th { text-align: left; padding: 12px; }
     td { padding: 12px; }
+    .admin-table {
+        overflow-x: auto;
+    }
+    .admin-table table {
+        min-width: 800px;
+    }
 </style>
 
 <script>
+    // Функция для парсинга JSON (Jinja2 не имеет from_json по умолчанию)
+    function parseServicesDetails(servicesDetails) {
+        if (!servicesDetails) return [];
+        try {
+            return JSON.parse(servicesDetails);
+        } catch(e) {
+            return [];
+        }
+    }
+
     // Переключение вкладок
     document.querySelectorAll('.admin-tab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -282,6 +478,11 @@
                 t.classList.remove('active');
             });
             document.getElementById('tab-' + tab).classList.add('active');
+            
+            // Если открыли вкладку цен - загружаем их
+            if (tab === 'prices') {
+                loadPricesForAdmin();
+            }
         });
     });
 
@@ -296,9 +497,69 @@
         .then(function(data) {
             if (data.success) {
                 location.reload();
+            } else {
+                alert('Ошибка обновления статуса');
             }
+        })
+        .catch(function(error) {
+            alert('Ошибка: ' + error);
         });
     }
+
+    // Загрузка цен для админ-панели
+    async function loadPricesForAdmin() {
+        const tbody = document.getElementById('pricesTableBody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> Загрузка цен...</td></tr>';
+        
+        try {
+            const response = await fetch('/api/prices');
+            const prices = await response.json();
+            
+            if (prices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #888;"><i class="fas fa-database"></i> Нет данных. Добавьте услуги в таблицу prices</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            prices.forEach(price => {
+                html += `
+                    <tr style="border-bottom:1px solid #222;">
+                        <td>${price.id}</td>
+                        <td><strong>${escapeHtml(price.service_name)}</strong></td>
+                        <td style="max-width: 300px;">${escapeHtml(price.description || '—')}</td>
+                        <td style="color: #ff68ff; font-weight: 700;">${Number(price.price).toLocaleString()} ₽</td>
+                        <td>${price.max_persons || '—'}</td>
+                        <td>${price.is_active ? '<span style="color: #4caf50;">Активна</span>' : '<span style="color: #888;">Неактивна</span>'}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        } catch (error) {
+            console.error('Ошибка загрузки цен:', error);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #f44336;"><i class="fas fa-exclamation-triangle"></i> Ошибка загрузки</td></tr>';
+        }
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Загружаем цены при загрузке страницы, если вкладка цен активна по умолчанию
+    document.addEventListener('DOMContentLoaded', function() {
+        // Проверяем, активна ли вкладка цен
+        const activeTab = document.querySelector('.admin-tab-btn.active');
+        if (activeTab && activeTab.getAttribute('data-tab') === 'prices') {
+            loadPricesForAdmin();
+        }
+    });
 </script>
 
 </body>
