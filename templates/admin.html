@@ -101,15 +101,19 @@
             margin-top: 5px;
             text-align: center;
         }
+        /* Курсор для кликабельных элементов */
+        .logo, .header-title {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">
+    <div class="logo" onclick="location.href='{{ url_for('index') }}'">
         <img src="{{ url_for('static', filename='photos/logo.jpg') }}" alt="Логотип">
     </div>
-    <div class="header-title">Админ панель</div>
+    <div class="header-title" onclick="location.href='{{ url_for('index') }}'">Админ панель</div>
     <nav>
         <a href="{{ url_for('index') }}">На сайт</a>
         <a href="{{ url_for('logout') }}">Выйти</a>
@@ -231,7 +235,6 @@
                                 <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>Отменить</option>
                                 <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>Завершить</option>
                             </select>
-                            <!-- Кнопка начисления бонусов - появляется только для завершенных заявок с пользователем -->
                             {% if booking.status == 'completed' and booking.user_id and not booking.bonus_added %}
                                 <button onclick="addBonus({{ booking.id }})" class="bonus-btn">
                                     <i class="fas fa-coins"></i> Начислить бонусы (5%)
@@ -361,7 +364,7 @@
                                 <i class="fas fa-user-minus"></i> Удалить
                             </a>
                             {% else %}
-                                <span style="color: #ffc107;">👑 Администратор</span>
+                                <span style="color: #ffc107;">Администратор</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -549,13 +552,13 @@
             const result = await response.json();
             
             if (result.success) {
-                alert(`✅ Бонусы начислены! +${result.points} баллов пользователю.`);
+                alert('Бонусы начислены! +' + result.points + ' баллов пользователю.');
                 location.reload();
             } else {
-                alert('❌ Ошибка: ' + result.error);
+                alert('Ошибка: ' + result.error);
             }
         } catch (error) {
-            alert('❌ Ошибка: ' + error);
+            alert('Ошибка: ' + error);
         }
     }
 
@@ -613,6 +616,27 @@
         }
     });
 </script>
+
+<!-- ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ -->
+<div class="side-border-right"></div>
+<div class="side-border-inner"></div>
+<div class="corner-decoration corner-tl"></div>
+<div class="corner-decoration corner-tr"></div>
+<div class="corner-decoration corner-bl"></div>
+<div class="corner-decoration corner-br"></div>
+<div class="bg-grid-left"></div>
+<div class="bg-grid-right"></div>
+
+<div class="floating-particle" style="top: 15%; left: 35px; --dir: 1; animation-delay: 0s;"></div>
+<div class="floating-particle" style="top: 35%; left: 30px; --dir: -1; animation-delay: 1.5s;"></div>
+<div class="floating-particle" style="top: 55%; left: 38px; --dir: 1; animation-delay: 3s;"></div>
+<div class="floating-particle" style="top: 75%; left: 32px; --dir: -1; animation-delay: 4.5s;"></div>
+<div class="floating-particle" style="top: 90%; left: 36px; --dir: 1; animation-delay: 6s;"></div>
+<div class="floating-particle" style="top: 10%; right: 35px; --dir: -1; animation-delay: 0.7s;"></div>
+<div class="floating-particle" style="top: 30%; right: 28px; --dir: 1; animation-delay: 2.2s;"></div>
+<div class="floating-particle" style="top: 50%; right: 34px; --dir: -1; animation-delay: 3.8s;"></div>
+<div class="floating-particle" style="top: 70%; right: 30px; --dir: 1; animation-delay: 5.2s;"></div>
+<div class="floating-particle" style="top: 88%; right: 38px; --dir: -1; animation-delay: 6.8s;"></div>
 
 </body>
 </html>

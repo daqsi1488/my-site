@@ -303,6 +303,11 @@
             font-weight: 500;
         }
         
+        /* Курсор для кликабельных элементов */
+        .logo, .header-title {
+            cursor: pointer;
+        }
+        
         @media (max-width: 768px) {
             .stat-value { font-size: 32px; }
             .bonus-balance .balance-value { font-size: 36px; }
@@ -313,10 +318,10 @@
 <body>
 
 <header>
-    <div class="logo">
+    <div class="logo" onclick="location.href='{{ url_for('index') }}'">
         <img src="{{ url_for('static', filename='photos/logo.jpg') }}" alt="Логотип КиберКачалка">
     </div>
-    <div class="header-title">Личный кабинет</div>
+    <div class="header-title" onclick="location.href='{{ url_for('index') }}'">Личный кабинет</div>
     <nav>
         <a href="{{ url_for('index') }}">Главная</a>
         <a href="{{ url_for('index') }}#services">Услуги</a>
