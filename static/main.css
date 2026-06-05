@@ -1,4 +1,4 @@
-/* main.css - Полностью исправленная версия */
+/* main.css - Полностью исправленная версия с БОКОВЫМ ОФОРМЛЕНИЕМ */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Russo+One&family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -17,6 +17,7 @@ body {
     position: relative;
 }
 
+/* НОВЫЕ ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ */
 body::before {
     content: '';
     position: fixed;
@@ -31,21 +32,158 @@ body::before {
     z-index: 0;
 }
 
+/* --- УЛУЧШЕННОЕ БОКОВОЕ ОФОРМЛЕНИЕ --- */
+
+/* Левая и правая декоративные полосы (неоновая окантовка) */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 15px;
+    width: 2px;
+    background: linear-gradient(180deg, 
+        rgba(84, 253, 246, 0) 0%, 
+        rgba(84, 253, 246, 0.6) 20%, 
+        rgba(255, 104, 255, 0.8) 50%,
+        rgba(84, 253, 246, 0.6) 80%,
+        rgba(84, 253, 246, 0) 100%);
+    filter: blur(1px);
+    box-shadow: 0 0 8px rgba(84, 253, 246, 0.5);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Добавляем правую полосу с помощью нового элемента */
+.side-border-right {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 15px;
+    width: 2px;
+    background: linear-gradient(180deg, 
+        rgba(255, 104, 255, 0) 0%, 
+        rgba(255, 104, 255, 0.6) 20%, 
+        rgba(84, 253, 246, 0.8) 50%,
+        rgba(255, 104, 255, 0.6) 80%,
+        rgba(255, 104, 255, 0) 100%);
+    filter: blur(1px);
+    box-shadow: 0 0 8px rgba(255, 104, 255, 0.5);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Угловые элементы (кибер-уголки) */
+.corner-decoration {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    border-style: solid;
+    border-color: #54fdf6;
+    opacity: 0.3;
+    filter: drop-shadow(0 0 4px #54fdf6);
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.corner-tl {
+    top: 20px;
+    left: 20px;
+    border-width: 2px 0 0 2px;
+}
+
+.corner-tr {
+    top: 20px;
+    right: 20px;
+    border-width: 2px 2px 0 0;
+    border-color: #ff68ff;
+}
+
+.corner-bl {
+    bottom: 20px;
+    left: 20px;
+    border-width: 0 0 2px 2px;
+    border-color: #ff68ff;
+}
+
+.corner-br {
+    bottom: 20px;
+    right: 20px;
+    border-width: 0 2px 2px 0;
+}
+
+/* Декоративные плавающие сетки по бокам */
+.bg-grid-left, .bg-grid-right {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 180px;
+    background-image: 
+        linear-gradient(rgba(84, 253, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(84, 253, 246, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+}
+
+.bg-grid-left {
+    left: 0;
+    background-position: 10px 0;
+}
+
+.bg-grid-right {
+    right: 0;
+    background-position: 10px 0;
+    transform: rotateY(180deg);
+}
+
+/* Адаптация для мобильных устройств: скрываем некоторые боковые элементы */
+@media (max-width: 768px) {
+    body::after, .side-border-right {
+        width: 1px;
+        left: 8px;
+        right: 8px;
+    }
+    .corner-decoration {
+        width: 30px;
+        height: 30px;
+        opacity: 0.2;
+    }
+    .bg-grid-left, .bg-grid-right {
+        width: 60px;
+        opacity: 0.2;
+    }
+}
+
 /* ============ HEADER ============ */
 header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 15px 50px;
-    background: rgba(10, 10, 20, 0.92);
+    background: rgba(10, 10, 20, 0.75);
     backdrop-filter: blur(12px);
     color: white;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
     border-bottom: 1px solid rgba(84, 253, 246, 0.15);
+    border-left: 1px solid rgba(84, 253, 246, 0.1);
+    border-right: 1px solid rgba(84, 253, 246, 0.1);
     position: sticky;
     top: 0;
     z-index: 100;
     transition: all 0.3s ease;
+    margin: 0 15px;
+    border-radius: 0 0 20px 20px;
+}
+
+@media (max-width: 768px) {
+    header {
+        margin: 0;
+        border-radius: 0;
+        padding: 12px 20px;
+    }
 }
 
 .logo img {
@@ -124,6 +262,7 @@ nav a:hover {
     color: #54fdf6 !important;
     transform: translateY(-2px);
     border-color: rgba(84, 253, 246, 0.4);
+    box-shadow: 0 0 12px rgba(84, 253, 246, 0.2);
 }
 
 .admin-nav-btn {
@@ -176,6 +315,15 @@ nav a:hover {
     background: linear-gradient(125deg, rgba(10, 10, 20, 0.6), rgba(15, 15, 28, 0.6));
     margin-bottom: 40px;
     position: relative;
+    border-radius: 30px;
+    margin: 20px 15px 40px;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        margin: 10px 10px 30px;
+        padding: 40px 15px;
+    }
 }
 
 .hero h1 {
@@ -228,7 +376,7 @@ nav a:hover {
 .hero-button:hover {
     background: rgba(84, 253, 246, 0.2);
     transform: scale(1.02);
-    box-shadow: 0 5px 20px rgba(84, 253, 246, 0.15);
+    box-shadow: 0 5px 20px rgba(84, 253, 246, 0.25);
     gap: 14px;
 }
 
@@ -238,7 +386,7 @@ nav a:hover {
     margin: 0 auto;
     padding: 0 20px 60px;
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .section {
@@ -249,12 +397,14 @@ nav a:hover {
     margin-bottom: 30px;
     border: 1px solid rgba(84, 253, 246, 0.08);
     transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .section:hover {
     transform: translateY(-4px);
-    border-color: rgba(84, 253, 246, 0.15);
-    background: rgba(18, 18, 32, 0.7);
+    border-color: rgba(84, 253, 246, 0.2);
+    background: rgba(18, 18, 32, 0.8);
+    box-shadow: 0 12px 28px rgba(84, 253, 246, 0.08);
 }
 
 .section h2 {
@@ -273,7 +423,7 @@ nav a:hover {
     color: #c0c0c0;
 }
 
-/* ============ КАРТОЧКИ УСЛУГ ============ */
+/* ============ КАРТОЧКИ УСЛУГ (Улучшенные) ============ */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -292,8 +442,9 @@ nav a:hover {
 
 .service-card:hover {
     transform: translateY(-6px);
-    background: rgba(84, 253, 246, 0.05);
-    border-color: rgba(84, 253, 246, 0.2);
+    background: rgba(84, 253, 246, 0.08);
+    border-color: rgba(84, 253, 246, 0.3);
+    box-shadow: 0 10px 25px -5px rgba(84, 253, 246, 0.2);
 }
 
 .service-card i {
@@ -303,6 +454,11 @@ nav a:hover {
     background-clip: text;
     color: transparent;
     margin-bottom: 15px;
+    transition: transform 0.2s;
+}
+
+.service-card:hover i {
+    transform: scale(1.05);
 }
 
 .service-card h3 {
@@ -1255,7 +1411,7 @@ nav a:hover {
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(84, 253, 246, 0.3);
+    box-shadow: 0 5px 15px rgba(84, 253, 246, 0.4);
 }
 
 .services-loading, .services-empty {
@@ -1372,6 +1528,7 @@ nav a:hover {
     outline: none;
     border-color: #54fdf6;
     background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 10px rgba(84, 253, 246, 0.2);
 }
 
 .form-textarea {
@@ -1388,6 +1545,8 @@ nav a:hover {
     padding: 30px 20px;
     margin-top: auto;
     border-top: 1px solid rgba(84, 253, 246, 0.1);
+    border-left: 1px solid rgba(84, 253, 246, 0.05);
+    border-right: 1px solid rgba(84, 253, 246, 0.05);
 }
 
 .footer-content {
