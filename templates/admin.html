@@ -78,6 +78,29 @@
         .booking-email i {
             margin-right: 4px;
         }
+        .bonus-btn {
+            margin-top: 5px;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+        .bonus-btn:hover {
+            background: rgba(255, 193, 7, 0.4);
+            transform: translateY(-1px);
+        }
+        .bonus-done {
+            font-size: 10px;
+            color: #4caf50;
+            display: block;
+            margin-top: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -102,7 +125,7 @@
         <button class="admin-tab-btn" data-tab="prices">Цены</button>
     </div>
 
-    <!-- Вкладка: Заявки (УЛУЧШЕННАЯ) -->
+    <!-- Вкладка: Заявки -->
     <div id="tab-bookings" class="admin-tab active">
         <h2>Заявки на запись</h2>
         <div class="admin-table">
@@ -126,6 +149,11 @@
                         <td style="vertical-align: top;">{{ booking.id }}</td>
                         <td style="vertical-align: top;">
                             <strong>{{ booking.customer_name }}</strong>
+                            {% if booking.user_id %}
+                                <div class="booking-details" style="margin-top: 5px;">
+                                    <i class="fas fa-id-badge"></i> ID пользователя: {{ booking.user_id }}
+                                </div>
+                            {% endif %}
                             {% if booking.comment %}
                                 <div class="booking-details" style="margin-top: 8px;">
                                     <i class="fas fa-comment"></i> {{ booking.comment[:50] }}{% if booking.comment|length > 50 %}...{% endif %}
@@ -197,12 +225,26 @@
                             </span>
                         </td>
                         <td style="vertical-align: top;">
-                            <select onchange="updateStatus({{ booking.id }}, this.value)">
+                            <select onchange="updateStatus({{ booking.id }}, this.value)" style="margin-bottom: 5px;">
                                 <option value="new" {% if booking.status == 'new' %}selected{% endif %}>Новая</option>
                                 <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>Подтвердить</option>
                                 <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>Отменить</option>
                                 <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>Завершить</option>
                             </select>
+                            <!-- Кнопка начисления бонусов - появляется только для завершенных заявок с пользователем -->
+                            {% if booking.status == 'completed' and booking.user_id and not booking.bonus_added %}
+                                <button onclick="addBonus({{ booking.id }})" class="bonus-btn">
+                                    <i class="fas fa-coins"></i> Начислить бонусы (5%)
+                                </button>
+                            {% elif booking.bonus_added %}
+                                <span class="bonus-done">
+                                    <i class="fas fa-check-circle"></i> Бонусы: +{{ booking.bonus_points }} баллов
+                                </span>
+                            {% elif booking.status == 'completed' and not booking.user_id %}
+                                <span class="bonus-done" style="color: #888;">
+                                    <i class="fas fa-user-slash"></i> Неавторизованный
+                                </span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -329,7 +371,7 @@
         </div>
     </div>
 
-    <!-- Вкладка: Цены (управление прайс-листом) -->
+    <!-- Вкладка: Цены -->
     <div id="tab-prices" class="admin-tab">
         <h2>Управление прайс-листом</h2>
         <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
@@ -456,16 +498,6 @@
 </style>
 
 <script>
-    // Функция для парсинга JSON (Jinja2 не имеет from_json по умолчанию)
-    function parseServicesDetails(servicesDetails) {
-        if (!servicesDetails) return [];
-        try {
-            return JSON.parse(servicesDetails);
-        } catch(e) {
-            return [];
-        }
-    }
-
     // Переключение вкладок
     document.querySelectorAll('.admin-tab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -479,7 +511,6 @@
             });
             document.getElementById('tab-' + tab).classList.add('active');
             
-            // Если открыли вкладку цен - загружаем их
             if (tab === 'prices') {
                 loadPricesForAdmin();
             }
@@ -504,6 +535,28 @@
         .catch(function(error) {
             alert('Ошибка: ' + error);
         });
+    }
+
+    // Функция начисления бонусов
+    async function addBonus(bookingId) {
+        if (!confirm('Начислить бонусы за эту запись? (5% от суммы)')) return;
+        
+        try {
+            const response = await fetch('/admin/add_bonus/' + bookingId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert(`✅ Бонусы начислены! +${result.points} баллов пользователю.`);
+                location.reload();
+            } else {
+                alert('❌ Ошибка: ' + result.error);
+            }
+        } catch (error) {
+            alert('❌ Ошибка: ' + error);
+        }
     }
 
     // Загрузка цен для админ-панели
@@ -554,7 +607,6 @@
     
     // Загружаем цены при загрузке страницы, если вкладка цен активна по умолчанию
     document.addEventListener('DOMContentLoaded', function() {
-        // Проверяем, активна ли вкладка цен
         const activeTab = document.querySelector('.admin-tab-btn.active');
         if (activeTab && activeTab.getAttribute('data-tab') === 'prices') {
             loadPricesForAdmin();

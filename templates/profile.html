@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет | КиберКачалка</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='photos/logo.jpg') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Дополнительные стили для личного кабинета */
+        .profile-header {
+            margin-bottom: 30px;
+        }
+        
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(15, 15, 28, 0.7), rgba(20, 20, 45, 0.5));
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(84, 253, 246, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #54fdf6, #ff68ff);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(84, 253, 246, 0.3);
+        }
+        
+        .stat-icon {
+            font-size: 48px;
+            color: #54fdf6;
+            margin-bottom: 15px;
+        }
+        
+        .stat-value {
+            font-size: 42px;
+            font-weight: 800;
+            font-family: 'Russo One', sans-serif;
+            color: #ff68ff;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #888;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .bookings-history {
+            background: rgba(15, 15, 28, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(84, 253, 246, 0.1);
+        }
+        
+        .bookings-history h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #54fdf6;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Russo One', 'Montserrat', sans-serif;
+        }
+        
+        .booking-item {
+            background: rgba(10, 10, 20, 0.5);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border-left: 3px solid;
+        }
+        
+        .booking-item.new { border-left-color: #ff9800; }
+        .booking-item.confirmed { border-left-color: #54fdf6; }
+        .booking-item.completed { border-left-color: #4caf50; }
+        .booking-item.cancelled { border-left-color: #f44336; }
+        
+        .booking-item:hover {
+            transform: translateX(5px);
+            background: rgba(20, 20, 40, 0.7);
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .booking-date {
+            font-size: 13px;
+            color: #54fdf6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .booking-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .booking-status.new { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+        .booking-status.confirmed { background: rgba(84, 253, 246, 0.2); color: #54fdf6; }
+        .booking-status.completed { background: rgba(76, 175, 80, 0.2); color: #4caf50; }
+        .booking-status.cancelled { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+        
+        .booking-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .booking-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #b0b0b0;
+        }
+        
+        .booking-detail i {
+            color: #ff68ff;
+            width: 18px;
+        }
+        
+        .booking-services {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .empty-bookings {
+            text-align: center;
+            padding: 50px;
+            color: #888;
+        }
+        
+        .empty-bookings i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: rgba(84, 253, 246, 0.3);
+        }
+        
+        /* Бонусная система */
+        .bonus-section {
+            background: linear-gradient(135deg, rgba(84, 253, 246, 0.05), rgba(255, 104, 255, 0.05));
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(84, 253, 246, 0.2);
+        }
+        
+        .bonus-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .bonus-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #54fdf6, #ff68ff);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #0a0a14;
+        }
+        
+        .bonus-info {
+            flex: 1;
+        }
+        
+        .bonus-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e0e0e0;
+            font-family: 'Russo One', 'Montserrat', sans-serif;
+        }
+        
+        .bonus-subtitle {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .bonus-balance {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .bonus-balance .balance-value {
+            font-size: 48px;
+            font-weight: 800;
+            font-family: 'Russo One', sans-serif;
+            color: #ffc107;
+        }
+        
+        .bonus-balance .balance-label {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .bonus-rules {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-top: 15px;
+        }
+        
+        .bonus-rules i {
+            color: #ff9800;
+            margin-right: 8px;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #54fdf6, #ff68ff);
+            border-radius: 10px;
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .next-level-info {
+            font-size: 12px;
+            color: #888;
+            text-align: right;
+        }
+        
+        .profile-welcome {
+            background: linear-gradient(135deg, rgba(84, 253, 246, 0.1), rgba(255, 104, 255, 0.05));
+            border-radius: 20px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .welcome-text h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            border-left: none;
+            padding-left: 0;
+        }
+        
+        .welcome-text p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .welcome-badge {
+            background: rgba(84, 253, 246, 0.15);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .stat-value { font-size: 32px; }
+            .bonus-balance .balance-value { font-size: 36px; }
+            .profile-welcome { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='photos/logo.jpg') }}" alt="Логотип КиберКачалка">
+    </div>
+    <div class="header-title">Личный кабинет</div>
+    <nav>
+        <a href="{{ url_for('index') }}">Главная</a>
+        <a href="{{ url_for('index') }}#services">Услуги</a>
+        <a href="{{ url_for('index') }}#prices">Цены</a>
+        <a href="{{ url_for('news_page') }}">Новости</a>
+        
+        {% if session.user_role == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-nav-btn">Админка</a>
+        {% endif %}
+        
+        <a href="{{ url_for('logout') }}" class="logout-nav-btn">Выйти ({{ session.user_name }})</a>
+    </nav>
+</header>
+
+<div class="content">
+    <div class="profile-welcome">
+        <div class="welcome-text">
+            <h2><i class="fas fa-user-astronaut"></i> Добро пожаловать, {{ user.full_name }}!</h2>
+            <p><i class="fas fa-envelope"></i> {{ user.email }} | <i class="fas fa-phone"></i> {{ user.phone or 'Не указан' }}</p>
+        </div>
+        <div class="welcome-badge">
+            <i class="fas fa-calendar-alt"></i> Регистрация: {{ user.created_at[:10] if user.created_at else '—' }}
+        </div>
+    </div>
+    
+    <!-- Статистика -->
+    <div class="profile-stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-value">{{ stats.total_bookings }}</div>
+            <div class="stat-label">Всего посещений</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-value">{{ stats.completed_bookings }}</div>
+            <div class="stat-label">Завершенных</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+            <div class="stat-value">{{ stats.total_spent }}</div>
+            <div class="stat-label">Потрачено ₽</div>
+        </div>
+    </div>
+    
+    <!-- Бонусная система -->
+    <div class="bonus-section">
+        <div class="bonus-header">
+            <div class="bonus-icon">
+                <i class="fas fa-gem"></i>
+            </div>
+            <div class="bonus-info">
+                <div class="bonus-title">Бонусная программа "КиберДруг"</div>
+                <div class="bonus-subtitle">Накапливайте баллы за каждое посещение и получайте скидки!</div>
+            </div>
+        </div>
+        
+        <div class="bonus-balance">
+            <div class="balance-value">{{ bonus.balance }}</div>
+            <div class="balance-label">баллов</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ bonus.next_level_progress }}%"></div>
+        </div>
+        <div class="next-level-info">
+            <i class="fas fa-arrow-up"></i> До следующего уровня: {{ bonus.next_level_points }} баллов
+        </div>
+        
+        <div class="bonus-rules">
+            <i class="fas fa-info-circle"></i>
+            <strong>Как начисляются баллы:</strong> 5% от суммы каждой завершенной записи. 100 баллов = 100 ₽ скидка. 
+            При накоплении 500 баллов — повышение уровня и +2% к начислению!
+        </div>
+    </div>
+    
+    <!-- История записей -->
+    <div class="bookings-history">
+        <h3><i class="fas fa-history"></i> История записей</h3>
+        
+        {% if bookings %}
+            {% for booking in bookings %}
+            <div class="booking-item {{ booking.status }}">
+                <div class="booking-header">
+                    <div class="booking-date">
+                        <i class="far fa-calendar-alt"></i> {{ booking.created_at[:16] if booking.created_at else '—' }}
+                    </div>
+                    <div class="booking-status {{ booking.status }}">
+                        {% if booking.status == 'new' %}Новая
+                        {% elif booking.status == 'confirmed' %}Подтверждена
+                        {% elif booking.status == 'completed' %}Завершена
+                        {% elif booking.status == 'cancelled' %}Отменена
+                        {% else %}{{ booking.status }}{% endif %}
+                    </div>
+                </div>
+                
+                <div class="booking-details">
+                    <div class="booking-detail">
+                        <i class="fas fa-calendar-day"></i> {{ booking.booking_date }}
+                    </div>
+                    <div class="booking-detail">
+                        <i class="fas fa-clock"></i> {{ booking.booking_time }}
+                    </div>
+                    <div class="booking-detail">
+                        <i class="fas fa-hourglass-half"></i> {{ booking.duration }} ч
+                    </div>
+                    <div class="booking-detail">
+                        <i class="fas fa-ruble-sign"></i> {{ booking.total_price or '—' }} ₽
+                    </div>
+                </div>
+                
+                <div class="booking-services">
+                    <i class="fas fa-tags"></i> 
+                    {% if booking.services_details and booking.services_details != '[]' %}
+                        {% set services = booking.services_details | from_json %}
+                        {{ services | map(attribute='name') | join(', ') }}
+                    {% elif booking.service %}
+                        {{ booking.service }}
+                    {% else %}
+                        — 
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-bookings">
+                <i class="fas fa-inbox"></i>
+                <p>У вас пока нет записей</p>
+                <a href="{{ url_for('index') }}" class="submit-btn" style="display: inline-block; margin-top: 15px;">
+                    <i class="fas fa-calendar-plus"></i> Записаться сейчас
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <h3>Фиджитал Центр "КиберКачалка"</h3>
+        <p>Почта: <a href="mailto:pu105ur@mail.ru">pu105ur@mail.ru</a> | Телефон: +7 (913) 531-57-60</p>
+        <div class="footer-row">
+            <a href="https://ntptis.ru" class="site-link" target="_blank">сайт НТПТиС</a>
+            <div class="social-icons">
+                <a href="https://t.me/fidgital_Norilsk" aria-label="Telegram" target="_blank" rel="noopener">
+                    <i class="fab fa-telegram"></i>
+                </a>
+                <a href="https://vk.com/ntptis_nrk" aria-label="VK" target="_blank" rel="noopener">
+                    <i class="fab fa-vk"></i>
+                </a>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2026 КиберКачалка. Все права защищены.</p>
+    </div>
+</footer>
+
+<!-- ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ -->
+<div class="side-border-right"></div>
+<div class="side-border-inner"></div>
+<div class="corner-decoration corner-tl"></div>
+<div class="corner-decoration corner-tr"></div>
+<div class="corner-decoration corner-bl"></div>
+<div class="corner-decoration corner-br"></div>
+<div class="bg-grid-left"></div>
+<div class="bg-grid-right"></div>
+
+<div class="floating-particle" style="top: 15%; left: 35px; --dir: 1; animation-delay: 0s;"></div>
+<div class="floating-particle" style="top: 35%; left: 30px; --dir: -1; animation-delay: 1.5s;"></div>
+<div class="floating-particle" style="top: 55%; left: 38px; --dir: 1; animation-delay: 3s;"></div>
+<div class="floating-particle" style="top: 75%; left: 32px; --dir: -1; animation-delay: 4.5s;"></div>
+<div class="floating-particle" style="top: 90%; left: 36px; --dir: 1; animation-delay: 6s;"></div>
+
+<div class="floating-particle" style="top: 10%; right: 35px; --dir: -1; animation-delay: 0.7s;"></div>
+<div class="floating-particle" style="top: 30%; right: 28px; --dir: 1; animation-delay: 2.2s;"></div>
+<div class="floating-particle" style="top: 50%; right: 34px; --dir: -1; animation-delay: 3.8s;"></div>
+<div class="floating-particle" style="top: 70%; right: 30px; --dir: 1; animation-delay: 5.2s;"></div>
+<div class="floating-particle" style="top: 88%; right: 38px; --dir: -1; animation-delay: 6.8s;"></div>
+
+</body>
+</html>

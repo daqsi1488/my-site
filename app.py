@@ -12,10 +12,6 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here")
 
-# Добавьте в app.py после создания app = Flask(__name__)
-
-from jinja2 import Environment
-
 # Фильтр для парсинга JSON в шаблонах
 def from_json_filter(value):
     import json
@@ -72,7 +68,8 @@ def register():
             'password_hash': hash_password(password),
             'full_name': full_name,
             'phone': phone,
-            'role': 'user'
+            'role': 'user',
+            'created_at': datetime.now().isoformat()
         }
         
         response = supabase.table('users').insert(user_data).execute()
@@ -109,7 +106,7 @@ def login():
             
             if user['role'] == 'admin':
                 return redirect(url_for('admin_dashboard'))
-            return redirect(url_for('index'))
+            return redirect(url_for('profile'))
         else:
             flash('Неверный email или пароль', 'error')
     
@@ -152,17 +149,15 @@ def get_document(doc_key):
         logger.error(f"Ошибка загрузки документа: {e}")
         return jsonify({'error': str(e)}), 500
     
-# ============ СОЗДАНИЕ ЗАЯВКИ (ОБНОВЛЕНО ДЛЯ МНОЖЕСТВЕННЫХ УСЛУГ) ============
+# ============ СОЗДАНИЕ ЗАЯВКИ ============
 @app.route('/create_booking', methods=['POST'])
 def create_booking():
     data = request.get_json() or request.form
     
-    # Преобразуем услуги в строку, если это массив
     services = data.get('services', '')
     if isinstance(services, list):
         services = ', '.join(services)
     
-    # Сохраняем детали услуг в JSON формате для админа
     services_details = data.get('services_details', [])
     if isinstance(services_details, list):
         services_details_json = json.dumps(services_details, ensure_ascii=False)
@@ -174,14 +169,16 @@ def create_booking():
         'customer_name': data.get('name', ''),
         'phone': data.get('phone', ''),
         'email': data.get('email', ''),
-        'service': services,  # Строка с перечислением услуг
-        'services_details': services_details_json,  # Детальный JSON с ценами
+        'service': services,
+        'services_details': services_details_json,
         'total_price': data.get('total_price', 0),
         'booking_date': data.get('date', ''),
         'booking_time': data.get('time', ''),
         'duration': data.get('duration', '1'),
         'comment': data.get('comment', ''),
         'status': 'new',
+        'bonus_added': False,
+        'bonus_points': 0,
         'created_at': datetime.now().isoformat()
     }
     
@@ -217,6 +214,167 @@ def send_contact():
     except Exception as e:
         logger.error(f"Ошибка отправки контакта: {e}")
         return jsonify({'success': False, 'message': str(e)})
+
+# ============ ЛИЧНЫЙ КАБИНЕТ ============
+@app.route('/profile')
+def profile():
+    if not session.get('user_id'):
+        flash('Пожалуйста, войдите в систему', 'error')
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    
+    try:
+        user_response = supabase.table('users')\
+            .select('*')\
+            .eq('id', user_id)\
+            .execute()
+        
+        if not user_response.data:
+            flash('Пользователь не найден', 'error')
+            return redirect(url_for('index'))
+        
+        user = user_response.data[0]
+        
+        bookings_response = supabase.table('bookings')\
+            .select('*')\
+            .eq('user_id', user_id)\
+            .order('created_at', desc=True)\
+            .execute()
+        
+        bookings = bookings_response.data
+        
+        bonus_response = supabase.table('user_bonuses')\
+            .select('*')\
+            .eq('user_id', user_id)\
+            .execute()
+        
+        bonus = bonus_response.data[0] if bonus_response.data else None
+        
+        if not bonus:
+            bonus_data = {
+                'user_id': user_id,
+                'balance': 0,
+                'total_earned': 0,
+                'level': 1,
+                'created_at': datetime.now().isoformat(),
+                'updated_at': datetime.now().isoformat()
+            }
+            supabase.table('user_bonuses').insert(bonus_data).execute()
+            bonus = bonus_data
+        
+        completed_bookings = [b for b in bookings if b.get('status') == 'completed']
+        total_spent = sum(float(b.get('total_price', 0)) for b in completed_bookings)
+        
+        next_level_points = max(0, 500 - (bonus.get('balance', 0) if bonus else 0))
+        next_level_progress = min(100, int((bonus.get('balance', 0) / 500) * 100)) if bonus else 0
+        
+        stats = {
+            'total_bookings': len(bookings),
+            'completed_bookings': len(completed_bookings),
+            'total_spent': int(total_spent)
+        }
+        
+        bonus_data = {
+            'balance': bonus.get('balance', 0) if bonus else 0,
+            'total_earned': bonus.get('total_earned', 0) if bonus else 0,
+            'level': bonus.get('level', 1) if bonus else 1,
+            'next_level_points': next_level_points,
+            'next_level_progress': next_level_progress
+        }
+        
+        return render_template('profile.html', 
+                             user=user, 
+                             bookings=bookings,
+                             stats=stats,
+                             bonus=bonus_data)
+                             
+    except Exception as e:
+        logger.error(f"Ошибка загрузки профиля: {e}")
+        flash('Ошибка загрузки профиля', 'error')
+        return redirect(url_for('index'))
+
+# ============ НАЧИСЛЕНИЕ БОНУСОВ ============
+@app.route('/admin/add_bonus/<int:booking_id>', methods=['POST'])
+def add_bonus(booking_id):
+    if session.get('user_role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    try:
+        booking_response = supabase.table('bookings')\
+            .select('*')\
+            .eq('id', booking_id)\
+            .execute()
+        
+        if not booking_response.data:
+            return jsonify({'error': 'Booking not found'}), 404
+        
+        booking = booking_response.data[0]
+        
+        if booking.get('status') != 'completed':
+            return jsonify({'error': 'Booking must be completed first'}), 400
+        
+        if booking.get('bonus_added'):
+            return jsonify({'error': 'Bonuses already added'}), 400
+        
+        user_id = booking.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'User not found for this booking'}), 400
+        
+        total_price = float(booking.get('total_price', 0))
+        
+        bonus_response = supabase.table('user_bonuses')\
+            .select('*')\
+            .eq('user_id', user_id)\
+            .execute()
+        
+        points_to_add = int(total_price * 0.05)
+        
+        if points_to_add > 0:
+            if bonus_response.data:
+                current_bonus = bonus_response.data[0]
+                new_balance = current_bonus.get('balance', 0) + points_to_add
+                new_total_earned = current_bonus.get('total_earned', 0) + points_to_add
+                
+                new_level = current_bonus.get('level', 1)
+                if new_balance >= 500 and current_bonus.get('level', 1) == 1:
+                    new_level = 2
+                elif new_balance >= 1500 and current_bonus.get('level', 1) == 2:
+                    new_level = 3
+                elif new_balance >= 3000 and current_bonus.get('level', 1) == 3:
+                    new_level = 4
+                
+                supabase.table('user_bonuses')\
+                    .update({
+                        'balance': new_balance,
+                        'total_earned': new_total_earned,
+                        'level': new_level,
+                        'updated_at': datetime.now().isoformat()
+                    })\
+                    .eq('user_id', user_id)\
+                    .execute()
+            else:
+                supabase.table('user_bonuses').insert({
+                    'user_id': user_id,
+                    'balance': points_to_add,
+                    'total_earned': points_to_add,
+                    'level': 1,
+                    'created_at': datetime.now().isoformat(),
+                    'updated_at': datetime.now().isoformat()
+                }).execute()
+            
+            supabase.table('bookings')\
+                .update({'bonus_added': True, 'bonus_points': points_to_add})\
+                .eq('id', booking_id)\
+                .execute()
+            
+            return jsonify({'success': True, 'points': points_to_add})
+        
+        return jsonify({'error': 'No points to add'}), 400
+        
+    except Exception as e:
+        logger.error(f"Ошибка начисления бонусов: {e}")
+        return jsonify({'error': str(e)}), 500
 
 # ============ АДМИН ПАНЕЛЬ ============
 @app.route('/admin')

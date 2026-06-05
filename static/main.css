@@ -1,4 +1,4 @@
-/* main.css - Полностью исправленная версия с БОКОВЫМ ОФОРМЛЕНИЕМ */
+/* main.css - Премиальное боковое оформление с 3D-эффектом */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Russo+One&family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -17,147 +17,249 @@ body {
     position: relative;
 }
 
-/* НОВЫЕ ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(84, 253, 246, 0.04) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 104, 255, 0.03) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-}
+/* ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ - НОВАЯ ОБЪЕМНАЯ ВЕРСИЯ */
 
-/* --- УЛУЧШЕННОЕ БОКОВОЕ ОФОРМЛЕНИЕ --- */
-
-/* Левая и правая декоративные полосы (неоновая окантовка) */
+/* 1. Основная неоновая полоса слева с объемным градиентом */
 body::after {
     content: '';
     position: fixed;
     top: 0;
     bottom: 0;
-    left: 15px;
-    width: 2px;
+    left: 20px;
+    width: 4px;
     background: linear-gradient(180deg, 
         rgba(84, 253, 246, 0) 0%, 
-        rgba(84, 253, 246, 0.6) 20%, 
-        rgba(255, 104, 255, 0.8) 50%,
-        rgba(84, 253, 246, 0.6) 80%,
+        rgba(84, 253, 246, 0.7) 15%,
+        rgba(84, 253, 246, 1) 25%,
+        rgba(255, 104, 255, 0.9) 50%,
+        rgba(84, 253, 246, 1) 75%,
+        rgba(84, 253, 246, 0.7) 85%,
         rgba(84, 253, 246, 0) 100%);
-    filter: blur(1px);
-    box-shadow: 0 0 8px rgba(84, 253, 246, 0.5);
-    z-index: 1;
+    filter: blur(1.5px);
+    box-shadow: 
+        0 0 12px rgba(84, 253, 246, 0.6),
+        2px 0 15px rgba(84, 253, 246, 0.3),
+        -2px 0 8px rgba(84, 253, 246, 0.2);
+    z-index: 2;
     pointer-events: none;
+    border-radius: 2px;
 }
 
-/* Добавляем правую полосу с помощью нового элемента */
+/* 2. Правая неоновая полоса с зеркальным градиентом */
 .side-border-right {
     position: fixed;
     top: 0;
     bottom: 0;
-    right: 15px;
-    width: 2px;
+    right: 20px;
+    width: 4px;
     background: linear-gradient(180deg, 
         rgba(255, 104, 255, 0) 0%, 
-        rgba(255, 104, 255, 0.6) 20%, 
-        rgba(84, 253, 246, 0.8) 50%,
-        rgba(255, 104, 255, 0.6) 80%,
+        rgba(255, 104, 255, 0.7) 15%,
+        rgba(255, 104, 255, 1) 25%,
+        rgba(84, 253, 246, 0.9) 50%,
+        rgba(255, 104, 255, 1) 75%,
+        rgba(255, 104, 255, 0.7) 85%,
         rgba(255, 104, 255, 0) 100%);
-    filter: blur(1px);
-    box-shadow: 0 0 8px rgba(255, 104, 255, 0.5);
-    z-index: 1;
-    pointer-events: none;
-}
-
-/* Угловые элементы (кибер-уголки) */
-.corner-decoration {
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    border-style: solid;
-    border-color: #54fdf6;
-    opacity: 0.3;
-    filter: drop-shadow(0 0 4px #54fdf6);
+    filter: blur(1.5px);
+    box-shadow: 
+        0 0 12px rgba(255, 104, 255, 0.6),
+        -2px 0 15px rgba(255, 104, 255, 0.3),
+        2px 0 8px rgba(255, 104, 255, 0.2);
     z-index: 2;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    border-radius: 2px;
+}
+
+/* 3. Объемные угловые элементы - 3D-эффект */
+.corner-decoration {
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    border-style: solid;
+    border-color: transparent;
+    filter: drop-shadow(0 0 6px currentColor);
+    z-index: 3;
+    pointer-events: none;
+    transition: all 0.3s ease;
 }
 
 .corner-tl {
-    top: 20px;
-    left: 20px;
-    border-width: 2px 0 0 2px;
+    top: 25px;
+    left: 25px;
+    border-width: 3px 0 0 3px;
+    border-top-color: #54fdf6;
+    border-left-color: #54fdf6;
+    box-shadow: -2px -2px 8px rgba(84, 253, 246, 0.3);
 }
 
 .corner-tr {
-    top: 20px;
-    right: 20px;
-    border-width: 2px 2px 0 0;
-    border-color: #ff68ff;
+    top: 25px;
+    right: 25px;
+    border-width: 3px 3px 0 0;
+    border-top-color: #ff68ff;
+    border-right-color: #ff68ff;
+    box-shadow: 2px -2px 8px rgba(255, 104, 255, 0.3);
 }
 
 .corner-bl {
-    bottom: 20px;
-    left: 20px;
-    border-width: 0 0 2px 2px;
-    border-color: #ff68ff;
+    bottom: 25px;
+    left: 25px;
+    border-width: 0 0 3px 3px;
+    border-bottom-color: #ff68ff;
+    border-left-color: #ff68ff;
+    box-shadow: -2px 2px 8px rgba(255, 104, 255, 0.3);
 }
 
 .corner-br {
-    bottom: 20px;
-    right: 20px;
-    border-width: 0 2px 2px 0;
+    bottom: 25px;
+    right: 25px;
+    border-width: 0 3px 3px 0;
+    border-bottom-color: #54fdf6;
+    border-right-color: #54fdf6;
+    box-shadow: 2px 2px 8px rgba(84, 253, 246, 0.3);
 }
 
-/* Декоративные плавающие сетки по бокам */
+/* 4. Боковые кибер-сетки с объемным фоном */
 .bg-grid-left, .bg-grid-right {
     position: fixed;
     top: 0;
     bottom: 0;
-    width: 180px;
+    width: 250px;
     background-image: 
-        linear-gradient(rgba(84, 253, 246, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(84, 253, 246, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px;
+        linear-gradient(rgba(84, 253, 246, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(84, 253, 246, 0.08) 1px, transparent 1px);
+    background-size: 30px 30px;
     pointer-events: none;
     z-index: 0;
-    opacity: 0.4;
+    opacity: 0.5;
+    backdrop-filter: blur(1px);
 }
 
 .bg-grid-left {
     left: 0;
-    background-position: 10px 0;
+    background-position: 15px 0;
+    box-shadow: inset -10px 0 20px -10px rgba(84, 253, 246, 0.1);
 }
 
 .bg-grid-right {
     right: 0;
-    background-position: 10px 0;
+    background-position: 15px 0;
     transform: rotateY(180deg);
+    box-shadow: inset 10px 0 20px -10px rgba(255, 104, 255, 0.1);
 }
 
-/* Адаптация для мобильных устройств: скрываем некоторые боковые элементы */
+/* 5. Дополнительные декоративные линии по бокам (второй слой) */
+body::before {
+    content: '';
+    position: fixed;
+    top: 5%;
+    bottom: 5%;
+    left: 12px;
+    width: 1px;
+    background: linear-gradient(180deg, 
+        rgba(84, 253, 246, 0) 0%, 
+        rgba(84, 253, 246, 0.4) 20%, 
+        rgba(255, 104, 255, 0.6) 50%,
+        rgba(84, 253, 246, 0.4) 80%,
+        rgba(84, 253, 246, 0) 100%);
+    filter: blur(1px);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* 6. Специальный элемент для правой дополнительной линии */
+.side-border-inner {
+    position: fixed;
+    top: 5%;
+    bottom: 5%;
+    right: 12px;
+    width: 1px;
+    background: linear-gradient(180deg, 
+        rgba(255, 104, 255, 0) 0%, 
+        rgba(255, 104, 255, 0.4) 20%, 
+        rgba(84, 253, 246, 0.6) 50%,
+        rgba(255, 104, 255, 0.4) 80%,
+        rgba(255, 104, 255, 0) 100%);
+    filter: blur(1px);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Плавающие частицы по бокам (для объема) */
+.floating-particle {
+    position: fixed;
+    width: 2px;
+    height: 2px;
+    background: #54fdf6;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 0 4px #54fdf6;
+    animation: floatParticle 8s infinite linear;
+}
+
+@keyframes floatParticle {
+    0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0);
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100vh) translateX(calc(var(--dir, 1) * 30px));
+    }
+}
+
+/* Адаптация для мобильных устройств */
 @media (max-width: 768px) {
     body::after, .side-border-right {
-        width: 1px;
-        left: 8px;
-        right: 8px;
+        width: 2px;
+        left: 10px;
+        right: 10px;
     }
+    
+    body::before, .side-border-inner {
+        display: none;
+    }
+    
     .corner-decoration {
-        width: 30px;
-        height: 30px;
-        opacity: 0.2;
+        width: 40px;
+        height: 40px;
+        border-width: 2px !important;
     }
+    
+    .corner-tl { top: 12px; left: 12px; }
+    .corner-tr { top: 12px; right: 12px; }
+    .corner-bl { bottom: 12px; left: 12px; }
+    .corner-br { bottom: 12px; right: 12px; }
+    
     .bg-grid-left, .bg-grid-right {
-        width: 60px;
-        opacity: 0.2;
+        width: 80px;
+        opacity: 0.25;
+        background-size: 20px 20px;
     }
 }
 
-/* ============ HEADER ============ */
+@media (max-width: 480px) {
+    body::after, .side-border-right {
+        width: 1.5px;
+        left: 6px;
+        right: 6px;
+    }
+    
+    .corner-decoration {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+/* ============ HEADER (немного доработан) ============ */
 header {
     display: flex;
     align-items: center;
@@ -308,6 +410,16 @@ nav a:hover {
     color: #54fdf6 !important;
 }
 
+ .profile-nav-btn {
+        background: rgba(84, 253, 246, 0.08);
+        border-color: rgba(84, 253, 246, 0.2);
+    }
+    .profile-nav-btn:hover {
+        background: rgba(84, 253, 246, 0.2) !important;
+        color: #54fdf6 !important;
+        border-color: rgba(84, 253, 246, 0.4);
+    }
+
 /* ============ HERO СЕКЦИЯ ============ */
 .hero {
     text-align: center;
@@ -423,7 +535,7 @@ nav a:hover {
     color: #c0c0c0;
 }
 
-/* ============ КАРТОЧКИ УСЛУГ (Улучшенные) ============ */
+/* ============ КАРТОЧКИ УСЛУГ ============ */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -927,7 +1039,7 @@ nav a:hover {
     color: #54fdf6;
 }
 
-/* ============ МОДАЛЬНОЕ ОКНО ЗАПИСИ (УЛУЧШЕННОЕ) ============ */
+/* ============ МОДАЛЬНОЕ ОКНО ЗАПИСИ ============ */
 .modal {
     display: none;
     position: fixed;

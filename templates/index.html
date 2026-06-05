@@ -26,6 +26,9 @@
         {% if session.user_role == 'admin' %}
             <a href="{{ url_for('admin_dashboard') }}" class="admin-nav-btn">Админка</a>
         {% endif %}
+        {% if session.user_id %}
+        <a href="{{ url_for('profile') }}" class="profile-nav-btn">👤 Мой кабинет</a>
+    {% endif %}
         
         {% if session.user_id %}
             <a href="{{ url_for('logout') }}" class="logout-nav-btn">Выйти ({{ session.user_name }})</a>
@@ -1093,15 +1096,29 @@
     
     document.addEventListener('DOMContentLoaded', loadPrices);
 </script>
- 
 
+<!-- ============ ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ (ОБНОВЛЕННЫЕ) ============ -->
 <div class="side-border-right"></div>
+<div class="side-border-inner"></div>
 <div class="corner-decoration corner-tl"></div>
 <div class="corner-decoration corner-tr"></div>
 <div class="corner-decoration corner-bl"></div>
 <div class="corner-decoration corner-br"></div>
 <div class="bg-grid-left"></div>
 <div class="bg-grid-right"></div>
+
+<!-- АНИМИРОВАННЫЕ ЧАСТИЦЫ ДЛЯ ДИНАМИКИ -->
+<div class="floating-particle" style="top: 15%; left: 35px; --dir: 1; animation-delay: 0s;"></div>
+<div class="floating-particle" style="top: 35%; left: 30px; --dir: -1; animation-delay: 1.5s;"></div>
+<div class="floating-particle" style="top: 55%; left: 38px; --dir: 1; animation-delay: 3s;"></div>
+<div class="floating-particle" style="top: 75%; left: 32px; --dir: -1; animation-delay: 4.5s;"></div>
+<div class="floating-particle" style="top: 90%; left: 36px; --dir: 1; animation-delay: 6s;"></div>
+
+<div class="floating-particle" style="top: 10%; right: 35px; --dir: -1; animation-delay: 0.7s;"></div>
+<div class="floating-particle" style="top: 30%; right: 28px; --dir: 1; animation-delay: 2.2s;"></div>
+<div class="floating-particle" style="top: 50%; right: 34px; --dir: -1; animation-delay: 3.8s;"></div>
+<div class="floating-particle" style="top: 70%; right: 30px; --dir: 1; animation-delay: 5.2s;"></div>
+<div class="floating-particle" style="top: 88%; right: 38px; --dir: -1; animation-delay: 6.8s;"></div>
 
 </body>
 </html>
