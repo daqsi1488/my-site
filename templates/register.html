@@ -70,6 +70,7 @@
                 <i class="fas fa-user"></i>
                 <input type="text" name="full_name" id="fullName" placeholder="ФИО" required>
             </div>
+            <div class="validation-hint" id="nameHint">Укажите ваше полное имя</div>
             
             <div class="input-with-icon">
                 <i class="fas fa-envelope"></i>
@@ -97,6 +98,11 @@
             
             <button type="submit" class="btn-primary" id="submitBtn">Зарегистрироваться</button>
         </form>
+        
+        <div style="margin-top: 20px; background: rgba(84, 253, 246, 0.05); padding: 12px; border-radius: 12px; font-size: 12px;">
+            <i class="fas fa-info-circle"></i> После регистрации на вашу почту придет код подтверждения. Введите его для завершения регистрации.
+        </div>
+        
         <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
         <p><a href="{{ url_for('index') }}">← На главную</a></p>
     </div>
@@ -217,10 +223,8 @@
     
     phoneInput.addEventListener('input', function(e) {
         let value = e.target.value;
-        // Убираем все не цифры и не +
         let cleaned = value.replace(/[^\d+]/g, '');
         
-        // Если начинается не с +7, исправляем
         if (!cleaned.startsWith('+7')) {
             if (cleaned.startsWith('8')) {
                 cleaned = '+7' + cleaned.substring(1);
@@ -231,12 +235,10 @@
             }
         }
         
-        // Ограничиваем длину (+7 + 10 цифр = 12 символов)
         if (cleaned.length > 12) {
             cleaned = cleaned.slice(0, 12);
         }
         
-        // Форматируем для отображения
         let formatted = cleaned;
         if (cleaned.startsWith('+7') && cleaned.length > 2) {
             let numbers = cleaned.slice(2);
@@ -250,7 +252,6 @@
         validatePhone();
     });
     
-    // Валидация email
     const emailInput = document.getElementById('email');
     const emailHint = document.getElementById('emailHint');
     
@@ -280,7 +281,6 @@
     emailInput.addEventListener('input', validateEmail);
     emailInput.addEventListener('blur', validateEmail);
     
-    // Валидация телефона
     function isValidPhone(phone) {
         const cleaned = phone.replace(/[\s\-\(\)]/g, '');
         const pattern = /^(\+7|8)[0-9]{10}$/;
@@ -307,7 +307,29 @@
     
     phoneInput.addEventListener('blur', validatePhone);
     
-    // Валидация пароля
+    const nameInput = document.getElementById('fullName');
+    const nameHint = document.getElementById('nameHint');
+    
+    function validateName() {
+        const name = nameInput.value.trim();
+        if (name.length >= 2) {
+            nameHint.textContent = '✓ Имя указано';
+            nameHint.className = 'validation-hint valid';
+            return true;
+        } else if (name.length > 0) {
+            nameHint.textContent = '✗ Введите полное имя (минимум 2 символа)';
+            nameHint.className = 'validation-hint invalid';
+            return false;
+        } else {
+            nameHint.textContent = 'Укажите ваше полное имя';
+            nameHint.className = 'validation-hint';
+            return false;
+        }
+    }
+    
+    nameInput.addEventListener('input', validateName);
+    nameInput.addEventListener('blur', validateName);
+    
     const passwordInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
     const passwordHint = document.getElementById('passwordHint');
@@ -358,15 +380,6 @@
     passwordInput.addEventListener('blur', validatePassword);
     confirmInput.addEventListener('blur', validateConfirm);
     
-    // Валидация ФИО
-    const nameInput = document.getElementById('fullName');
-    function validateName() {
-        const name = nameInput.value.trim();
-        return name.length >= 2;
-    }
-    nameInput.addEventListener('blur', validateName);
-    
-    // Общая валидация формы
     const form = document.getElementById('registerForm');
     const submitBtn = document.getElementById('submitBtn');
     
@@ -390,12 +403,12 @@
         }
     });
     
-    // Инициализация
     validateForm();
     validateEmail();
     validatePhone();
     validatePassword();
     validateConfirm();
+    validateName();
 </script>
 
 </body>

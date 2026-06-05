@@ -11,6 +11,91 @@
         .logo, .header-title {
             cursor: pointer;
         }
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        .forgot-password a {
+            font-size: 12px;
+            color: #888;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .forgot-password a:hover {
+            color: #54fdf6;
+        }
+        .reset-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 1005;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .reset-modal-content {
+            background: linear-gradient(135deg, #14142a, #0d0d1f);
+            border-radius: 28px;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid rgba(84, 253, 246, 0.3);
+            animation: modalSlideIn 0.3s ease;
+            position: relative;
+        }
+        .reset-modal-header {
+            padding: 25px 25px 15px;
+            border-bottom: 1px solid rgba(84, 253, 246, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .reset-modal-header i {
+            font-size: 28px;
+            color: #54fdf6;
+        }
+        .reset-modal-header h3 {
+            font-size: 22px;
+            color: #e0e0e0;
+            font-family: 'Russo One', 'Montserrat', sans-serif;
+            margin: 0;
+        }
+        .reset-modal-body {
+            padding: 25px;
+        }
+        .reset-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #a0a0a0;
+            transition: 0.2s;
+        }
+        .reset-modal-close:hover {
+            color: #ff68ff;
+        }
+        .reset-message {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .reset-message.success {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 3px solid #4caf50;
+            color: #4caf50;
+        }
+        .reset-message.error {
+            background: rgba(244, 67, 54, 0.2);
+            border-left: 3px solid #f44336;
+            color: #f44336;
+        }
     </style>
 </head>
 <body>
@@ -41,13 +126,41 @@
             {% endif %}
         {% endwith %}
         
-        <form method="post" class="auth-form">
+        <form method="post" class="auth-form" id="loginForm">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Пароль" required>
+            <div class="forgot-password">
+                <a href="#" onclick="openResetModal(event)">Забыли пароль?</a>
+            </div>
             <button type="submit" class="btn-primary">Войти</button>
         </form>
         <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться</a></p>
         <p><a href="{{ url_for('index') }}">← На главную</a></p>
+    </div>
+</div>
+
+<!-- Модальное окно для восстановления пароля -->
+<div id="resetModal" class="reset-modal">
+    <div class="reset-modal-content">
+        <span class="reset-modal-close" onclick="closeResetModal()">&times;</span>
+        <div class="reset-modal-header">
+            <i class="fas fa-key"></i>
+            <h3>Восстановление пароля</h3>
+        </div>
+        <div class="reset-modal-body">
+            <div id="resetMessage" style="display: none;"></div>
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Введите ваш email</label>
+                <input type="email" class="form-input" id="resetEmail" placeholder="example@mail.ru" style="width: 100%;">
+            </div>
+            <div class="info-box" style="margin-top: 15px;">
+                <i class="fas fa-info-circle"></i>
+                <span>На указанную почту будет отправлена ссылка для сброса пароля.</span>
+            </div>
+            <button class="btn-primary" onclick="requestPasswordReset()" style="margin-top: 20px; width: 100%;">
+                <i class="fas fa-paper-plane"></i> Отправить ссылку
+            </button>
+        </div>
     </div>
 </div>
 
@@ -98,7 +211,7 @@
         border-color: #54fdf6;
     }
     .btn-primary {
-        background: linear-gradient(135deg, #54fdf6);
+        background: linear-gradient(135deg, #54fdf6, #2bb8b2);
         color: #0a0a1a;
         padding: 14px;
         border: none;
@@ -112,6 +225,11 @@
         transform: translateY(-2px);
         box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
     }
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
     .auth-card p {
         text-align: center;
         margin-top: 20px;
@@ -121,7 +239,116 @@
         color: #54fdf6;
         text-decoration: none;
     }
+    .flash {
+        text-align: center;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #b0b0b0;
+        font-size: 13px;
+    }
+    .form-group label i {
+        margin-right: 6px;
+        color: #54fdf6;
+    }
+    .info-box {
+        background: rgba(84, 253, 246, 0.05);
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 12px;
+        color: #a0a0a0;
+    }
+    .info-box i {
+        color: #54fdf6;
+        margin-right: 8px;
+    }
 </style>
+
+<script>
+    // Открыть модальное окно восстановления пароля
+    function openResetModal(event) {
+        if (event) event.preventDefault();
+        document.getElementById('resetModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        document.getElementById('resetEmail').value = '';
+        document.getElementById('resetMessage').style.display = 'none';
+    }
+    
+    // Закрыть модальное окно
+    function closeResetModal() {
+        document.getElementById('resetModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // Запрос на восстановление пароля
+    async function requestPasswordReset() {
+        const email = document.getElementById('resetEmail').value.trim();
+        const messageDiv = document.getElementById('resetMessage');
+        const submitBtn = document.querySelector('#resetModal .btn-primary');
+        
+        if (!email) {
+            messageDiv.innerHTML = '<div class="reset-message error">Введите ваш email адрес</div>';
+            messageDiv.style.display = 'block';
+            return;
+        }
+        
+        // Простая валидация email
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(email)) {
+            messageDiv.innerHTML = '<div class="reset-message error">Введите корректный email адрес</div>';
+            messageDiv.style.display = 'block';
+            return;
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+        
+        try {
+            const response = await fetch('/reset_password_request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                messageDiv.innerHTML = '<div class="reset-message success">' + result.message + '</div>';
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    closeResetModal();
+                }, 3000);
+            } else {
+                messageDiv.innerHTML = '<div class="reset-message error">' + result.message + '</div>';
+                messageDiv.style.display = 'block';
+            }
+        } catch (error) {
+            messageDiv.innerHTML = '<div class="reset-message error">Ошибка соединения. Попробуйте позже.</div>';
+            messageDiv.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Отправить ссылку';
+        }
+    }
+    
+    // Закрытие модального окна по клику на фон
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('resetModal');
+        if (e.target === modal) {
+            closeResetModal();
+        }
+    });
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('resetModal');
+            if (modal.style.display === 'flex') {
+                closeResetModal();
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

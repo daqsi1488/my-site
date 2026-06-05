@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение email | КиберКачалка</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .code-input {
+            font-size: 32px;
+            text-align: center;
+            letter-spacing: 10px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        .timer {
+            font-size: 14px;
+            color: #54fdf6;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .resend-btn {
+            background: none;
+            border: none;
+            color: #ff68ff;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            margin-top: 10px;
+        }
+        .resend-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .auth-card {
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        .info-email {
+            background: rgba(84, 253, 246, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        /* Курсор для кликабельных элементов */
+        .logo, .header-title {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="location.href='{{ url_for('index') }}'">
+        <img src="{{ url_for('static', filename='photos/logo.jpg') }}" alt="Логотип">
+    </div>
+    <div class="header-title" onclick="location.href='{{ url_for('index') }}'">Фиджитал центр "КиберКачалка"</div>
+    <nav>
+        <a href="{{ url_for('index') }}">Главная</a>
+        <a href="{{ url_for('login') }}">Вход</a>
+    </nav>
+</header>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2><i class="fas fa-envelope"></i> Подтверждение email</h2>
+        
+        <div class="info-email">
+            <i class="fas fa-envelope"></i> Код отправлен на: <strong>{{ email }}</strong>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; background: {% if category == 'success' %}#4CAF50{% elif category == 'error' %}#f44336{% else %}#2196f3{% endif %}; color: white;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="post" class="auth-form" id="verifyForm">
+            <div class="input-with-icon">
+                <i class="fas fa-key"></i>
+                <input type="text" name="code" id="code" class="code-input" placeholder="_ _ _ _ _ _" maxlength="6" required autocomplete="off">
+            </div>
+            <div class="validation-hint" id="codeHint">Введите 6-значный код из письма</div>
+            
+            <div class="timer" id="timer">Код действителен: 10:00</div>
+            
+            <button type="submit" class="btn-primary" id="submitBtn">Подтвердить</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="resend-btn" id="resendBtn" onclick="resendCode()">
+                <i class="fas fa-redo-alt"></i> Отправить код повторно
+            </button>
+        </div>
+        
+        <p><a href="{{ url_for('register') }}">← Вернуться к регистрации</a></p>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <p>© 2026 КиберКачалка</p>
+    </div>
+</footer>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        padding: 40px 20px;
+    }
+    .auth-card {
+        background: rgba(20, 20, 40, 0.8);
+        backdrop-filter: blur(12px);
+        border-radius: 28px;
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+    .auth-card h2 {
+        font-size: 28px;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #54fdf6;
+    }
+    .input-with-icon {
+        position: relative;
+        width: 100%;
+    }
+    .input-with-icon i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #54fdf6;
+        z-index: 1;
+        font-size: 18px;
+    }
+    .input-with-icon input {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        padding: 14px 20px;
+        border-radius: 14px;
+        color: white;
+        font-size: 28px;
+        width: 100%;
+        text-align: center;
+        letter-spacing: 5px;
+    }
+    .input-with-icon input:focus {
+        outline: none;
+        border-color: #54fdf6;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #54fdf6, #2bb8b2);
+        color: #0a0a1a;
+        padding: 14px;
+        border: none;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        width: 100%;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+    }
+    .validation-hint {
+        font-size: 11px;
+        margin-top: 5px;
+        color: #888;
+        text-align: center;
+    }
+    .validation-hint.valid {
+        color: #4caf50;
+    }
+    .validation-hint.invalid {
+        color: #f44336;
+    }
+    .auth-card p {
+        text-align: center;
+        margin-top: 20px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .auth-card a {
+        color: #54fdf6;
+        text-decoration: none;
+    }
+    .flash {
+        text-align: center;
+    }
+    .resend-btn {
+        background: none;
+        border: none;
+        color: #ff68ff;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .resend-btn:hover {
+        text-decoration: underline;
+    }
+    .resend-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+
+<script>
+    let timeLeft = 600; // 10 минут в секундах
+    let timerInterval;
+    
+    // Авто-фокус на поле ввода
+    document.getElementById('code').focus();
+    
+    // Таймер обратного отсчета
+    function startTimer() {
+        timerInterval = setInterval(function() {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').innerHTML = '⏰ Код истек! Запросите новый.';
+                document.getElementById('timer').style.color = '#f44336';
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('resendBtn').disabled = false;
+            } else {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                document.getElementById('timer').innerHTML = `⏱️ Код действителен: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    }
+    
+    startTimer();
+    
+    // Валидация кода
+    const codeInput = document.getElementById('code');
+    const codeHint = document.getElementById('codeHint');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    function validateCode() {
+        const code = codeInput.value;
+        if (code.length === 6 && /^\d+$/.test(code)) {
+            codeHint.textContent = '✓ Код введен';
+            codeHint.className = 'validation-hint valid';
+            submitBtn.disabled = false;
+            return true;
+        } else if (code.length > 0) {
+            codeHint.textContent = '✗ Введите 6 цифр';
+            codeHint.className = 'validation-hint invalid';
+            submitBtn.disabled = true;
+            return false;
+        } else {
+            codeHint.textContent = 'Введите 6-значный код из письма';
+            codeHint.className = 'validation-hint';
+            submitBtn.disabled = true;
+            return false;
+        }
+    }
+    
+    codeInput.addEventListener('input', validateCode);
+    codeInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter' && validateCode()) {
+            document.getElementById('verifyForm').submit();
+        }
+    });
+    
+    // Повторная отправка кода
+    let resendCooldown = false;
+    
+    async function resendCode() {
+        if (resendCooldown) {
+            alert('Подождите 30 секунд перед повторной отправкой');
+            return;
+        }
+        
+        const resendBtn = document.getElementById('resendBtn');
+        resendBtn.disabled = true;
+        resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+        
+        try {
+            const response = await fetch('/resend_code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Новый код отправлен на почту!');
+                // Сбрасываем таймер
+                timeLeft = 600;
+                clearInterval(timerInterval);
+                startTimer();
+                document.getElementById('submitBtn').disabled = false;
+                
+                // Устанавливаем кулдаун на повторную отправку
+                resendCooldown = true;
+                setTimeout(() => {
+                    resendCooldown = false;
+                }, 30000);
+            } else {
+                alert(result.message || 'Ошибка отправки кода');
+            }
+        } catch (error) {
+            alert('Ошибка отправки. Попробуйте позже.');
+        } finally {
+            resendBtn.disabled = false;
+            resendBtn.innerHTML = '<i class="fas fa-redo-alt"></i> Отправить код повторно';
+        }
+    }
+    
+    // Предотвращаем отправку пустой формы
+    document.getElementById('verifyForm').addEventListener('submit', function(e) {
+        if (!validateCode()) {
+            e.preventDefault();
+        }
+    });
+    
+    validateCode();
+</script>
+
+</body>
+</html>

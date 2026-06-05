@@ -6,12 +6,27 @@ import os
 import json
 import logging
 import re
+import random
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here")
+app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here-please-change-me")
+
+
+EMAIL_HOST = "smtp.mail.ru" 
+EMAIL_PORT = 587  
+EMAIL_USER = "cyberkachalka@mail.ru"  
+EMAIL_PASSWORD = "WID3z1j7VbpcycI4Bh2y" 
+EMAIL_FROM = "cyberkachalka@mail.ru" 
+
+# Токен для безопасной верификации
+serializer = URLSafeTimedSerializer(app.secret_key)
 
 # Фильтр для парсинга JSON в шаблонах
 def from_json_filter(value):
@@ -31,22 +46,72 @@ def is_valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
-# Валидация телефона (принимает +7XXXXXXXXXX или 8XXXXXXXXXX)
+# Валидация телефона
 def is_valid_phone(phone):
-    # Очищаем от лишних символов
     cleaned = re.sub(r'[\s\-\(\)]', '', phone)
-    # Проверяем формат: +7XXXXXXXXXX (11 цифр после +7) или 8XXXXXXXXXX (10 цифр)
     pattern = r'^(\+7|8)[0-9]{10}$'
     return re.match(pattern, cleaned) is not None
 
 def format_phone(phone):
-    # Очищаем от лишних символов
     cleaned = re.sub(r'[\s\-\(\)]', '', phone)
     if cleaned.startswith('8'):
         cleaned = '+7' + cleaned[1:]
     if not cleaned.startswith('+'):
         cleaned = '+' + cleaned
     return cleaned
+
+# Функция отправки кода подтверждения на email
+def send_verification_code(email, code):
+    """Отправляет код подтверждения на указанный email"""
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_FROM
+        msg['To'] = email
+        msg['Subject'] = 'Подтверждение регистрации - КиберКачалка'
+        
+        html = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; background-color: #0a0a14; color: #e0e0e0; }}
+                .container {{ max-width: 500px; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #14142a, #0d0d1f); border-radius: 20px; border: 1px solid #54fdf6; }}
+                h2 {{ color: #54fdf6; text-align: center; }}
+                .code {{ font-size: 36px; font-weight: bold; text-align: center; padding: 20px; background: rgba(84, 253, 246, 0.1); border-radius: 15px; margin: 20px 0; letter-spacing: 5px; color: #ff68ff; }}
+                .footer {{ text-align: center; margin-top: 20px; font-size: 12px; color: #888; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h2>🔐 Добро пожаловать в КиберКачалку!</h2>
+                <p>Для завершения регистрации введите следующий код подтверждения:</p>
+                <div class="code">{code}</div>
+                <p>Код действителен в течение 10 минут.</p>
+                <p>Если вы не регистрировались на нашем сайте, просто проигнорируйте это письмо.</p>
+                <div class="footer">
+                    <p>© 2026 КиберКачалка | Фиджитал центр НТПТиС</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html, 'html'))
+        
+        server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"Код подтверждения отправлен на {email}")
+        return True
+    except Exception as e:
+        logger.error(f"Ошибка отправки email: {e}")
+        return False
+
+# Генерация кода подтверждения
+def generate_verification_code():
+    return str(random.randint(100000, 999999))
 
 # ============ ГЛАВНЫЕ СТРАНИЦЫ ============
 @app.route('/')
@@ -68,7 +133,7 @@ def news_page():
         flash('Не удалось загрузить новости. Попробуйте позже.', 'error')
         return render_template('news.html', news=[])
 
-# ============ РЕГИСТРАЦИЯ ============
+# ============ РЕГИСТРАЦИЯ С ПОДТВЕРЖДЕНИЕМ EMAIL ============
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -87,14 +152,13 @@ def register():
             flash('Введите корректный номер телефона (например: +79161234567 или 89161234567)', 'error')
             return render_template('register.html')
         
-        # Форматируем телефон
         phone = format_phone(phone)
         
-        # Проверка длины пароля
         if len(password) < 6:
             flash('Пароль должен содержать не менее 6 символов', 'error')
             return render_template('register.html')
         
+        # Проверка существующего пользователя
         existing = supabase.table('users')\
             .select('*')\
             .eq('email', email)\
@@ -104,25 +168,100 @@ def register():
             flash('Пользователь с таким email уже существует', 'error')
             return render_template('register.html')
         
-        user_data = {
+        # Генерируем код подтверждения
+        verification_code = generate_verification_code()
+        
+        # Отправляем код на email
+        if not send_verification_code(email, verification_code):
+            flash('Не удалось отправить код подтверждения. Проверьте правильность email или попробуйте позже.', 'error')
+            return render_template('register.html')
+        
+        # Сохраняем данные пользователя в сессию для подтверждения
+        session['pending_user'] = {
             'email': email,
             'password_hash': hash_password(password),
             'full_name': full_name,
             'phone': phone,
-            'role': 'user',
-            'email_verified': False,
-            'created_at': datetime.now().isoformat()
+            'verification_code': verification_code,
+            'code_expires': (datetime.now().timestamp() + 600)  # 10 минут
         }
         
-        response = supabase.table('users').insert(user_data).execute()
-        
-        if response.data:
-            flash('Регистрация успешна! Теперь войдите в систему.', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('Ошибка регистрации. Попробуйте позже.', 'error')
+        flash(f'Код подтверждения отправлен на {email}. Введите его для завершения регистрации.', 'info')
+        return redirect(url_for('verify_code'))
     
     return render_template('register.html')
+
+@app.route('/verify_code', methods=['GET', 'POST'])
+def verify_code():
+    if 'pending_user' not in session:
+        flash('Сначала заполните форму регистрации', 'error')
+        return redirect(url_for('register'))
+    
+    pending_user = session['pending_user']
+    email = pending_user['email']
+    
+    # Проверяем не истек ли код
+    if datetime.now().timestamp() > pending_user['code_expires']:
+        session.pop('pending_user', None)
+        flash('Время подтверждения истекло. Пожалуйста, зарегистрируйтесь заново.', 'error')
+        return redirect(url_for('register'))
+    
+    if request.method == 'POST':
+        entered_code = request.form.get('code', '').strip()
+        
+        if entered_code == pending_user['verification_code']:
+            # Код верный - создаем пользователя
+            user_data = {
+                'email': pending_user['email'],
+                'password_hash': pending_user['password_hash'],
+                'full_name': pending_user['full_name'],
+                'phone': pending_user['phone'],
+                'role': 'user',
+                'email_verified': True,
+                'created_at': datetime.now().isoformat()
+            }
+            
+            try:
+                response = supabase.table('users').insert(user_data).execute()
+                
+                if response.data:
+                    session.pop('pending_user', None)
+                    flash('Регистрация успешна! Теперь войдите в систему.', 'success')
+                    return redirect(url_for('login'))
+                else:
+                    flash('Ошибка регистрации. Попробуйте позже.', 'error')
+                    return redirect(url_for('register'))
+            except Exception as e:
+                logger.error(f"Ошибка создания пользователя: {e}")
+                flash('Ошибка регистрации. Попробуйте позже.', 'error')
+                return redirect(url_for('register'))
+        else:
+            flash('Неверный код подтверждения. Попробуйте еще раз.', 'error')
+    
+    # Маскируем email для отображения
+    masked_email = email[:3] + '***' + email[email.find('@'):] if '@' in email else email
+    
+    return render_template('verify_code.html', email=masked_email, full_email=email)
+
+@app.route('/resend_code', methods=['POST'])
+def resend_code():
+    if 'pending_user' not in session:
+        return jsonify({'success': False, 'message': 'Сессия истекла. Заполните форму заново.'})
+    
+    pending_user = session['pending_user']
+    email = pending_user['email']
+    
+    # Генерируем новый код
+    new_code = generate_verification_code()
+    
+    # Отправляем новый код
+    if send_verification_code(email, new_code):
+        session['pending_user']['verification_code'] = new_code
+        session['pending_user']['code_expires'] = datetime.now().timestamp() + 600
+        session.modified = True
+        return jsonify({'success': True, 'message': 'Новый код отправлен!'})
+    else:
+        return jsonify({'success': False, 'message': 'Не удалось отправить код. Попробуйте позже.'})
 
 # ============ ВХОД ============
 @app.route('/login', methods=['GET', 'POST'])
@@ -140,6 +279,12 @@ def login():
         
         if response.data:
             user = response.data[0]
+            
+            # Проверяем, подтвержден ли email
+            if not user.get('email_verified', False):
+                flash('Подтвердите email перед входом в систему. Проверьте вашу почту.', 'error')
+                return render_template('login.html')
+            
             session['user_id'] = user['id']
             session['user_email'] = user['email']
             session['user_name'] = user['full_name']
@@ -190,27 +335,23 @@ def get_document(doc_key):
     except Exception as e:
         logger.error(f"Ошибка загрузки документа: {e}")
         return jsonify({'error': str(e)}), 500
-    
-# ============ СОЗДАНИЕ ЗАЯВКИ (ОБНОВЛЕННАЯ ВЕРСИЯ) ============
+
+# ============ СОЗДАНИЕ ЗАЯВКИ ============
 @app.route('/create_booking', methods=['POST'])
 def create_booking():
     data = request.get_json() or request.form
     
-    # Валидация телефона
     phone = data.get('phone', '')
     if not is_valid_phone(phone):
         return jsonify({'success': False, 'message': 'Введите корректный номер телефона (например: +79161234567)'})
     
-    # Валидация email (если указан)
     email = data.get('email', '')
     if email and not is_valid_email(email):
         return jsonify({'success': False, 'message': 'Введите корректный email адрес'})
     
-    # Получаем имя клиента и тип клиента
     customer_name = data.get('name', '').strip()
-    client_type = data.get('client_type', 'individual')  # individual или organization
+    client_type = data.get('client_type', 'individual')
     
-    # Если клиент не указал имя, проверяем организацию
     if not customer_name and client_type == 'organization':
         customer_name = data.get('org_name', '').strip()
     
@@ -225,9 +366,7 @@ def create_booking():
     total_price = 0
     
     if isinstance(services_details, list):
-        # Обрабатываем детали услуг, включая экскурсии с количеством человек
         for detail in services_details:
-            # Если это экскурсия, умножаем цену на количество человек
             if detail.get('is_excursion') and detail.get('persons_count'):
                 persons = int(detail.get('persons_count', 1))
                 base_price = float(detail.get('price', 0))
@@ -243,14 +382,13 @@ def create_booking():
         services_details_json = services_details
         total_price = float(data.get('total_price', 0))
     
-    # Если total_price не передан или равен 0, пересчитываем
     if total_price == 0:
         total_price = float(data.get('total_price', 0))
     
     booking_data = {
         'user_id': session.get('user_id'),
         'customer_name': customer_name,
-        'client_type': client_type,  # Добавляем тип клиента
+        'client_type': client_type,
         'phone': format_phone(phone),
         'email': email.strip().lower() if email else '',
         'service': services,
@@ -282,7 +420,6 @@ def create_booking():
 def send_contact():
     data = request.get_json() or request.form
     
-    # Валидация телефона
     phone = data.get('phone', '')
     if not is_valid_phone(phone):
         return jsonify({'success': False, 'message': 'Введите корректный номер телефона'})
@@ -579,6 +716,123 @@ def delete_user(user_id):
     supabase.table('users').delete().eq('id', user_id).execute()
     flash('Пользователь удален', 'success')
     return redirect(url_for('admin_dashboard'))
+
+# ============ ВОССТАНОВЛЕНИЕ ПАРОЛЯ ============
+@app.route('/reset_password_request', methods=['POST'])
+def reset_password_request():
+    """Запрос на сброс пароля - отправка ссылки на email"""
+    data = request.get_json()
+    email = data.get('email', '').strip().lower()
+    
+    if not email:
+        return jsonify({'success': False, 'message': 'Введите email адрес'})
+    
+    if not is_valid_email(email):
+        return jsonify({'success': False, 'message': 'Введите корректный email адрес'})
+    
+    # Проверяем, существует ли пользователь с таким email
+    response = supabase.table('users').select('*').eq('email', email).execute()
+    
+    if not response.data:
+        # Не сообщаем, что email не найден (безопасность)
+        return jsonify({'success': True, 'message': 'Если пользователь с таким email существует, ссылка для сброса пароля будет отправлена.'})
+    
+    user = response.data[0]
+    
+    # Генерируем токен для сброса пароля (действителен 1 час)
+    token = serializer.dumps(email, salt='password-reset-salt')
+    
+    # Строим ссылку для сброса
+    reset_url = url_for('reset_password', token=token, _external=True)
+    
+    # Отправляем письмо
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_FROM
+        msg['To'] = email
+        msg['Subject'] = 'Сброс пароля - КиберКачалка'
+        
+        html = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; background-color: #0a0a14; color: #e0e0e0; }}
+                .container {{ max-width: 500px; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #14142a, #0d0d1f); border-radius: 20px; border: 1px solid #54fdf6; }}
+                h2 {{ color: #54fdf6; text-align: center; }}
+                .button {{ display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #54fdf6, #2bb8b2); color: #0a0a14; text-decoration: none; border-radius: 30px; font-weight: bold; margin: 20px 0; }}
+                .footer {{ text-align: center; margin-top: 20px; font-size: 12px; color: #888; }}
+                .warning {{ color: #ff9800; font-size: 12px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h2>🔐 Сброс пароля</h2>
+                <p>Вы запросили сброс пароля для аккаунта <strong>{email}</strong>.</p>
+                <p>Для установки нового пароля нажмите на кнопку ниже:</p>
+                <div style="text-align: center;">
+                    <a href="{reset_url}" class="button">Сбросить пароль</a>
+                </div>
+                <p class="warning">⚠️ Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо.</p>
+                <p>Ссылка действительна в течение 1 часа.</p>
+                <div class="footer">
+                    <p>© 2026 КиберКачалка | Фиджитал центр НТПТиС</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html, 'html'))
+        
+        server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"Ссылка для сброса пароля отправлена на {email}")
+        return jsonify({'success': True, 'message': 'Ссылка для сброса пароля отправлена на вашу почту.'})
+        
+    except Exception as e:
+        logger.error(f"Ошибка отправки письма для сброса пароля: {e}")
+        return jsonify({'success': False, 'message': 'Ошибка отправки письма. Попробуйте позже.'})
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    """Страница сброса пароля"""
+    try:
+        # Проверяем токен (действителен 1 час)
+        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
+    except SignatureExpired:
+        flash('Ссылка для сброса пароля истекла. Запросите новую.', 'error')
+        return redirect(url_for('login'))
+    except BadSignature:
+        flash('Неверная ссылка для сброса пароля.', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        new_password = request.form.get('password', '')
+        
+        if len(new_password) < 6:
+            flash('Пароль должен содержать не менее 6 символов', 'error')
+            return render_template('reset_password.html', token=token)
+        
+        # Обновляем пароль пользователя
+        password_hash = hash_password(new_password)
+        
+        response = supabase.table('users').update({
+            'password_hash': password_hash,
+            'updated_at': datetime.now().isoformat()
+        }).eq('email', email).execute()
+        
+        if response.data:
+            flash('Пароль успешно изменен! Теперь войдите в систему.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Ошибка при смене пароля. Попробуйте позже.', 'error')
+    
+    return render_template('reset_password.html', token=token)
 
 if __name__ == '__main__':
     app.run(debug=True)
