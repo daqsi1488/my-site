@@ -43,6 +43,162 @@
         .logo, .header-title {
             cursor: pointer;
         }
+        
+        /* Стили для модального окна услуги */
+        .service-info-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 1003;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .service-info-content {
+            background: linear-gradient(135deg, #14142a, #0d0d1f);
+            border-radius: 28px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(84, 253, 246, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+        .service-info-header {
+            padding: 25px 25px 15px;
+            border-bottom: 1px solid rgba(84, 253, 246, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .service-info-header i {
+            font-size: 48px;
+            color: #54fdf6;
+        }
+        .service-info-header h3 {
+            font-size: 24px;
+            color: #e0e0e0;
+            font-family: 'Russo One', 'Montserrat', sans-serif;
+            margin: 0;
+        }
+        .service-info-body {
+            padding: 25px;
+        }
+        .service-info-price {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ff68ff;
+            margin-bottom: 15px;
+        }
+        .service-info-desc {
+            color: #a0a0a0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .service-info-persons {
+            color: #54fdf6;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .service-info-close {
+            width: 100%;
+            background: linear-gradient(135deg, #54fdf6, #2bb8b2);
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            color: #0a0a14;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .service-info-close:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Переключатель для юр/физ лица */
+        .client-type-switch {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 50px;
+        }
+        .client-type-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #a0a0a0;
+        }
+        .client-type-btn.active {
+            background: linear-gradient(135deg, #54fdf6, #2bb8b2);
+            color: #0a0a14;
+        }
+        
+        /* Стили для количества человек в экскурсии */
+        .persons-counter {
+            background: rgba(84, 253, 246, 0.05);
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        .persons-counter.show {
+            display: block;
+        }
+        .persons-counter label {
+            display: block;
+            margin-bottom: 10px;
+            color: #54fdf6;
+            font-size: 14px;
+        }
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(84, 253, 246, 0.1);
+            border: 1px solid rgba(84, 253, 246, 0.3);
+            color: #54fdf6;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .counter-btn:hover {
+            background: rgba(84, 253, 246, 0.2);
+        }
+        .persons-count {
+            font-size: 24px;
+            font-weight: 700;
+            min-width: 60px;
+            text-align: center;
+            color: #e0e0e0;
+        }
+        .persons-price {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ff68ff;
+        }
+        
+        /* Кликабельные карточки услуг */
+        .service-card {
+            cursor: pointer;
+        }
+        .price-card-modern {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -96,7 +252,7 @@
     <div id="prices" class="section prices-section">
         <div class="prices-header">
             <h2><i class="fas fa-tags"></i> Прейскурант на услуги</h2>
-            <p class="prices-subtitle">Актуальные цены фиджитал-центра «Киберкачалка»</p>
+            <p class="prices-subtitle">Актуальные цены фиджитал-центра «Киберкачалка» (кликните на услугу для подробной информации)</p>
         </div>
         
         <div class="prices-grid" id="pricesGrid">
@@ -119,27 +275,27 @@
     <div id="services" class="section">
         <h2>🎮 Наши услуги</h2>
         <div class="services-grid">
-            <div class="service-card">
+            <div class="service-card" onclick="showServiceInfo('PS5 Зона', 'Играйте в FIFA, NBA, UFC и другие спортивные игры на современной PlayStation 5 с 4K-мониторами и удобными креслами.', '200 ₽/час', '🎮')">
                 <i class="fas fa-gamepad"></i>
                 <h3>PS5 Зона</h3>
                 <p>Играйте в FIFA, NBA, UFC и другие спортивные игры</p>
             </div>
-            <div class="service-card">
+            <div class="service-card" onclick="showServiceInfo('Мини-футбол', 'Живые матчи на профессиональном покрытии. Собирайте команду и приходите! Проводим любительские турниры.', 'от 1 000 ₽/час', '⚽')">
                 <i class="fas fa-futbol"></i>
                 <h3>Мини-футбол</h3>
                 <p>Живые матчи на профессиональном покрытии. Собирайте команду и приходите!</p>
             </div>
-            <div class="service-card">
+            <div class="service-card" onclick="showServiceInfo('Баскетбол', 'Играйте в баскетбол с друзьями или участвуйте в турнирах. Профессиональная площадка и инвентарь.', 'от 1 000 ₽/час', '🏀')">
                 <i class="fas fa-basketball-ball"></i>
                 <h3>Баскетбол</h3>
                 <p>Играйте в баскетбол с друзьями или участвуйте в турнирах</p>
             </div>
-            <div class="service-card">
+            <div class="service-card" onclick="showServiceInfo('Настольные игры', 'Монополия, Джанга, Шахматы, Шашки, Уно, Мафия и множество других настольных игр для компании любого размера.', 'от 100 ₽/час', '🎲')">
                 <i class="fas fa-chess-board"></i>
                 <h3>Настольные игры</h3>
                 <p>Монополия, Джанга, Шахматы, Шашки, Уно, Мафия и множество других настольных игр</p>
             </div>
-            <div class="service-card">
+            <div class="service-card" onclick="showServiceInfo('Турниры', 'Регулярные киберспортивные и спортивные турниры с ценными призами. Следите за анонсами!', 'Участие бесплатно', '🏆')">
                 <i class="fas fa-trophy"></i>
                 <h3>Турниры</h3>
                 <p>Регулярные киберспортивные и спортивные турниры с призами</p>
@@ -164,7 +320,7 @@
                 <p class="gaming-desc">В нашей киберзоне установлены современные PlayStation 5 с огромным выбором игр. Уютные кресла, мощные 4K-мониторы и отличная акустика создают идеальные условия для погружения в виртуальный мир. Мы регулярно обновляем библиотеку игр и проводим киберспортивные турниры по FIFA, eFootball и другим дисциплинам.</p>
             </div>
             <div class="gaming-prices">
-                <div class="price-card">
+                <div class="price-card" onclick="showServiceInfo('Аренда интерактивной игровой зоны', 'Аренда телевизора с приставкой PlayStation 5. Включает доступ ко всем играм. Подходит для компании до 8 человек.', '200 ₽/час', '🎮')">
                     <div class="price-icon"><i class="fas fa-hourglass-half"></i></div>
                     <div class="price-info">
                         <div class="price-title">Аренда интерактивной игровой зоны</div>
@@ -172,7 +328,7 @@
                         <div class="price-note-small">до 8 человек</div>
                     </div>
                 </div>
-                <div class="price-card discount">
+                <div class="price-card discount" onclick="showServiceInfo('Льготная аренда интерактивной игровой зоны', 'Льготная аренда для инвалидов I-III групп, ветеранов боевых действий, детей-сирот, многодетных семей.', '100 ₽/час', '💝')">
                     <div class="price-icon"><i class="fas fa-hand-holding-heart"></i></div>
                     <div class="price-info">
                         <div class="price-title">Льготная аренда</div>
@@ -194,10 +350,10 @@
             <div class="sports-info">
                 <p>Для любителей активного отдыха у нас есть отличные спортивные площадки. Мини-футбол, баскетбол, волейбол и даже настольный теннис — выбирайте то, что вам по душе! Мы проводим любительские лиги, турниры и просто даём возможность поиграть с друзьями в любое удобное время.</p>
                 <div class="sports-features">
-                    <div class="sport-feature"><i class="fas fa-futbol"></i> Мини-футбол</div>
-                    <div class="sport-feature"><i class="fas fa-basketball-ball"></i> Баскетбол</div>
-                    <div class="sport-feature"><i class="fas fa-table-tennis"></i> Настольный теннис</div>
-                    <div class="sport-feature"><i class="fas fa-dumbbell"></i> Тренажерный зал</div>
+                    <div class="sport-feature" onclick="showServiceInfo('Мини-футбол', 'Живые матчи на профессиональном покрытии. Собирайте команду и приходите!', 'от 1 000 ₽/час', '⚽')"><i class="fas fa-futbol"></i> Мини-футбол</div>
+                    <div class="sport-feature" onclick="showServiceInfo('Баскетбол', 'Играйте в баскетбол с друзьями или участвуйте в турнирах.', 'от 1 000 ₽/час', '🏀')"><i class="fas fa-basketball-ball"></i> Баскетбол</div>
+                    <div class="sport-feature" onclick="showServiceInfo('Настольный теннис', 'Соревнуйтесь в настольный теннис. Профессиональные столы и ракетки.', '500 ₽/час', '🏓')"><i class="fas fa-table-tennis"></i> Настольный теннис</div>
+                    <div class="sport-feature" onclick="showServiceInfo('Тренажерный зал', 'Современные тренажеры для поддержания физической формы.', '500 ₽/час', '💪')"><i class="fas fa-dumbbell"></i> Тренажерный зал</div>
                 </div>
             </div>
             <div class="sports-prices">
@@ -367,6 +523,22 @@
     </div>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ИНФОРМАЦИИ ОБ УСЛУГЕ -->
+<div id="serviceInfoModal" class="service-info-modal">
+    <div class="service-info-content">
+        <div class="service-info-header">
+            <i class="fas fa-info-circle"></i>
+            <h3 id="serviceInfoTitle">Услуга</h3>
+        </div>
+        <div class="service-info-body">
+            <div class="service-info-price" id="serviceInfoPrice"></div>
+            <div class="service-info-desc" id="serviceInfoDesc"></div>
+            <div class="service-info-persons" id="serviceInfoPersons"></div>
+            <button class="service-info-close" onclick="closeServiceInfoModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
 <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ЗАПИСИ -->
 <div id="bookingModal" class="modal">
     <div class="modal-content modal-large">
@@ -395,15 +567,30 @@
         <form class="booking-form" id="bookingForm">
             <!-- ШАГ 1: Контактные данные -->
             <div class="booking-step-content" id="step1">
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> Ваше имя <span class="required">*</span></label>
+                <!-- Переключатель тип клиента -->
+                <div class="client-type-switch">
+                    <div class="client-type-btn active" data-type="individual" onclick="setClientType('individual')">
+                        <i class="fas fa-user"></i> Физическое лицо
+                    </div>
+                    <div class="client-type-btn" data-type="organization" onclick="setClientType('organization')">
+                        <i class="fas fa-building"></i> Юридическое лицо
+                    </div>
+                </div>
+                
+                <div class="form-group" id="nameFieldGroup">
+                    <label id="nameLabel"><i class="fas fa-user"></i> Ваше имя <span class="required">*</span></label>
                     <input type="text" class="form-input" id="bookingName" placeholder="Иван Иванов" required>
                     <div class="validation-message" id="nameError">Введите ваше имя</div>
                 </div>
+                <div class="form-group" id="orgFieldGroup" style="display: none;">
+                    <label><i class="fas fa-building"></i> Название организации <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="bookingOrg" placeholder="ООО Ромашка">
+                    <div class="validation-message" id="orgError">Введите название организации</div>
+                </div>
                 <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Ваш телефон <span class="required">*</span></label>
+                    <label><i class="fas fa-phone"></i> Контактный телефон <span class="required">*</span></label>
                     <input type="tel" class="form-input" id="bookingPhone" placeholder="+7 (___) ___-__-__" required>
-                    <div class="validation-message" id="phoneError">Введите корректный номер телефона (например: +7 916 123-45-67)</div>
+                    <div class="validation-message" id="phoneError">Введите корректный номер телефона</div>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-envelope"></i> Email (необязательно)</label>
@@ -492,11 +679,70 @@
     let availableServices = [];
     let selectedServices = [];
     let currentStep = 1;
-    const totalSteps = 4;
+    let totalSteps = 4;
+    let clientType = 'individual'; // 'individual' или 'organization'
+    let excursionPersonsCount = 1; // Количество человек для экскурсии
+    let currentExcursionService = null; // Текущая выбранная экскурсия
+
+    // ============ ПОКАЗ ИНФОРМАЦИИ ОБ УСЛУГЕ ============
+    function showServiceInfo(title, description, price, icon = '🎮') {
+        document.getElementById('serviceInfoTitle').innerHTML = icon + ' ' + title;
+        document.getElementById('serviceInfoPrice').innerHTML = price;
+        document.getElementById('serviceInfoDesc').innerHTML = description;
+        
+        // Проверяем, есть ли информация о количестве человек
+        if (title.toLowerCase().includes('экскурсия') || description.toLowerCase().includes('экскурсия')) {
+            document.getElementById('serviceInfoPersons').innerHTML = '<i class="fas fa-users"></i> Цена указана за 1 человека. Для группы до 20 человек.';
+        } else if (title.toLowerCase().includes('аренда') || title.toLowerCase().includes('зона')) {
+            document.getElementById('serviceInfoPersons').innerHTML = '<i class="fas fa-users"></i> Цена указана за час аренды. Максимум до 8 человек.';
+        } else {
+            document.getElementById('serviceInfoPersons').innerHTML = '';
+        }
+        
+        document.getElementById('serviceInfoModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
     
-    // Валидационные функции
+    function closeServiceInfoModal() {
+        document.getElementById('serviceInfoModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // ============ ТИП КЛИЕНТА ============
+    function setClientType(type) {
+        clientType = type;
+        
+        // Обновляем активную кнопку
+        document.querySelectorAll('.client-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`.client-type-btn[data-type="${type}"]`).classList.add('active');
+        
+        // Показываем/скрываем соответствующие поля
+        const nameFieldGroup = document.getElementById('nameFieldGroup');
+        const orgFieldGroup = document.getElementById('orgFieldGroup');
+        const nameLabel = document.getElementById('nameLabel');
+        
+        if (type === 'individual') {
+            nameFieldGroup.style.display = 'block';
+            orgFieldGroup.style.display = 'none';
+            nameLabel.innerHTML = '<i class="fas fa-user"></i> Ваше имя <span class="required">*</span>';
+            document.getElementById('bookingName').required = true;
+            document.getElementById('bookingOrg').required = false;
+        } else {
+            nameFieldGroup.style.display = 'none';
+            orgFieldGroup.style.display = 'block';
+            document.getElementById('bookingName').required = false;
+            document.getElementById('bookingOrg').required = true;
+        }
+        
+        validateStep1();
+        updateNextButtonState();
+    }
+    
+    // ============ ВАЛИДАЦИОННЫЕ ФУНКЦИИ ============
     function isValidEmail(email) {
-        if (!email) return true; // email необязательный
+        if (!email) return true;
         const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return pattern.test(email);
     }
@@ -530,24 +776,35 @@
         return formatted;
     }
     
-    // ============ ВАЛИДАЦИЯ ШАГА 1 ============
     function validateStep1() {
         let isValid = true;
         
-        // Имя
-        const name = document.getElementById('bookingName').value.trim();
-        const nameError = document.getElementById('nameError');
-        const nameInput = document.getElementById('bookingName');
-        if (!name) {
-            nameError.classList.add('show');
-            nameInput.classList.add('error');
-            isValid = false;
+        if (clientType === 'individual') {
+            const name = document.getElementById('bookingName').value.trim();
+            const nameError = document.getElementById('nameError');
+            const nameInput = document.getElementById('bookingName');
+            if (!name) {
+                nameError.classList.add('show');
+                nameInput.classList.add('error');
+                isValid = false;
+            } else {
+                nameError.classList.remove('show');
+                nameInput.classList.remove('error');
+            }
         } else {
-            nameError.classList.remove('show');
-            nameInput.classList.remove('error');
+            const org = document.getElementById('bookingOrg').value.trim();
+            const orgError = document.getElementById('orgError');
+            const orgInput = document.getElementById('bookingOrg');
+            if (!org) {
+                orgError.classList.add('show');
+                orgInput.classList.add('error');
+                isValid = false;
+            } else {
+                orgError.classList.remove('show');
+                orgInput.classList.remove('error');
+            }
         }
         
-        // Телефон
         const phone = document.getElementById('bookingPhone').value;
         const phoneError = document.getElementById('phoneError');
         const phoneInput = document.getElementById('bookingPhone');
@@ -560,7 +817,6 @@
             phoneInput.classList.remove('error');
         }
         
-        // Email (опционально, но если заполнен - проверяем)
         const email = document.getElementById('bookingEmail').value.trim();
         const emailError = document.getElementById('emailError');
         const emailInput = document.getElementById('bookingEmail');
@@ -576,7 +832,6 @@
         return isValid;
     }
     
-    // ============ ВАЛИДАЦИЯ ШАГА 2 ============
     function validateStep2() {
         const isValid = selectedServices.length > 0;
         const servicesError = document.getElementById('servicesError');
@@ -588,11 +843,9 @@
         return isValid;
     }
     
-    // ============ ВАЛИДАЦИЯ ШАГА 3 ============
     function validateStep3() {
         let isValid = true;
         
-        // Дата
         const date = document.getElementById('bookingDate').value;
         const dateError = document.getElementById('dateError');
         const dateInput = document.getElementById('bookingDate');
@@ -605,7 +858,6 @@
             dateInput.classList.remove('error');
         }
         
-        // Время
         const time = document.getElementById('bookingTime').value;
         const timeError = document.getElementById('timeError');
         const timeInput = document.getElementById('bookingTime');
@@ -621,7 +873,6 @@
         return isValid;
     }
     
-    // ============ ОБНОВЛЕНИЕ КНОПКИ NEXT ============
     function updateNextButtonState() {
         const nextBtn = document.getElementById('nextBtn');
         if (!nextBtn) return;
@@ -641,13 +892,8 @@
                 isValid = true;
         }
         
-        if (isValid) {
-            nextBtn.disabled = false;
-            nextBtn.style.opacity = '1';
-        } else {
-            nextBtn.disabled = true;
-            nextBtn.style.opacity = '0.5';
-        }
+        nextBtn.disabled = !isValid;
+        nextBtn.style.opacity = isValid ? '1' : '0.5';
     }
     
     // ============ МОДАЛЬНОЕ ОКНО ЗАПИСИ ============
@@ -685,18 +931,33 @@
         if (e.target === modal) {
             modal.style.display = 'none';
         }
+        const serviceModal = document.getElementById('serviceInfoModal');
+        if (e.target === serviceModal) {
+            closeServiceInfoModal();
+        }
     });
     
     function resetBookingForm() {
         currentStep = 1;
         selectedServices = [];
+        clientType = 'individual';
+        excursionPersonsCount = 1;
+        currentExcursionService = null;
         document.getElementById('bookingForm').reset();
-        // Сброс ошибок
         document.querySelectorAll('.validation-message').forEach(msg => msg.classList.remove('show'));
         document.querySelectorAll('.form-input').forEach(input => input.classList.remove('error'));
-        // Устанавливаем маску телефона
+        
+        // Сброс переключателя
+        document.querySelectorAll('.client-type-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.client-type-btn[data-type="individual"]').classList.add('active');
+        document.getElementById('nameFieldGroup').style.display = 'block';
+        document.getElementById('orgFieldGroup').style.display = 'none';
+        document.getElementById('bookingName').required = true;
+        document.getElementById('bookingOrg').required = false;
+        
         const phoneInput = document.getElementById('bookingPhone');
         if (phoneInput) phoneInput.value = '+7';
+        
         updateStepDisplay();
         updateSelectedServicesSummary();
         updateNextButtonState();
@@ -757,7 +1018,6 @@
             currentStep++;
             updateStepDisplay();
         } else if (!isValid) {
-            // Показываем подсказку
             if (currentStep === 1) {
                 alert('Пожалуйста, заполните все поля корректно');
             } else if (currentStep === 2) {
@@ -776,10 +1036,23 @@
     }
     
     function updateConfirmation() {
-        document.getElementById('confName').textContent = document.getElementById('bookingName').value || '—';
+        let clientName = '';
+        if (clientType === 'individual') {
+            clientName = document.getElementById('bookingName').value || '—';
+        } else {
+            const orgName = document.getElementById('bookingOrg').value || '—';
+            clientName = orgName + ' (организация)';
+        }
+        document.getElementById('confName').textContent = clientName;
         document.getElementById('confPhone').textContent = document.getElementById('bookingPhone').value || '—';
         
-        const servicesList = selectedServices.map(s => s.service_name).join(', ');
+        const servicesList = selectedServices.map(s => {
+            let serviceText = s.service_name;
+            if (s.is_excursion && s.persons_count) {
+                serviceText += ` (${s.persons_count} чел.)`;
+            }
+            return serviceText;
+        }).join(', ');
         document.getElementById('confServices').textContent = servicesList || '—';
         
         const date = document.getElementById('bookingDate').value;
@@ -828,7 +1101,7 @@
         });
     }
     
-    // ============ ВАЛИДАЦИЯ ПОЛЕЙ В РЕАЛЬНОМ ВРЕМЕНИ ============
+    // ============ ВАЛИДАЦИЯ ПОЛЕЙ ============
     const bookingNameField = document.getElementById('bookingName');
     if (bookingNameField) {
         bookingNameField.addEventListener('input', function() {
@@ -841,8 +1114,18 @@
             }
             updateNextButtonState();
         });
-        bookingNameField.addEventListener('blur', function() {
-            validateStep1();
+    }
+    
+    const bookingOrgField = document.getElementById('bookingOrg');
+    if (bookingOrgField) {
+        bookingOrgField.addEventListener('input', function() {
+            if (this.value.trim()) {
+                document.getElementById('orgError').classList.remove('show');
+                this.classList.remove('error');
+            } else {
+                document.getElementById('orgError').classList.add('show');
+                this.classList.add('error');
+            }
             updateNextButtonState();
         });
     }
@@ -892,7 +1175,8 @@
                 html += `<div class="service-category"><div class="service-category-title">${getCategoryIcon(category)} ${category}</div><div class="service-category-items">`;
                 services.forEach(service => {
                     const isSelected = selectedServices.some(s => s.id === service.id);
-                    html += `<div class="service-select-item ${isSelected ? 'selected' : ''}" data-service-id="${service.id}">
+                    const isExcursion = service.service_name && service.service_name.toLowerCase().includes('экскурсия');
+                    html += `<div class="service-select-item ${isSelected ? 'selected' : ''}" data-service-id="${service.id}" data-is-excursion="${isExcursion}">
                         <input type="checkbox" class="service-checkbox" value="${service.id}" ${isSelected ? 'checked' : ''}>
                         <div class="service-select-info">
                             <div class="service-select-name">${escapeHtml(service.service_name)}</div>
@@ -901,6 +1185,17 @@
                         </div>
                         <div class="service-select-indicator"><i class="fas fa-check-circle"></i></div>
                     </div>`;
+                    if (isExcursion) {
+                        html += `<div class="persons-counter" id="excursion-counter-${service.id}" style="display: none;">
+                            <label><i class="fas fa-users"></i> Количество участников экскурсии (до 20 человек):</label>
+                            <div class="counter-controls">
+                                <button type="button" class="counter-btn" onclick="changeExcursionPersons(${service.id}, -1)">-</button>
+                                <span class="persons-count" id="excursion-count-${service.id}">1</span>
+                                <button type="button" class="counter-btn" onclick="changeExcursionPersons(${service.id}, 1)">+</button>
+                            </div>
+                            <div class="persons-price" id="excursion-price-${service.id}">Итого: ${Number(service.price).toLocaleString()} ₽</div>
+                        </div>`;
+                    }
                 });
                 html += `</div></div>`;
             }
@@ -910,6 +1205,7 @@
                 const checkbox = item.querySelector('.service-checkbox');
                 const serviceId = parseInt(item.dataset.serviceId);
                 const service = availableServices.find(s => s.id === serviceId);
+                const isExcursion = item.dataset.isExcursion === 'true';
                 
                 item.addEventListener('click', function(e) {
                     if (e.target.type === 'checkbox') return;
@@ -926,12 +1222,24 @@
                     checkbox.addEventListener('change', function(e) {
                         e.stopPropagation();
                         const parentItem = this.closest('.service-select-item');
+                        const counterDiv = document.getElementById(`excursion-counter-${serviceId}`);
+                        
                         if (this.checked) { 
-                            if (!selectedServices.some(s => s.id === serviceId)) selectedServices.push(service); 
-                            parentItem.classList.add('selected'); 
+                            if (!selectedServices.some(s => s.id === serviceId)) {
+                                const serviceWithCount = { ...service, persons_count: 1, is_excursion: isExcursion };
+                                selectedServices.push(serviceWithCount);
+                            }
+                            parentItem.classList.add('selected');
+                            if (counterDiv && isExcursion) {
+                                counterDiv.style.display = 'block';
+                                updateExcursionPrice(serviceId);
+                            }
                         } else { 
                             selectedServices = selectedServices.filter(s => s.id !== serviceId); 
-                            parentItem.classList.remove('selected'); 
+                            parentItem.classList.remove('selected');
+                            if (counterDiv) {
+                                counterDiv.style.display = 'none';
+                            }
                         }
                         updateSelectedServicesSummary();
                         updateNextButtonState();
@@ -945,6 +1253,39 @@
             console.error(error);
             container.innerHTML = '<div class="services-empty">Ошибка загрузки</div>';
         }
+    }
+    
+    function changeExcursionPersons(serviceId, delta) {
+        const service = selectedServices.find(s => s.id === serviceId);
+        if (!service) return;
+        
+        let newCount = (service.persons_count || 1) + delta;
+        if (newCount < 1) newCount = 1;
+        if (newCount > 20) newCount = 20;
+        
+        service.persons_count = newCount;
+        
+        const countSpan = document.getElementById(`excursion-count-${serviceId}`);
+        if (countSpan) countSpan.textContent = newCount;
+        
+        updateExcursionPrice(serviceId);
+        updateSelectedServicesSummary();
+    }
+    
+    function updateExcursionPrice(serviceId) {
+        const service = selectedServices.find(s => s.id === serviceId);
+        if (!service) return;
+        
+        const originalPrice = Number(service.price);
+        const totalPrice = originalPrice * (service.persons_count || 1);
+        
+        const priceDiv = document.getElementById(`excursion-price-${serviceId}`);
+        if (priceDiv) {
+            priceDiv.innerHTML = `Итого: ${totalPrice.toLocaleString()} ₽ (${service.persons_count} чел. × ${originalPrice.toLocaleString()} ₽)`;
+        }
+        
+        // Обновляем цену в сервисе для отображения в итоге
+        service.display_price = totalPrice;
     }
     
     function getCategoryIcon(category) {
@@ -970,8 +1311,18 @@
             let totalPrice = 0;
             let html = '<ul class="selected-services-ul">';
             selectedServices.forEach(service => { 
-                html += `<li><i class="fas fa-tag"></i><span>${escapeHtml(service.service_name)}</span><strong>${Number(service.price).toLocaleString()} ₽</strong></li>`; 
-                totalPrice += Number(service.price); 
+                let price = service.display_price || Number(service.price);
+                if (service.is_excursion && service.persons_count) {
+                    price = Number(service.price) * service.persons_count;
+                } else {
+                    price = Number(service.price);
+                }
+                totalPrice += price;
+                let serviceText = escapeHtml(service.service_name);
+                if (service.is_excursion && service.persons_count) {
+                    serviceText += ` (${service.persons_count} чел.)`;
+                }
+                html += `<li><i class="fas fa-tag"></i><span>${serviceText}</span><strong>${price.toLocaleString()} ₽</strong></li>`; 
             });
             html += `</ul>`;
             if (selectedServices.length > 1) html += `<div class="total-price"><i class="fas fa-calculator"></i> Итого: ${totalPrice.toLocaleString()} ₽</div>`;
@@ -990,7 +1341,6 @@
     const bookingTimeField = document.getElementById('bookingTime');
     
     if (bookingDateField) {
-        // Устанавливаем минимальную дату (сегодня)
         const today = new Date().toISOString().split('T')[0];
         bookingDateField.setAttribute('min', today);
         
@@ -1025,26 +1375,54 @@
         bookingForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Финальная валидация
             if (!validateStep1() || !validateStep2() || !validateStep3()) {
                 alert('Пожалуйста, заполните все поля корректно');
                 return;
             }
             
-            const servicesList = selectedServices.map(s => s.service_name).join(', ');
-            const totalPrice = selectedServices.reduce((sum, s) => sum + Number(s.price), 0);
+            let clientName = '';
+            if (clientType === 'individual') {
+                clientName = document.getElementById('bookingName').value;
+            } else {
+                clientName = document.getElementById('bookingOrg').value + ' (организация)';
+            }
+            
+            const servicesList = selectedServices.map(s => {
+                let text = s.service_name;
+                if (s.is_excursion && s.persons_count) {
+                    text += ` (${s.persons_count} чел.)`;
+                }
+                return text;
+            }).join(', ');
+            
+            let totalPrice = 0;
+            const servicesDetails = selectedServices.map(s => {
+                let price = Number(s.price);
+                if (s.is_excursion && s.persons_count) {
+                    price = price * s.persons_count;
+                }
+                totalPrice += price;
+                return { 
+                    id: s.id, 
+                    name: s.service_name, 
+                    price: price,
+                    persons_count: s.persons_count || 1,
+                    is_excursion: s.is_excursion || false
+                };
+            });
             
             const data = {
-                name: document.getElementById('bookingName').value,
+                name: clientName,
                 phone: document.getElementById('bookingPhone').value,
                 email: document.getElementById('bookingEmail').value,
                 services: servicesList,
-                services_details: selectedServices.map(s => ({ id: s.id, name: s.service_name, price: s.price })),
+                services_details: servicesDetails,
                 total_price: totalPrice,
                 date: document.getElementById('bookingDate').value,
                 time: document.getElementById('bookingTime').value,
                 duration: document.getElementById('bookingDuration').value,
-                comment: document.getElementById('bookingComment').value
+                comment: document.getElementById('bookingComment').value,
+                client_type: clientType
             };
             
             const submitButton = document.getElementById('submitBtn');
@@ -1065,6 +1443,8 @@
                     bookingForm.reset();
                     selectedServices = [];
                     currentStep = 1;
+                    clientType = 'individual';
+                    if (bookingPhoneInput) bookingPhoneInput.value = '+7';
                 }
             } catch (error) {
                 alert('Ошибка отправки. Попробуйте позже.');
@@ -1172,6 +1552,7 @@
             if (document.getElementById('policyModal').style.display === 'flex') closePolicyModal();
             if (document.getElementById('termsModal').style.display === 'flex') closeTermsModal();
             if (document.getElementById('procedureModal').style.display === 'flex') closeProcedureModal();
+            if (document.getElementById('serviceInfoModal').style.display === 'flex') closeServiceInfoModal();
         }
     });
     
@@ -1188,10 +1569,10 @@
             const eventServices = prices.filter(p => p.service_name && (p.service_name.includes('мероприятия') || p.service_name.includes('турнира')));
             const otherServices = prices.filter(p => !rentalServices.includes(p) && !gamingServices.includes(p) && !eventServices.includes(p));
             let html = '';
-            if (rentalServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-building"></i> Аренда помещений</div><div class="price-category-grid">${rentalServices.map(p => `<div class="price-card-modern"><div class="price-card-icon"><i class="fas fa-door-open"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || '—')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
-            if (gamingServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-gamepad"></i> Интерактивные зоны</div><div class="price-category-grid">${gamingServices.map(p => `<div class="price-card-modern ${p.service_name && p.service_name.includes('Льготная') ? 'discount-card' : ''}"><div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('Льготная') ? 'fa-hand-holding-heart' : 'fa-tv'}"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || 'Аренда телевизора с приставкой')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || 'до 8 человек')}</div></div><div class="price-card-value ${p.service_name && p.service_name.includes('Льготная') ? 'discount-price' : ''}">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
-            if (eventServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-trophy"></i> Мероприятия и турниры</div><div class="price-category-grid">${eventServices.map(p => `<div class="price-card-modern"><div class="price-card-icon"><i class="fas fa-calendar-star"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || 'Организация и проведение')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
-            if (otherServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-ellipsis-h"></i> Дополнительные услуги</div><div class="price-category-grid">${otherServices.map(p => `<div class="price-card-modern"><div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('фуршет') ? 'fa-utensils' : 'fa-chalkboard-user'}"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || '—')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
+            if (rentalServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-building"></i> Аренда помещений</div><div class="price-category-grid">${rentalServices.map(p => `<div class="price-card-modern" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || '—')}', '${Number(p.price).toLocaleString()} ₽/час', '🏢')"><div class="price-card-icon"><i class="fas fa-door-open"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || '—')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
+            if (gamingServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-gamepad"></i> Интерактивные зоны</div><div class="price-category-grid">${gamingServices.map(p => `<div class="price-card-modern ${p.service_name && p.service_name.includes('Льготная') ? 'discount-card' : ''}" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || 'Аренда телевизора с приставкой')}', '${Number(p.price).toLocaleString()} ₽/час', '${p.service_name && p.service_name.includes('Льготная') ? '💝' : '🎮'}')"><div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('Льготная') ? 'fa-hand-holding-heart' : 'fa-tv'}"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || 'Аренда телевизора с приставкой')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || 'до 8 человек')}</div></div><div class="price-card-value ${p.service_name && p.service_name.includes('Льготная') ? 'discount-price' : ''}">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
+            if (eventServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-trophy"></i> Мероприятия и турниры</div><div class="price-category-grid">${eventServices.map(p => `<div class="price-card-modern" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || 'Организация и проведение')}', '${Number(p.price).toLocaleString()} ₽', '🏆')"><div class="price-card-icon"><i class="fas fa-calendar-star"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || 'Организация и проведение')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
+            if (otherServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-ellipsis-h"></i> Дополнительные услуги</div><div class="price-category-grid">${otherServices.map(p => `<div class="price-card-modern" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || '—')}', '${Number(p.price).toLocaleString()} ₽', '📋')"><div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('фуршет') ? 'fa-utensils' : 'fa-chalkboard-user'}"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || '—')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
             container.innerHTML = html;
         } catch (error) { console.error(error); container.innerHTML = '<div class="price-empty">Ошибка загрузки цен</div>'; }
     }

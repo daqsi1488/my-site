@@ -191,7 +191,7 @@ def get_document(doc_key):
         logger.error(f"Ошибка загрузки документа: {e}")
         return jsonify({'error': str(e)}), 500
     
-# ============ СОЗДАНИЕ ЗАЯВКИ ============
+# ============ СОЗДАНИЕ ЗАЯВКИ (ОБНОВЛЕННАЯ ВЕРСИЯ) ============
 @app.route('/create_booking', methods=['POST'])
 def create_booking():
     data = request.get_json() or request.form
@@ -206,24 +206,56 @@ def create_booking():
     if email and not is_valid_email(email):
         return jsonify({'success': False, 'message': 'Введите корректный email адрес'})
     
+    # Получаем имя клиента и тип клиента
+    customer_name = data.get('name', '').strip()
+    client_type = data.get('client_type', 'individual')  # individual или organization
+    
+    # Если клиент не указал имя, проверяем организацию
+    if not customer_name and client_type == 'organization':
+        customer_name = data.get('org_name', '').strip()
+    
+    if not customer_name:
+        return jsonify({'success': False, 'message': 'Укажите имя или название организации'})
+    
     services = data.get('services', '')
     if isinstance(services, list):
         services = ', '.join(services)
     
     services_details = data.get('services_details', [])
+    total_price = 0
+    
     if isinstance(services_details, list):
+        # Обрабатываем детали услуг, включая экскурсии с количеством человек
+        for detail in services_details:
+            # Если это экскурсия, умножаем цену на количество человек
+            if detail.get('is_excursion') and detail.get('persons_count'):
+                persons = int(detail.get('persons_count', 1))
+                base_price = float(detail.get('price', 0))
+                detail['price'] = base_price
+                detail['total_price'] = base_price * persons
+                detail['persons_count'] = persons
+                total_price += detail['total_price']
+            else:
+                total_price += float(detail.get('price', 0))
+        
         services_details_json = json.dumps(services_details, ensure_ascii=False)
     else:
         services_details_json = services_details
+        total_price = float(data.get('total_price', 0))
+    
+    # Если total_price не передан или равен 0, пересчитываем
+    if total_price == 0:
+        total_price = float(data.get('total_price', 0))
     
     booking_data = {
         'user_id': session.get('user_id'),
-        'customer_name': data.get('name', '').strip(),
+        'customer_name': customer_name,
+        'client_type': client_type,  # Добавляем тип клиента
         'phone': format_phone(phone),
         'email': email.strip().lower() if email else '',
         'service': services,
         'services_details': services_details_json,
-        'total_price': data.get('total_price', 0),
+        'total_price': total_price,
         'booking_date': data.get('date', ''),
         'booking_time': data.get('time', ''),
         'duration': data.get('duration', '1'),
