@@ -4,7 +4,8 @@ from datetime import datetime
 import hashlib
 import os
 import json
-import logging 
+import logging
+import re
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,6 +25,28 @@ app.jinja_env.filters['from_json'] = from_json_filter
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+# Валидация email
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+# Валидация телефона (принимает +7XXXXXXXXXX или 8XXXXXXXXXX)
+def is_valid_phone(phone):
+    # Очищаем от лишних символов
+    cleaned = re.sub(r'[\s\-\(\)]', '', phone)
+    # Проверяем формат: +7XXXXXXXXXX (11 цифр после +7) или 8XXXXXXXXXX (10 цифр)
+    pattern = r'^(\+7|8)[0-9]{10}$'
+    return re.match(pattern, cleaned) is not None
+
+def format_phone(phone):
+    # Очищаем от лишних символов
+    cleaned = re.sub(r'[\s\-\(\)]', '', phone)
+    if cleaned.startswith('8'):
+        cleaned = '+7' + cleaned[1:]
+    if not cleaned.startswith('+'):
+        cleaned = '+' + cleaned
+    return cleaned
 
 # ============ ГЛАВНЫЕ СТРАНИЦЫ ============
 @app.route('/')
@@ -49,10 +72,28 @@ def news_page():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         password = request.form['password']
-        full_name = request.form['full_name']
-        phone = request.form['phone']
+        full_name = request.form['full_name'].strip()
+        phone = request.form['phone'].strip()
+        
+        # Валидация email
+        if not is_valid_email(email):
+            flash('Введите корректный email адрес (например: name@domain.ru)', 'error')
+            return render_template('register.html')
+        
+        # Валидация телефона
+        if not is_valid_phone(phone):
+            flash('Введите корректный номер телефона (например: +79161234567 или 89161234567)', 'error')
+            return render_template('register.html')
+        
+        # Форматируем телефон
+        phone = format_phone(phone)
+        
+        # Проверка длины пароля
+        if len(password) < 6:
+            flash('Пароль должен содержать не менее 6 символов', 'error')
+            return render_template('register.html')
         
         existing = supabase.table('users')\
             .select('*')\
@@ -61,7 +102,7 @@ def register():
         
         if existing.data:
             flash('Пользователь с таким email уже существует', 'error')
-            return redirect(url_for('register'))
+            return render_template('register.html')
         
         user_data = {
             'email': email,
@@ -69,16 +110,17 @@ def register():
             'full_name': full_name,
             'phone': phone,
             'role': 'user',
+            'email_verified': False,
             'created_at': datetime.now().isoformat()
         }
         
         response = supabase.table('users').insert(user_data).execute()
         
         if response.data:
-            flash('Регистрация успешна! Теперь войдите', 'success')
+            flash('Регистрация успешна! Теперь войдите в систему.', 'success')
             return redirect(url_for('login'))
         else:
-            flash('Ошибка регистрации', 'error')
+            flash('Ошибка регистрации. Попробуйте позже.', 'error')
     
     return render_template('register.html')
 
@@ -86,7 +128,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         password = request.form['password']
         password_hash = hash_password(password)
         
@@ -154,6 +196,16 @@ def get_document(doc_key):
 def create_booking():
     data = request.get_json() or request.form
     
+    # Валидация телефона
+    phone = data.get('phone', '')
+    if not is_valid_phone(phone):
+        return jsonify({'success': False, 'message': 'Введите корректный номер телефона (например: +79161234567)'})
+    
+    # Валидация email (если указан)
+    email = data.get('email', '')
+    if email and not is_valid_email(email):
+        return jsonify({'success': False, 'message': 'Введите корректный email адрес'})
+    
     services = data.get('services', '')
     if isinstance(services, list):
         services = ', '.join(services)
@@ -166,9 +218,9 @@ def create_booking():
     
     booking_data = {
         'user_id': session.get('user_id'),
-        'customer_name': data.get('name', ''),
-        'phone': data.get('phone', ''),
-        'email': data.get('email', ''),
+        'customer_name': data.get('name', '').strip(),
+        'phone': format_phone(phone),
+        'email': email.strip().lower() if email else '',
         'service': services,
         'services_details': services_details_json,
         'total_price': data.get('total_price', 0),
@@ -198,10 +250,15 @@ def create_booking():
 def send_contact():
     data = request.get_json() or request.form
     
+    # Валидация телефона
+    phone = data.get('phone', '')
+    if not is_valid_phone(phone):
+        return jsonify({'success': False, 'message': 'Введите корректный номер телефона'})
+    
     contact_data = {
-        'name': data.get('name', ''),
-        'phone': data.get('phone', ''),
-        'message': data.get('message', ''),
+        'name': data.get('name', '').strip(),
+        'phone': format_phone(phone),
+        'message': data.get('message', '').strip(),
         'created_at': datetime.now().isoformat()
     }
     

@@ -6,6 +6,33 @@
     <title>Регистрация | КиберКачалка</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .input-with-icon {
+            position: relative;
+        }
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #54fdf6;
+            z-index: 1;
+        }
+        .input-with-icon input {
+            padding-left: 40px !important;
+        }
+        .validation-hint {
+            font-size: 11px;
+            margin-top: 5px;
+            color: #888;
+        }
+        .validation-hint.valid {
+            color: #4caf50;
+        }
+        .validation-hint.invalid {
+            color: #f44336;
+        }
+    </style>
 </head>
 <body>
 
@@ -27,19 +54,44 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash flash-{{ category }}" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; background: {% if category == 'success' %}#4CAF50{% elif category == 'error' %}#f44336{% else %}#2196f3{% endif %};">
+                    <div class="flash flash-{{ category }}" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; background: {% if category == 'success' %}#4CAF50{% elif category == 'error' %}#f44336{% else %}#2196f3{% endif %}; color: white;">
                         {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         
-        <form method="post" class="auth-form">
-            <input type="text" name="full_name" placeholder="ФИО" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="tel" name="phone" placeholder="Телефон" required>
-            <input type="password" name="password" placeholder="Пароль" required>
-            <button type="submit" class="btn-primary">Зарегистрироваться</button>
+        <form method="post" class="auth-form" id="registerForm">
+            <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input type="text" name="full_name" id="fullName" placeholder="ФИО" required>
+            </div>
+            
+            <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" id="email" placeholder="Email" required>
+            </div>
+            <div class="validation-hint" id="emailHint">example@domain.ru</div>
+            
+            <div class="input-with-icon">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="phone" id="phone" placeholder="Телефон" value="+7" required>
+            </div>
+            <div class="validation-hint" id="phoneHint">+7 (XXX) XXX-XX-XX</div>
+            
+            <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" id="password" placeholder="Пароль" required>
+            </div>
+            <div class="validation-hint" id="passwordHint">Минимум 6 символов</div>
+            
+            <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="confirmPassword" placeholder="Подтвердите пароль" required>
+            </div>
+            <div class="validation-hint" id="confirmHint">Пароли должны совпадать</div>
+            
+            <button type="submit" class="btn-primary" id="submitBtn">Зарегистрироваться</button>
         </form>
         <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
         <p><a href="{{ url_for('index') }}">← На главную</a></p>
@@ -78,7 +130,7 @@
     .auth-form {
         display: flex;
         flex-direction: column;
-        gap: 18px;
+        gap: 15px;
     }
     .auth-form input {
         background: rgba(255, 255, 255, 0.08);
@@ -87,13 +139,14 @@
         border-radius: 14px;
         color: white;
         font-size: 16px;
+        width: 100%;
     }
     .auth-form input:focus {
         outline: none;
         border-color: #54fdf6;
     }
     .btn-primary {
-        background: linear-gradient(135deg, #54fdf6);
+        background: linear-gradient(135deg, #54fdf6, #2bb8b2);
         color: #0a0a1a;
         padding: 14px;
         border: none;
@@ -107,6 +160,11 @@
         transform: translateY(-2px);
         box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
     }
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
     .auth-card p {
         text-align: center;
         margin-top: 20px;
@@ -116,7 +174,225 @@
         color: #54fdf6;
         text-decoration: none;
     }
+    .input-with-icon {
+        position: relative;
+        width: 100%;
+    }
+    .input-with-icon i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #54fdf6;
+        z-index: 1;
+        font-size: 16px;
+    }
+    .input-with-icon input {
+        padding-left: 45px !important;
+    }
+    .validation-hint {
+        font-size: 11px;
+        margin-top: -5px;
+        margin-bottom: 5px;
+        color: #888;
+    }
+    .validation-hint.valid {
+        color: #4caf50;
+    }
+    .validation-hint.invalid {
+        color: #f44336;
+    }
+    .flash {
+        text-align: center;
+    }
 </style>
+
+<script>
+    // Маска для телефона
+    const phoneInput = document.getElementById('phone');
+    
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        // Убираем все не цифры и не +
+        let cleaned = value.replace(/[^\d+]/g, '');
+        
+        // Если начинается не с +7, исправляем
+        if (!cleaned.startsWith('+7')) {
+            if (cleaned.startsWith('8')) {
+                cleaned = '+7' + cleaned.substring(1);
+            } else if (cleaned.startsWith('7')) {
+                cleaned = '+7' + cleaned.substring(1);
+            } else if (!cleaned.startsWith('+')) {
+                cleaned = '+7' + cleaned;
+            }
+        }
+        
+        // Ограничиваем длину (+7 + 10 цифр = 12 символов)
+        if (cleaned.length > 12) {
+            cleaned = cleaned.slice(0, 12);
+        }
+        
+        // Форматируем для отображения
+        let formatted = cleaned;
+        if (cleaned.startsWith('+7') && cleaned.length > 2) {
+            let numbers = cleaned.slice(2);
+            if (numbers.length >= 1) formatted = '+7 (' + numbers.slice(0, 3);
+            if (numbers.length >= 4) formatted += ') ' + numbers.slice(3, 6);
+            if (numbers.length >= 7) formatted += '-' + numbers.slice(6, 8);
+            if (numbers.length >= 9) formatted += '-' + numbers.slice(8, 10);
+        }
+        
+        e.target.value = formatted;
+        validatePhone();
+    });
+    
+    // Валидация email
+    const emailInput = document.getElementById('email');
+    const emailHint = document.getElementById('emailHint');
+    
+    function isValidEmail(email) {
+        const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return pattern.test(email);
+    }
+    
+    function validateEmail() {
+        const email = emailInput.value.trim();
+        if (!email) {
+            emailHint.textContent = 'Введите email';
+            emailHint.className = 'validation-hint invalid';
+            return false;
+        }
+        if (isValidEmail(email)) {
+            emailHint.textContent = '✓ Корректный email';
+            emailHint.className = 'validation-hint valid';
+            return true;
+        } else {
+            emailHint.textContent = '✗ Неверный формат email (пример: name@domain.ru)';
+            emailHint.className = 'validation-hint invalid';
+            return false;
+        }
+    }
+    
+    emailInput.addEventListener('input', validateEmail);
+    emailInput.addEventListener('blur', validateEmail);
+    
+    // Валидация телефона
+    function isValidPhone(phone) {
+        const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+        const pattern = /^(\+7|8)[0-9]{10}$/;
+        return pattern.test(cleaned);
+    }
+    
+    function validatePhone() {
+        const phone = phoneInput.value;
+        if (!phone || phone === '+7') {
+            phoneHint.textContent = 'Введите номер телефона (+7 XXX XXX-XX-XX)';
+            phoneHint.className = 'validation-hint invalid';
+            return false;
+        }
+        if (isValidPhone(phone)) {
+            phoneHint.textContent = '✓ Корректный номер';
+            phoneHint.className = 'validation-hint valid';
+            return true;
+        } else {
+            phoneHint.textContent = '✗ Неверный формат (пример: +7 916 123-45-67)';
+            phoneHint.className = 'validation-hint invalid';
+            return false;
+        }
+    }
+    
+    phoneInput.addEventListener('blur', validatePhone);
+    
+    // Валидация пароля
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirmPassword');
+    const passwordHint = document.getElementById('passwordHint');
+    const confirmHint = document.getElementById('confirmHint');
+    
+    function validatePassword() {
+        const password = passwordInput.value;
+        if (!password) {
+            passwordHint.textContent = 'Введите пароль';
+            passwordHint.className = 'validation-hint invalid';
+            return false;
+        }
+        if (password.length >= 6) {
+            passwordHint.textContent = '✓ Пароль надежный';
+            passwordHint.className = 'validation-hint valid';
+            return true;
+        } else {
+            passwordHint.textContent = '✗ Пароль должен содержать минимум 6 символов';
+            passwordHint.className = 'validation-hint invalid';
+            return false;
+        }
+    }
+    
+    function validateConfirm() {
+        const password = passwordInput.value;
+        const confirm = confirmInput.value;
+        if (!confirm) {
+            confirmHint.textContent = 'Подтвердите пароль';
+            confirmHint.className = 'validation-hint invalid';
+            return false;
+        }
+        if (password === confirm) {
+            confirmHint.textContent = '✓ Пароли совпадают';
+            confirmHint.className = 'validation-hint valid';
+            return true;
+        } else {
+            confirmHint.textContent = '✗ Пароли не совпадают';
+            confirmHint.className = 'validation-hint invalid';
+            return false;
+        }
+    }
+    
+    passwordInput.addEventListener('input', function() {
+        validatePassword();
+        validateConfirm();
+    });
+    confirmInput.addEventListener('input', validateConfirm);
+    passwordInput.addEventListener('blur', validatePassword);
+    confirmInput.addEventListener('blur', validateConfirm);
+    
+    // Валидация ФИО
+    const nameInput = document.getElementById('fullName');
+    function validateName() {
+        const name = nameInput.value.trim();
+        return name.length >= 2;
+    }
+    nameInput.addEventListener('blur', validateName);
+    
+    // Общая валидация формы
+    const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    function validateForm() {
+        const isNameValid = nameInput.value.trim().length >= 2;
+        const isEmailValid = isValidEmail(emailInput.value.trim());
+        const isPhoneValid = isValidPhone(phoneInput.value);
+        const isPasswordValid = passwordInput.value.length >= 6;
+        const isConfirmValid = passwordInput.value === confirmInput.value;
+        
+        const isValid = isNameValid && isEmailValid && isPhoneValid && isPasswordValid && isConfirmValid;
+        submitBtn.disabled = !isValid;
+        return isValid;
+    }
+    
+    form.addEventListener('input', validateForm);
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            alert('Пожалуйста, заполните все поля корректно');
+        }
+    });
+    
+    // Инициализация
+    validateForm();
+    validateEmail();
+    validatePhone();
+    validatePassword();
+    validateConfirm();
+</script>
 
 </body>
 </html>
