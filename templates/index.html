@@ -199,6 +199,340 @@
         .price-card-modern {
             cursor: pointer;
         }
+        
+        /* ============ НОВЫЙ БЛОК НОВОСТЕЙ-КАРУСЕЛЬ С ИЗОБРАЖЕНИЯМИ ============ */
+        .news-carousel-block {
+            margin-bottom: 40px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .news-carousel-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .news-carousel-title-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .news-carousel-title-left i {
+            font-size: 28px;
+            color: #54fdf6;
+        }
+        
+        .news-carousel-title-left h2 {
+            font-size: 24px;
+            font-family: 'Russo One', 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #e0e0e0, #54fdf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+        }
+        
+        .news-carousel-all-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(84, 253, 246, 0.08);
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: #54fdf6;
+            transition: all 0.3s ease;
+        }
+        
+        .news-carousel-all-link:hover {
+            background: rgba(84, 253, 246, 0.2);
+            gap: 12px;
+        }
+        
+        .news-carousel-container {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(10, 10, 20, 0.4);
+            backdrop-filter: blur(4px);
+        }
+        
+        .news-carousel-track {
+            position: relative;
+            height: 360px;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+        
+        .news-carousel-slides {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .news-carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            cursor: pointer;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        
+        .news-carousel-slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        
+        .news-slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.5);
+            transform: scale(1.05);
+            transition: transform 0.6s ease;
+        }
+        
+        .news-carousel-slide.active .news-slide-bg {
+            transform: scale(1);
+        }
+        
+        .news-slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            padding: 25px 30px;
+            background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 45, 0.95));
+            backdrop-filter: blur(8px);
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+        
+        .news-carousel-slide.active .news-slide-content {
+            transform: translateY(0);
+        }
+        
+        .news-slide-info {
+            flex: 1;
+        }
+        
+        .news-slide-emoji {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+        
+        .news-slide-date {
+            font-size: 12px;
+            color: #54fdf6;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .news-slide-title {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Russo One', 'Montserrat', sans-serif;
+            color: #e0e0e0;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .news-slide-excerpt {
+            font-size: 14px;
+            color: #b0b0b0;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        
+        .news-slide-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #ff68ff;
+            font-size: 13px;
+            font-weight: 500;
+            transition: gap 0.3s ease;
+        }
+        
+        .news-slide-link:hover {
+            gap: 12px;
+            color: #54fdf6;
+        }
+        
+        .news-slide-image {
+            width: 140px;
+            height: 140px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 2px solid rgba(84, 253, 246, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .news-slide-image-placeholder {
+            width: 140px;
+            height: 140px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(84, 253, 246, 0.1), rgba(255, 104, 255, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            border: 2px solid rgba(84, 253, 246, 0.2);
+        }
+        
+        /* Навигационные кнопки карусели */
+        .carousel-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(84, 253, 246, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #e0e0e0;
+            font-size: 20px;
+        }
+        
+        .carousel-nav-btn:hover {
+            background: rgba(84, 253, 246, 0.3);
+            border-color: rgba(84, 253, 246, 0.7);
+            color: #54fdf6;
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .carousel-nav-prev {
+            left: 20px;
+        }
+        
+        .carousel-nav-next {
+            right: 20px;
+        }
+        
+        /* Индикаторы (точки) */
+        .carousel-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-dot.active {
+            background: #54fdf6;
+            width: 24px;
+            border-radius: 10px;
+        }
+        
+        .carousel-dot:hover {
+            background: #ff68ff;
+        }
+        
+        /* Индикатор загрузки */
+        .carousel-loader {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #54fdf6, #ff68ff);
+            width: 0%;
+            transition: width 0.1s linear;
+            z-index: 10;
+        }
+        
+        @media (max-width: 768px) {
+            .news-carousel-track {
+                height: 420px;
+            }
+            
+            .news-slide-content {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+            }
+            
+            .news-slide-image, .news-slide-image-placeholder {
+                width: 100%;
+                height: 180px;
+                margin-top: 10px;
+            }
+            
+            .news-slide-title {
+                font-size: 18px;
+            }
+            
+            .news-slide-excerpt {
+                font-size: 12px;
+            }
+            
+            .carousel-nav-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+            
+            .carousel-nav-prev {
+                left: 10px;
+            }
+            
+            .carousel-nav-next {
+                right: 10px;
+            }
+            
+            .news-carousel-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .news-carousel-track {
+                height: 480px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -243,6 +577,46 @@
 </section>
 
 <div class="content">
+    
+    <!-- ============ НОВЫЙ БЛОК НОВОСТЕЙ-КАРУСЕЛЬ С ИЗОБРАЖЕНИЕМ ============ -->
+    <div class="news-carousel-block">
+        <div class="news-carousel-title">
+            <div class="news-carousel-title-left">
+                <i class="fas fa-newspaper"></i>
+                <h2>🔥 Актуальные новости</h2>
+            </div>
+            <a href="{{ url_for('news_page') }}" class="news-carousel-all-link">
+                <span>Все новости</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="news-carousel-container" id="newsCarousel">
+            <div class="news-carousel-track">
+                <div class="news-carousel-slides" id="carouselSlides">
+                    <!-- Слайды будут заполнены динамически через JavaScript -->
+                    <div class="news-carousel-slide-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #54fdf6;"></i>
+                    </div>
+                </div>
+                
+                <!-- Кнопки навигации -->
+                <button class="carousel-nav-btn carousel-nav-prev" id="carouselPrev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-nav-btn carousel-nav-next" id="carouselNext">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Индикаторы (точки) -->
+                <div class="carousel-dots" id="carouselDots"></div>
+                
+                <!-- Индикатор загрузки -->
+                <div class="carousel-loader" id="carouselLoader"></div>
+            </div>
+        </div>
+    </div>
+    
     <div id="about" class="section">
         <h2>📖 О нас</h2>
         <p>Фиджитал центр "КиберКачалка" — это современное пространство, объединяющее виртуальный и реальный спорт. У нас вы можете насладиться игрой на PlayStation 5 в FIFA и другие игры, а также поиграть в живой футбол, баскетбол и другие виды спорта. Мы создали уникальную атмосферу для активного отдыха и развития киберспортивных навыков.</p>
@@ -680,9 +1054,9 @@
     let selectedServices = [];
     let currentStep = 1;
     let totalSteps = 4;
-    let clientType = 'individual'; // 'individual' или 'organization'
-    let excursionPersonsCount = 1; // Количество человек для экскурсии
-    let currentExcursionService = null; // Текущая выбранная экскурсия
+    let clientType = 'individual';
+    let excursionPersonsCount = 1;
+    let currentExcursionService = null;
 
     // ============ ПОКАЗ ИНФОРМАЦИИ ОБ УСЛУГЕ ============
     function showServiceInfo(title, description, price, icon = '🎮') {
@@ -690,7 +1064,6 @@
         document.getElementById('serviceInfoPrice').innerHTML = price;
         document.getElementById('serviceInfoDesc').innerHTML = description;
         
-        // Проверяем, есть ли информация о количестве человек
         if (title.toLowerCase().includes('экскурсия') || description.toLowerCase().includes('экскурсия')) {
             document.getElementById('serviceInfoPersons').innerHTML = '<i class="fas fa-users"></i> Цена указана за 1 человека. Для группы до 20 человек.';
         } else if (title.toLowerCase().includes('аренда') || title.toLowerCase().includes('зона')) {
@@ -712,13 +1085,11 @@
     function setClientType(type) {
         clientType = type;
         
-        // Обновляем активную кнопку
         document.querySelectorAll('.client-type-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector(`.client-type-btn[data-type="${type}"]`).classList.add('active');
         
-        // Показываем/скрываем соответствующие поля
         const nameFieldGroup = document.getElementById('nameFieldGroup');
         const orgFieldGroup = document.getElementById('orgFieldGroup');
         const nameLabel = document.getElementById('nameLabel');
@@ -947,7 +1318,6 @@
         document.querySelectorAll('.validation-message').forEach(msg => msg.classList.remove('show'));
         document.querySelectorAll('.form-input').forEach(input => input.classList.remove('error'));
         
-        // Сброс переключателя
         document.querySelectorAll('.client-type-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelector('.client-type-btn[data-type="individual"]').classList.add('active');
         document.getElementById('nameFieldGroup').style.display = 'block';
@@ -1284,7 +1654,6 @@
             priceDiv.innerHTML = `Итого: ${totalPrice.toLocaleString()} ₽ (${service.persons_count} чел. × ${originalPrice.toLocaleString()} ₽)`;
         }
         
-        // Обновляем цену в сервисе для отображения в итоге
         service.display_price = totalPrice;
     }
     
@@ -1577,6 +1946,189 @@
         } catch (error) { console.error(error); container.innerHTML = '<div class="price-empty">Ошибка загрузки цен</div>'; }
     }
     document.addEventListener('DOMContentLoaded', loadPrices);
+    
+    // ============ НОВОСТНАЯ КАРУСЕЛЬ ============
+    // Данные новостей для карусели (переданные от Flask)
+    const carouselNewsData = {{ latest_news | tojson | safe }};
+    
+    let currentSlide = 0;
+    let autoPlayTimer;
+    let loaderInterval;
+    
+    function createSlides() {
+        const slidesContainer = document.getElementById('carouselSlides');
+        const dotsContainer = document.getElementById('carouselDots');
+        
+        if (!slidesContainer || !carouselNewsData.length) {
+            if (slidesContainer) {
+                slidesContainer.innerHTML = '<div class="news-carousel-slide active" style="display: flex; align-items: center; justify-content: center;"><div style="text-align: center;"><i class="fas fa-newspaper" style="font-size: 48px; color: #54fdf6;"></i><p style="margin-top: 15px;">Новостей пока нет</p></div></div>';
+            }
+            return;
+        }
+        
+        slidesContainer.innerHTML = '';
+        carouselNewsData.forEach((news, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'news-carousel-slide' + (index === 0 ? ' active' : '');
+            slide.setAttribute('data-news-id', news.id || index);
+            
+            let bgStyle = '';
+            if (news.image_url) {
+                bgStyle = `background-image: url("{{ url_for('static', filename='uploads/news/') }}${news.image_url}"); background-size: cover; background-position: center;`;
+            }
+            
+            let imageHtml = '';
+            if (news.image_url) {
+                imageHtml = `<img src="{{ url_for('static', filename='uploads/news/') }}${news.image_url}" class="news-slide-image" alt="${escapeHtml(news.title)}">`;
+            } else {
+                imageHtml = `<div class="news-slide-image-placeholder">${news.image_emoji || '📢'}</div>`;
+            }
+            
+            slide.innerHTML = `
+                <div class="news-slide-bg" style="${bgStyle}"></div>
+                <div class="news-slide-content">
+                    <div class="news-slide-info">
+                        <div class="news-slide-emoji">${news.image_emoji || '📢'}</div>
+                        <div class="news-slide-date"><i class="far fa-calendar-alt"></i> ${news.date_published}</div>
+                        <div class="news-slide-title">${escapeHtml(news.title)}</div>
+                        <div class="news-slide-excerpt">${escapeHtml(news.excerpt ? news.excerpt.substring(0, 100) : (news.content ? news.content.substring(0, 100) : ''))}${(news.excerpt && news.excerpt.length > 100) || (news.content && news.content.length > 100) ? '...' : ''}</div>
+                        <div class="news-slide-link">
+                            <span>Читать далее</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    ${imageHtml}
+                </div>
+            `;
+            
+            slide.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.location.href = "{{ url_for('news_page') }}?news_id=" + (news.id || index);
+            });
+            
+            slidesContainer.appendChild(slide);
+        });
+        
+        dotsContainer.innerHTML = '';
+        carouselNewsData.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+            dot.addEventListener('click', () => {
+                stopAutoPlay();
+                goToSlide(index);
+                startAutoPlay();
+            });
+            dotsContainer.appendChild(dot);
+        });
+    }
+    
+    function updateSlides() {
+        const slides = document.querySelectorAll('.news-carousel-slide');
+        const dots = document.querySelectorAll('.carousel-dot');
+        
+        slides.forEach((slide, index) => {
+            if (index === currentSlide) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+        
+        dots.forEach((dot, index) => {
+            if (index === currentSlide) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+        
+        resetLoader();
+    }
+    
+    function goToSlide(index) {
+        if (!carouselNewsData.length) return;
+        if (index < 0) index = carouselNewsData.length - 1;
+        if (index >= carouselNewsData.length) index = 0;
+        currentSlide = index;
+        updateSlides();
+    }
+    
+    function nextSlide() {
+        goToSlide(currentSlide + 1);
+    }
+    
+    function prevSlide() {
+        goToSlide(currentSlide - 1);
+    }
+    
+    function startAutoPlay() {
+        if (autoPlayTimer) clearInterval(autoPlayTimer);
+        if (loaderInterval) clearInterval(loaderInterval);
+        
+        autoPlayTimer = setInterval(() => {
+            nextSlide();
+        }, 6000);
+    }
+    
+    function stopAutoPlay() {
+        if (autoPlayTimer) {
+            clearInterval(autoPlayTimer);
+            autoPlayTimer = null;
+        }
+        if (loaderInterval) {
+            clearInterval(loaderInterval);
+            loaderInterval = null;
+        }
+        const loader = document.getElementById('carouselLoader');
+        if (loader) loader.style.width = '0%';
+    }
+    
+    function resetLoader() {
+        const loader = document.getElementById('carouselLoader');
+        if (!loader) return;
+        
+        if (loaderInterval) clearInterval(loaderInterval);
+        loader.style.width = '0%';
+        
+        let width = 0;
+        loaderInterval = setInterval(() => {
+            width += 100 / 60;
+            if (width >= 100) {
+                width = 100;
+                clearInterval(loaderInterval);
+            }
+            loader.style.width = width + '%';
+        }, 100);
+    }
+    
+    function initCarousel() {
+        createSlides();
+        
+        const prevBtn = document.getElementById('carouselPrev');
+        const nextBtn = document.getElementById('carouselNext');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                stopAutoPlay();
+                prevSlide();
+                startAutoPlay();
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                stopAutoPlay();
+                nextSlide();
+                startAutoPlay();
+            });
+        }
+        
+        if (carouselNewsData.length > 0) {
+            startAutoPlay();
+        }
+    }
+    
+    initCarousel();
 </script>
 
 <!-- ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ -->

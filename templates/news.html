@@ -12,6 +12,54 @@
         .logo, .header-title {
             cursor: pointer;
         }
+        
+        /* Дополнительные стили для изображений в новостях */
+        .news-card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 16px 16px 0 0;
+        }
+        
+        .news-image-placeholder {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, rgba(84, 253, 246, 0.08), rgba(255, 104, 255, 0.08));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        
+        .news-modal-image img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 16px;
+        }
+        
+        /* Анимация для новостей */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .news-card {
+            animation: fadeInUp 0.5s ease backwards;
+        }
+        
+        .news-card:nth-child(1) { animation-delay: 0.1s; }
+        .news-card:nth-child(2) { animation-delay: 0.2s; }
+        .news-card:nth-child(3) { animation-delay: 0.3s; }
+        .news-card:nth-child(4) { animation-delay: 0.4s; }
+        .news-card:nth-child(5) { animation-delay: 0.5s; }
+        .news-card:nth-child(6) { animation-delay: 0.6s; }
     </style>
 </head>
 <body>
@@ -53,19 +101,23 @@
         <div class="news-grid" id="newsGrid">
             {% if news %}
                 {% for item in news %}
-                <div class="news-card" onclick="openNews({{ loop.index0 }})">
-                    <div class="news-image">{{ item.image_emoji or '📢' }}</div>
+                <div class="news-card" onclick="openNews({{ loop.index0 }})" data-news-index="{{ loop.index0 }}">
+                    {% if item.image_url %}
+                        <img src="{{ url_for('static', filename='uploads/news/' + item.image_url) }}" class="news-card-image" alt="{{ item.title }}">
+                    {% else %}
+                        <div class="news-image-placeholder">{{ item.image_emoji or '📢' }}</div>
+                    {% endif %}
                     <div class="news-content">
                         <div class="news-date"><i class="far fa-calendar-alt"></i> {{ item.date_published }}</div>
                         <h3 class="news-title">{{ item.title }}</h3>
-                        <p class="news-excerpt">{{ item.excerpt }}</p>
+                        <p class="news-excerpt">{{ item.excerpt[:100] }}{% if item.excerpt|length > 100 %}...{% endif %}</p>
                         <span class="read-more">Читать далее <i class="fas fa-arrow-right"></i></span>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
                 <div class="news-card" style="width: 100%; text-align: center;">
-                    <div class="news-image">📭</div>
+                    <div class="news-image-placeholder">📭</div>
                     <div class="news-content">
                         <h3 class="news-title">Новостей пока нет</h3>
                         <p class="news-excerpt">Скоро здесь появятся первые новости!</p>
@@ -80,7 +132,7 @@
 <footer class="footer">
     <div class="footer-content">
         <h3>Фиджитал Центр "КиберКачалка"</h3>
-        <p>Почта: <a href="mailto:info@fidgetalcenter.ru">info@fidgetalcenter.ru</a> | Телефон: +7 (123) 456-78-90</p>
+        <p>Почта: <a href="mailto:pu105ur@mail.ru">pu105ur@mail.ru</a> | Телефон: +7 (913) 531-57-60</p>
         <div class="footer-row">
             <a href="https://ntptis.ru" class="site-link" target="_blank">сайт НТПТиС</a>
             <div class="social-icons">
@@ -294,9 +346,15 @@
         background: rgba(20, 20, 40, 0.8);
     }
     
-    .news-image {
+    .news-card-image {
         width: 100%;
-        height: 220px;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .news-image-placeholder {
+        width: 100%;
+        height: 200px;
         background: linear-gradient(135deg, rgba(84, 253, 246, 0.08), rgba(255, 104, 255, 0.08));
         display: flex;
         align-items: center;
@@ -422,12 +480,18 @@
     
     .news-modal-image {
         width: 100%;
-        height: 250px;
+        padding: 30px;
         background: linear-gradient(135deg, rgba(84, 253, 246, 0.1), rgba(255, 104, 255, 0.1));
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 80px;
+    }
+    
+    .news-modal-image img {
+        max-width: 100%;
+        max-height: 350px;
+        object-fit: contain;
+        border-radius: 16px;
     }
     
     .news-modal-body {
@@ -633,6 +697,8 @@
         .legal-modal-header h2 { font-size: 18px; }
         .legal-modal-header i { font-size: 24px; }
         .legal-modal-body { padding: 20px; font-size: 14px; }
+        .news-card-image, .news-image-placeholder { height: 160px; }
+        .news-modal-image img { max-height: 200px; }
     }
 </style>
 
@@ -642,28 +708,6 @@
     
     console.log("Новости загружены:", newsData);
 
-    function renderNews() {
-        const newsGrid = document.getElementById('newsGrid');
-        if (!newsGrid) return;
-        
-        if (newsData.length === 0) {
-            newsGrid.innerHTML = '<div class="news-card" style="width: 100%; text-align: center;"><div class="news-image">📭</div><div class="news-content"><h3 class="news-title">Новостей пока нет</h3><p class="news-excerpt">Скоро здесь появятся первые новости!</p></div></div>';
-            return;
-        }
-        
-        newsGrid.innerHTML = newsData.map((news, index) => `
-            <div class="news-card" onclick="openNews(${index})">
-                <div class="news-image">${news.image_emoji || '📢'}</div>
-                <div class="news-content">
-                    <div class="news-date"><i class="far fa-calendar-alt"></i> ${news.date_published}</div>
-                    <h3 class="news-title">${escapeHtml(news.title)}</h3>
-                    <p class="news-excerpt">${escapeHtml(news.excerpt)}</p>
-                    <span class="read-more">Читать далее <i class="fas fa-arrow-right"></i></span>
-                </div>
-            </div>
-        `).join('');
-    }
-    
     function escapeHtml(text) {
         if (!text) return '';
         return text.replace(/[&<>]/g, function(m) {
@@ -674,29 +718,45 @@
         });
     }
     
+    // Функция открытия новости в модальном окне
     window.openNews = function(index) {
         const news = newsData[index];
         if (!news) return;
+        
         const modal = document.getElementById('newsModal');
         const modalContent = document.getElementById('newsModalContent');
+        
+        // Формируем HTML для изображения
+        let imageHtml = '';
+        if (news.image_url) {
+            imageHtml = `<img src="{{ url_for('static', filename='uploads/news/') }}${news.image_url}" alt="${escapeHtml(news.title)}">`;
+        } else {
+            imageHtml = `<span style="font-size: 80px;">${news.image_emoji || '📢'}</span>`;
+        }
+        
         modalContent.innerHTML = `
-            <div class="news-modal-image">${news.image_emoji || '📢'}</div>
+            <div class="news-modal-image">
+                ${imageHtml}
+            </div>
             <div class="news-modal-body">
                 <div class="news-modal-date"><i class="far fa-calendar-alt"></i> ${news.date_published}</div>
                 <h2 class="news-modal-title">${escapeHtml(news.title)}</h2>
-                <div class="news-modal-text">${news.content}</div>
+                <div class="news-modal-text">${news.content.replace(/\n/g, '<br>')}</div>
             </div>
         `;
+        
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     };
     
+    // Закрытие модального окна новости
     function closeNewsModal() {
         const modal = document.getElementById('newsModal');
         modal.style.display = 'none';
         document.body.style.overflow = '';
     }
     
+    // Инициализация карусели
     function initCarousel() {
         const grid = document.getElementById('newsGrid');
         const leftBtn = document.getElementById('scrollLeftBtn');
@@ -712,15 +772,17 @@
         });
     }
     
-    renderNews();
-    initCarousel();
-    
+    // Закрытие модального окна по крестику
     const closeBtn = document.getElementById('closeNewsModalBtn');
     if (closeBtn) closeBtn.addEventListener('click', closeNewsModal);
+    
+    // Закрытие по клику на фон
     window.addEventListener('click', (e) => {
         const modal = document.getElementById('newsModal');
         if (e.target === modal) closeNewsModal();
     });
+    
+    // Закрытие по Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             const modal = document.getElementById('newsModal');
@@ -728,6 +790,7 @@
         }
     });
     
+    // Функции для модальных окон документов
     function openPolicyModal() {
         document.getElementById('policyModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -769,6 +832,7 @@
         document.body.style.overflow = '';
     }
     
+    // Закрытие модальных окон документов по клику на фон
     window.addEventListener('click', function(e) {
         const policyModal = document.getElementById('policyModal');
         const termsModal = document.getElementById('termsModal');
@@ -778,6 +842,7 @@
         if (e.target === procedureModal) closeProcedureModal();
     });
     
+    // Закрытие по Escape для документов
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             if (document.getElementById('policyModal').style.display === 'flex') closePolicyModal();
@@ -785,7 +850,31 @@
             if (document.getElementById('procedureModal').style.display === 'flex') closeProcedureModal();
         }
     });
+    
+    // Запуск инициализации
+    initCarousel();
 </script>
+
+<!-- ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ -->
+<div class="side-border-right"></div>
+<div class="side-border-inner"></div>
+<div class="corner-decoration corner-tl"></div>
+<div class="corner-decoration corner-tr"></div>
+<div class="corner-decoration corner-bl"></div>
+<div class="corner-decoration corner-br"></div>
+<div class="bg-grid-left"></div>
+<div class="bg-grid-right"></div>
+
+<div class="floating-particle" style="top: 15%; left: 35px; --dir: 1; animation-delay: 0s;"></div>
+<div class="floating-particle" style="top: 35%; left: 30px; --dir: -1; animation-delay: 1.5s;"></div>
+<div class="floating-particle" style="top: 55%; left: 38px; --dir: 1; animation-delay: 3s;"></div>
+<div class="floating-particle" style="top: 75%; left: 32px; --dir: -1; animation-delay: 4.5s;"></div>
+<div class="floating-particle" style="top: 90%; left: 36px; --dir: 1; animation-delay: 6s;"></div>
+<div class="floating-particle" style="top: 10%; right: 35px; --dir: -1; animation-delay: 0.7s;"></div>
+<div class="floating-particle" style="top: 30%; right: 28px; --dir: 1; animation-delay: 2.2s;"></div>
+<div class="floating-particle" style="top: 50%; right: 34px; --dir: -1; animation-delay: 3.8s;"></div>
+<div class="floating-particle" style="top: 70%; right: 30px; --dir: 1; animation-delay: 5.2s;"></div>
+<div class="floating-particle" style="top: 88%; right: 38px; --dir: -1; animation-delay: 6.8s;"></div>
 
 </body>
 </html>

@@ -11,6 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+import uuid  # Добавлено для генерации уникальных имен файлов
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,6 +19,14 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here-please-change-me")
 
+# Настройка для загрузки файлов
+UPLOAD_FOLDER = 'static/uploads/news'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
+
+# Создаем папку для загрузок, если её нет
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 EMAIL_HOST = "smtp.mail.ru" 
 EMAIL_PORT = 587  
@@ -37,6 +46,9 @@ def from_json_filter(value):
         return []
 
 app.jinja_env.filters['from_json'] = from_json_filter
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -116,7 +128,20 @@ def generate_verification_code():
 # ============ ГЛАВНЫЕ СТРАНИЦЫ ============
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Получаем последние 3 новости для показа на главной
+    try:
+        response = supabase.table('news')\
+            .select('*')\
+            .eq('is_active', True)\
+            .order('date_published', desc=True)\
+            .limit(3)\
+            .execute()
+        latest_news = response.data
+    except Exception as e:
+        logger.error(f"Ошибка загрузки последних новостей: {e}")
+        latest_news = []
+    
+    return render_template('index.html', latest_news=latest_news)
 
 @app.route('/news')
 def news_page():
@@ -669,18 +694,30 @@ def update_booking(booking_id):
     
     return jsonify({'success': True})
 
-# ============ АДМИН: ДОБАВЛЕНИЕ НОВОСТИ ============
+# ============ АДМИН: ДОБАВЛЕНИЕ НОВОСТИ (С ЗАГРУЗКОЙ ФАЙЛА) ============
 @app.route('/admin/add_news', methods=['POST'])
 def add_news():
     if session.get('user_role') != 'admin':
         flash('Доступ запрещен', 'error')
         return redirect(url_for('index'))
     
+    # Обработка загруженного файла
+    image_filename = None
+    if 'image_file' in request.files:
+        file = request.files['image_file']
+        if file and file.filename and allowed_file(file.filename):
+            # Генерируем уникальное имя файла
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            image_filename = f"{uuid.uuid4().hex}.{ext}"
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+            logger.info(f"Изображение сохранено: {image_filename}")
+    
     news_data = {
         'title': request.form['title'],
         'content': request.form['content'],
-        'excerpt': request.form['excerpt'][:200] if request.form.get('excerpt') else request.form['title'][:100],
+        'excerpt': request.form.get('excerpt', request.form['title'][:100])[:200],
         'image_emoji': request.form.get('image_emoji', '📢'),
+        'image_url': image_filename,  # Сохраняем имя файла
         'date_published': datetime.now().strftime('%d %B %Y'),
         'is_active': True,
         'created_by': session.get('user_id')
@@ -701,6 +738,14 @@ def delete_news(news_id):
     if session.get('user_role') != 'admin':
         flash('Доступ запрещен', 'error')
         return redirect(url_for('index'))
+    
+    # Получаем новость перед удалением, чтобы удалить файл
+    news_item = supabase.table('news').select('image_url').eq('id', news_id).execute()
+    if news_item.data and news_item.data[0].get('image_url'):
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], news_item.data[0]['image_url'])
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            logger.info(f"Удалено изображение: {image_path}")
     
     supabase.table('news').delete().eq('id', news_id).execute()
     flash('Новость удалена', 'success')
@@ -833,6 +878,79 @@ def reset_password(token):
             flash('Ошибка при смене пароля. Попробуйте позже.', 'error')
     
     return render_template('reset_password.html', token=token)
+
+# ============ АДМИН: ПОЛУЧЕНИЕ НОВОСТИ ДЛЯ РЕДАКТИРОВАНИЯ ============
+@app.route('/admin/get_news/<int:news_id>')
+def get_news(news_id):
+    if session.get('user_role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    try:
+        response = supabase.table('news').select('*').eq('id', news_id).execute()
+        if response.data:
+            return jsonify(response.data[0])
+        return jsonify({'error': 'News not found'}), 404
+    except Exception as e:
+        logger.error(f"Ошибка получения новости: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+# ============ АДМИН: РЕДАКТИРОВАНИЕ НОВОСТИ ============
+@app.route('/admin/edit_news/<int:news_id>', methods=['POST'])
+def edit_news(news_id):
+    if session.get('user_role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    title = request.form.get('title', '')
+    excerpt = request.form.get('excerpt', '')
+    content = request.form.get('content', '')
+    image_emoji = request.form.get('image_emoji', '📢')
+    delete_image = request.form.get('delete_image') == 'true'
+    
+    # Сначала получаем текущую новость
+    current_news = supabase.table('news').select('image_url').eq('id', news_id).execute()
+    
+    image_filename = current_news.data[0].get('image_url') if current_news.data else None
+    
+    # Если нужно удалить изображение
+    if delete_image and image_filename:
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            logger.info(f"Удалено изображение при редактировании: {image_path}")
+        image_filename = None
+    
+    # Если загружено новое изображение
+    if 'image_file' in request.files:
+        file = request.files['image_file']
+        if file and file.filename and allowed_file(file.filename):
+            # Удаляем старое изображение, если оно есть
+            if image_filename:
+                old_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+            # Сохраняем новое
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            image_filename = f"{uuid.uuid4().hex}.{ext}"
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+            logger.info(f"Новое изображение сохранено при редактировании: {image_filename}")
+    
+    # Обновляем новость
+    news_data = {
+        'title': title,
+        'content': content,
+        'excerpt': excerpt[:200],
+        'image_emoji': image_emoji,
+        'image_url': image_filename,
+        'updated_at': datetime.now().isoformat()
+    }
+    
+    response = supabase.table('news').update(news_data).eq('id', news_id).execute()
+    
+    if response.data:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'error': 'Ошибка обновления новости'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

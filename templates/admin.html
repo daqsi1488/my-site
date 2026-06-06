@@ -105,6 +105,160 @@
         .logo, .header-title {
             cursor: pointer;
         }
+        /* Стиль для превью изображения */
+        .image-preview {
+            margin-top: 10px;
+            max-width: 150px;
+            border-radius: 12px;
+            border: 1px solid rgba(84, 253, 246, 0.2);
+            display: none;
+        }
+        .image-preview.show {
+            display: block;
+        }
+        .news-image-preview {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        /* Стили для модального окна редактирования */
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1005;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .edit-modal-content {
+            background: linear-gradient(135deg, #14142a, #0d0d1f);
+            border-radius: 28px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(84, 253, 246, 0.3);
+            position: relative;
+        }
+        .edit-modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(84, 253, 246, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .edit-modal-header i {
+            font-size: 28px;
+            color: #54fdf6;
+        }
+        .edit-modal-header h3 {
+            font-size: 22px;
+            color: #e0e0e0;
+            font-family: 'Russo One', 'Montserrat', sans-serif;
+            margin: 0;
+        }
+        .edit-modal-body {
+            padding: 25px;
+        }
+        .edit-modal-body input,
+        .edit-modal-body textarea {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(84, 253, 246, 0.3);
+            border-radius: 10px;
+            color: white;
+        }
+        .edit-modal-body textarea {
+            min-height: 120px;
+        }
+        .edit-modal-footer {
+            padding: 15px 25px 25px;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        .edit-modal-footer button {
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .edit-save-btn {
+            background: linear-gradient(135deg, #54fdf6, #2bb8b2);
+            border: none;
+            color: #0a0a14;
+        }
+        .edit-cancel-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(84, 253, 246, 0.3);
+            color: #e0e0e0;
+        }
+        .edit-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #a0a0a0;
+            transition: 0.2s;
+        }
+        .edit-modal-close:hover {
+            color: #ff68ff;
+        }
+        .edit-current-image {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .edit-current-image img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .edit-news-btn {
+            background: rgba(84, 253, 246, 0.15);
+            border: none;
+            color: #54fdf6;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .edit-news-btn:hover {
+            background: rgba(84, 253, 246, 0.3);
+        }
+        .delete-news-btn {
+            background: rgba(244, 67, 54, 0.15);
+            border: none;
+            color: #f44336;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .delete-news-btn:hover {
+            background: rgba(244, 67, 54, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -199,18 +353,18 @@
                             {% else %}
                                 <span style="color: #888;">—</span>
                             {% endif %}
-                        </td>
+                         </td>
                         <td style="vertical-align: top;">
                             <i class="fas fa-calendar-day"></i> {{ booking.booking_date }}<br>
                             <i class="fas fa-clock"></i> {{ booking.booking_time }}
-                        </td>
+                         </td>
                         <td style="vertical-align: top;">
                             {% if booking.duration %}
                                 {{ booking.duration }} ч
                             {% else %}
                                 1 ч
                             {% endif %}
-                        </td>
+                         </td>
                         <td style="vertical-align: top;">
                             {% if booking.total_price and booking.total_price > 0 %}
                                 <span style="color: #ff68ff; font-weight: 700;">
@@ -219,7 +373,7 @@
                             {% else %}
                                 <span style="color: #888;">—</span>
                             {% endif %}
-                        </td>
+                         </td>
                         <td style="vertical-align: top;">
                             <span class="status-badge status-{{ booking.status }}">
                                 {% if booking.status == 'new' %}Новая
@@ -227,7 +381,7 @@
                                 {% elif booking.status == 'cancelled' %}Отменена
                                 {% else %}Завершена{% endif %}
                             </span>
-                        </td>
+                         </td>
                         <td style="vertical-align: top;">
                             <select onchange="updateStatus({{ booking.id }}, this.value)" style="margin-bottom: 5px;">
                                 <option value="new" {% if booking.status == 'new' %}selected{% endif %}>Новая</option>
@@ -248,8 +402,8 @@
                                     <i class="fas fa-user-slash"></i> Неавторизованный
                                 </span>
                             {% endif %}
-                        </td>
-                    </tr>
+                         </td>
+                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -267,11 +421,16 @@
         
         <div class="admin-news-form">
             <h3>Добавить новость</h3>
-            <form method="post" action="{{ url_for('add_news') }}">
+            <form method="post" action="{{ url_for('add_news') }}" enctype="multipart/form-data">
                 <input type="text" name="title" placeholder="Заголовок" required>
                 <input type="text" name="excerpt" placeholder="Краткое описание" required>
                 <textarea name="content" rows="5" placeholder="Полный текст новости..." required></textarea>
-                <input type="text" name="image_emoji" placeholder="Эмодзи" value="📢">
+                <input type="text" name="image_emoji" placeholder="Эмодзи (если нет фото)" value="📢">
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Изображение новости (jpg, png, gif)</label>
+                    <input type="file" name="image_file" id="newsImage" accept="image/*" onchange="previewImage(this)">
+                    <img id="imagePreview" class="image-preview" alt="Превью">
+                </div>
                 <button type="submit">Добавить</button>
             </form>
         </div>
@@ -282,6 +441,7 @@
                     <tr style="border-bottom:1px solid #333;">
                         <th>ID</th>
                         <th>Дата</th>
+                        <th>Изображение</th>
                         <th>Заголовок</th>
                         <th>Действие</th>
                     </tr>
@@ -291,14 +451,26 @@
                     <tr style="border-bottom:1px solid #222;">
                         <td>{{ item.id }}</td>
                         <td>{{ item.date_published }}</td>
+                        <td>
+                            {% if item.image_url %}
+                                <img src="{{ url_for('static', filename='uploads/news/' + item.image_url) }}" class="news-image-preview">
+                            {% else %}
+                                <span style="font-size: 24px;">{{ item.image_emoji or '📢' }}</span>
+                            {% endif %}
+                         </td>
                         <td>{{ item.title }}</td>
                         <td>
-                            <a href="{{ url_for('delete_news', news_id=item.id) }}" 
-                               onclick="return confirm('Удалить новость?')" style="color:#f44336; text-decoration:none;">
-                                <i class="fas fa-trash"></i> Удалить
-                            </a>
-                        </td>
-                    </tr>
+                            <div class="action-buttons">
+                                <button onclick="openEditModal({{ item.id }})" class="edit-news-btn">
+                                    <i class="fas fa-edit"></i> Редактировать
+                                </button>
+                                <a href="{{ url_for('delete_news', news_id=item.id) }}" 
+                                   onclick="return confirm('Удалить новость?')" class="delete-news-btn">
+                                    <i class="fas fa-trash"></i> Удалить
+                                </a>
+                            </div>
+                         </td>
+                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -366,8 +538,8 @@
                             {% else %}
                                 <span style="color: #ffc107;">Администратор</span>
                             {% endif %}
-                        </td>
-                    </tr>
+                         </td>
+                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -397,10 +569,38 @@
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px;">
                             <i class="fas fa-spinner fa-spin"></i> Загрузка цен...
-                        </td>
+                         </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования новости -->
+<div id="editNewsModal" class="edit-modal">
+    <div class="edit-modal-content">
+        <span class="edit-modal-close" onclick="closeEditModal()">&times;</span>
+        <div class="edit-modal-header">
+            <i class="fas fa-edit"></i>
+            <h3>Редактирование новости</h3>
+        </div>
+        <div class="edit-modal-body">
+            <input type="hidden" id="editNewsId">
+            <input type="text" id="editTitle" placeholder="Заголовок">
+            <input type="text" id="editExcerpt" placeholder="Краткое описание">
+            <textarea id="editContent" placeholder="Полный текст новости..."></textarea>
+            <input type="text" id="editEmoji" placeholder="Эмодзи (если нет фото)">
+            <div class="edit-current-image" id="editCurrentImageContainer"></div>
+            <div class="form-group">
+                <label><i class="fas fa-image"></i> Новое изображение (оставьте пустым, чтобы не менять)</label>
+                <input type="file" id="editImageFile" accept="image/*">
+                <img id="editImagePreview" class="image-preview" alt="Превью">
+            </div>
+        </div>
+        <div class="edit-modal-footer">
+            <button class="edit-cancel-btn" onclick="closeEditModal()">Отмена</button>
+            <button class="edit-save-btn" onclick="saveNewsEdit()">Сохранить</button>
         </div>
     </div>
 </div>
@@ -459,6 +659,10 @@
         border-radius: 10px;
         color: white;
     }
+    .admin-news-form input[type="file"] {
+        padding: 8px;
+        background: transparent;
+    }
     .admin-news-form button {
         background: linear-gradient(135deg, #54fdf6, #2bb8b2);
         border: none;
@@ -498,9 +702,76 @@
     .admin-table table {
         min-width: 800px;
     }
+    .image-preview {
+        margin-top: 10px;
+        max-width: 150px;
+        border-radius: 12px;
+        border: 1px solid rgba(84, 253, 246, 0.2);
+        display: none;
+    }
+    .image-preview.show {
+        display: block;
+    }
+    .news-image-preview {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .edit-news-btn {
+        background: rgba(84, 253, 246, 0.15);
+        border: none;
+        color: #54fdf6;
+        padding: 4px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+    .edit-news-btn:hover {
+        background: rgba(84, 253, 246, 0.3);
+    }
+    .delete-news-btn {
+        background: rgba(244, 67, 54, 0.15);
+        border: none;
+        color: #f44336;
+        padding: 4px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .delete-news-btn:hover {
+        background: rgba(244, 67, 54, 0.3);
+    }
 </style>
 
 <script>
+    let allNewsData = [];
+    
+    // Функция предпросмотра изображения
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.add('show');
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '#';
+            preview.classList.remove('show');
+        }
+    }
+
     // Переключение вкладок
     document.querySelectorAll('.admin-tab-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -598,6 +869,116 @@
         }
     }
     
+    // Сохраняем данные новостей для редактирования
+    function loadNewsData() {
+        const rows = document.querySelectorAll('#tab-news tbody tr');
+        allNewsData = [];
+        rows.forEach(row => {
+            const id = parseInt(row.cells[0]?.innerText);
+            const date = row.cells[1]?.innerText;
+            const title = row.cells[3]?.innerText;
+            if (id) {
+                allNewsData.push({ id, date, title });
+            }
+        });
+    }
+    
+    // Открыть модальное окно редактирования
+    async function openEditModal(newsId) {
+        try {
+            const response = await fetch(`/admin/get_news/${newsId}`);
+            const news = await response.json();
+            
+            if (news) {
+                document.getElementById('editNewsId').value = news.id;
+                document.getElementById('editTitle').value = news.title || '';
+                document.getElementById('editExcerpt').value = news.excerpt || '';
+                document.getElementById('editContent').value = news.content || '';
+                document.getElementById('editEmoji').value = news.image_emoji || '📢';
+                
+                const container = document.getElementById('editCurrentImageContainer');
+                if (news.image_url) {
+                    container.innerHTML = `
+                        <span>Текущее изображение:</span>
+                        <img src="{{ url_for('static', filename='uploads/news/') }}${news.image_url}" alt="Текущее фото">
+                        <label style="font-size: 12px; color: #888;">
+                            <input type="checkbox" id="deleteCurrentImage"> Удалить текущее изображение
+                        </label>
+                    `;
+                } else {
+                    container.innerHTML = '<span style="color: #888;">Нет текущего изображения</span>';
+                }
+                
+                document.getElementById('editImagePreview').classList.remove('show');
+                document.getElementById('editImageFile').value = '';
+                
+                document.getElementById('editNewsModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки новости:', error);
+            alert('Ошибка загрузки данных новости');
+        }
+    }
+    
+    // Закрыть модальное окно редактирования
+    function closeEditModal() {
+        document.getElementById('editNewsModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // Сохранить изменения новости
+    async function saveNewsEdit() {
+        const newsId = document.getElementById('editNewsId').value;
+        const formData = new FormData();
+        formData.append('title', document.getElementById('editTitle').value);
+        formData.append('excerpt', document.getElementById('editExcerpt').value);
+        formData.append('content', document.getElementById('editContent').value);
+        formData.append('image_emoji', document.getElementById('editEmoji').value);
+        
+        const deleteImage = document.getElementById('deleteCurrentImage')?.checked || false;
+        formData.append('delete_image', deleteImage);
+        
+        const imageFile = document.getElementById('editImageFile').files[0];
+        if (imageFile) {
+            formData.append('image_file', imageFile);
+        }
+        
+        try {
+            const response = await fetch(`/admin/edit_news/${newsId}`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Новость успешно обновлена!');
+                closeEditModal();
+                location.reload();
+            } else {
+                alert('Ошибка: ' + (result.error || 'Не удалось обновить новость'));
+            }
+        } catch (error) {
+            console.error('Ошибка сохранения:', error);
+            alert('Ошибка при сохранении');
+        }
+    }
+    
+    // Предпросмотр нового изображения в модалке
+    document.getElementById('editImageFile')?.addEventListener('change', function(e) {
+        const preview = document.getElementById('editImagePreview');
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                preview.src = ev.target.result;
+                preview.classList.add('show');
+            };
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            preview.classList.remove('show');
+        }
+    });
+    
     function escapeHtml(text) {
         if (!text) return '';
         return text.replace(/[&<>]/g, function(m) {
@@ -608,12 +989,13 @@
         });
     }
     
-    // Загружаем цены при загрузке страницы, если вкладка цен активна по умолчанию
+    // Загружаем цены при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
         const activeTab = document.querySelector('.admin-tab-btn.active');
         if (activeTab && activeTab.getAttribute('data-tab') === 'prices') {
             loadPricesForAdmin();
         }
+        loadNewsData();
     });
 </script>
 
