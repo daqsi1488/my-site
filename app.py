@@ -290,7 +290,21 @@ def index():
         logger.error(f"❌ Ошибка загрузки последних новостей: {e}")
         latest_news = []
     
-    return render_template('index.html', latest_news=latest_news)
+    # Передаем данные авторизованного пользователя в шаблон для авто-заполнения формы
+    user_data = None
+    if session.get('user_id'):
+        try:
+            user_response = supabase.table('users')\
+                .select('full_name, phone, email')\
+                .eq('id', session['user_id'])\
+                .execute()
+            if user_response.data:
+                user_data = user_response.data[0]
+                logger.info(f"✅ Данные пользователя загружены для авто-заполнения формы")
+        except Exception as e:
+            logger.error(f"Ошибка получения данных пользователя: {e}")
+    
+    return render_template('index.html', latest_news=latest_news, user_data=user_data)
 
 @app.route('/news')
 def news_page():

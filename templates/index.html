@@ -263,6 +263,9 @@
 <div id="bookingModal" class="modal"><div class="modal-content modal-large"><span class="modal-close" id="closeModalBtn">&times;</span><h3><i class="fas fa-calendar-alt"></i> Запись в КиберКачалку</h3><div class="booking-steps" id="bookingSteps"><div class="step active" data-step="1"><div class="step-number">1</div><div class="step-label">Контакты</div></div><div class="step" data-step="2"><div class="step-number">2</div><div class="step-label">Выбор услуг</div></div><div class="step" data-step="3"><div class="step-number">3</div><div class="step-label">Дата и время</div></div><div class="step" data-step="4"><div class="step-number">4</div><div class="step-label">Подтверждение</div></div></div><form class="booking-form" id="bookingForm"><!-- ШАГ 1 --><div class="booking-step-content" id="step1"><div class="client-type-switch"><div class="client-type-btn active" data-type="individual" onclick="setClientType('individual')"><i class="fas fa-user"></i> Физическое лицо</div><div class="client-type-btn" data-type="organization" onclick="setClientType('organization')"><i class="fas fa-building"></i> Юридическое лицо</div></div><div class="form-group" id="nameFieldGroup"><label id="nameLabel"><i class="fas fa-user"></i> Ваше имя <span class="required">*</span></label><input type="text" class="form-input" id="bookingName" placeholder="Иван Иванов" required><div class="validation-message" id="nameError">Введите ваше имя</div></div><div class="form-group" id="orgFieldGroup" style="display: none;"><label><i class="fas fa-building"></i> Название организации <span class="required">*</span></label><input type="text" class="form-input" id="bookingOrg" placeholder="ООО Ромашка"><div class="validation-message" id="orgError">Введите название организации</div></div><div class="form-group"><label><i class="fas fa-phone"></i> Контактный телефон <span class="required">*</span></label><input type="tel" class="form-input" id="bookingPhone" placeholder="+7 (___) ___-__-__" required><div class="validation-message" id="phoneError">Введите корректный номер телефона</div></div><div class="form-group"><label><i class="fas fa-envelope"></i> Email (необязательно)</label><input type="email" class="form-input" id="bookingEmail" placeholder="ivan@example.com"><div class="validation-message" id="emailError">Введите корректный email адрес</div></div><div class="form-group"><label><i class="fas fa-comment"></i> Комментарий</label><textarea class="form-textarea" id="bookingComment" placeholder="Дополнительная информация..."></textarea></div></div><!-- ШАГ 2 --><div class="booking-step-content" id="step2" style="display: none;"><p class="step-description">Кликните на любую услугу, чтобы выбрать её. Можно выбрать несколько.</p><div class="services-selection" id="servicesSelection"><div class="services-loading"><i class="fas fa-spinner fa-spin"></i> Загрузка услуг...</div></div><div class="selected-services-summary" id="selectedServicesSummary" style="display: none;"><h4><i class="fas fa-check-circle"></i> Выбранные услуги:</h4><div id="selectedServicesList"></div></div><div class="validation-message" id="servicesError">Выберите хотя бы одну услугу</div></div><!-- ШАГ 3 --><div class="booking-step-content" id="step3" style="display: none;"><div class="form-row"><div class="form-group half"><label><i class="fas fa-calendar-day"></i> Дата посещения <span class="required">*</span></label><input type="date" class="form-input" id="bookingDate" required><div class="validation-message" id="dateError">Выберите дату</div></div><div class="form-group half"><label><i class="fas fa-clock"></i> Время <span class="required">*</span></label><input type="time" class="form-input" id="bookingTime" required><div class="validation-message" id="timeError">Выберите время</div></div></div><div class="form-group"><label><i class="fas fa-hourglass-half"></i> Продолжительность (часов)</label><select class="form-input" id="bookingDuration"><option value="1">1 час</option><option value="2">2 часа</option><option value="3">3 часа</option><option value="4">4+ часа (уточнить)</option></select></div><div class="info-box"><i class="fas fa-info-circle"></i><span>Часы работы: Вторник-Суббота с 15:00 до 20:00</span></div></div><!-- ШАГ 4 --><div class="booking-step-content" id="step4" style="display: none;"><div class="confirmation-box" id="confirmationBox"><h4><i class="fas fa-clipboard-list"></i> Проверьте данные записи:</h4><div class="confirmation-details"><div class="confirmation-item"><span class="conf-label">Клиент:</span><span class="conf-value" id="confName">—</span></div><div class="confirmation-item"><span class="conf-label">Телефон:</span><span class="conf-value" id="confPhone">—</span></div><div class="confirmation-item"><span class="conf-label">Услуги:</span><span class="conf-value" id="confServices">—</span></div><div class="confirmation-item"><span class="conf-label">Дата:</span><span class="conf-value" id="confDate">—</span></div><div class="confirmation-item"><span class="conf-label">Время:</span><span class="conf-value" id="confTime">—</span></div><div class="confirmation-item"><span class="conf-label">Длительность:</span><span class="conf-value" id="confDuration">—</span></div><div class="confirmation-item" id="confCommentItem" style="display: none;"><span class="conf-label">Комментарий:</span><span class="conf-value" id="confComment">—</span></div></div></div><div class="info-box warning"><i class="fas fa-exclamation-triangle"></i><span>После отправки заявки с вами свяжется администратор для подтверждения.</span></div></div><div class="form-navigation"><button type="button" class="nav-btn prev-btn" id="prevBtn" style="display: none;"><i class="fas fa-arrow-left"></i> Назад</button><button type="button" class="nav-btn next-btn" id="nextBtn">Далее <i class="fas fa-arrow-right"></i></button><button type="submit" class="submit-btn" id="submitBtn" style="display: none;"><i class="fas fa-paper-plane"></i> Отправить заявку</button></div></form></div></div>
 
 <script>
+    // Переменные из Flask (данные пользователя для авто-заполнения)
+    const userData = {{ user_data | tojson | safe }};
+    
     // ============ ПЕРЕМЕННЫЕ ============
     let availableServices = [];
     let selectedServices = [];
@@ -314,6 +317,12 @@
             nameLabel.innerHTML = '<i class="fas fa-user"></i> Ваше имя <span class="required">*</span>';
             document.getElementById('bookingName').required = true;
             document.getElementById('bookingOrg').required = false;
+            
+            // Если есть данные пользователя - заполняем имя
+            if (userData && userData.full_name) {
+                document.getElementById('bookingName').value = userData.full_name;
+                validateStep1();
+            }
         } else {
             nameFieldGroup.style.display = 'none';
             orgFieldGroup.style.display = 'block';
@@ -323,6 +332,26 @@
         
         validateStep1();
         updateNextButtonState();
+    }
+    
+    // ============ Функция для авто-заполнения данных пользователя ============
+    function fillUserData() {
+        if (userData) {
+            if (userData.full_name) {
+                document.getElementById('bookingName').value = userData.full_name;
+            }
+            if (userData.phone) {
+                // Форматируем телефон для отображения
+                let phone = userData.phone;
+                let formatted = formatPhoneForDisplay(phone);
+                document.getElementById('bookingPhone').value = formatted;
+            }
+            if (userData.email) {
+                document.getElementById('bookingEmail').value = userData.email;
+            }
+            validateStep1();
+            updateNextButtonState();
+        }
     }
     
     // ============ ВАЛИДАЦИОННЫЕ ФУНКЦИИ ============
@@ -503,6 +532,8 @@
             resetBookingForm();
             modal.style.display = 'flex';
             loadServicesForSelection();
+            // Заполняем данные пользователя при открытии модалки
+            fillUserData();
         });
     }
     
@@ -540,7 +571,7 @@
         document.getElementById('bookingOrg').required = false;
         
         const phoneInput = document.getElementById('bookingPhone');
-        if (phoneInput) phoneInput.value = '+7';
+        if (phoneInput && !userData?.phone) phoneInput.value = '+7';
         
         updateStepDisplay();
         updateSelectedServicesSummary();
@@ -660,7 +691,10 @@
     // ============ МАСКА ДЛЯ ТЕЛЕФОНА ============
     const bookingPhoneInput = document.getElementById('bookingPhone');
     if (bookingPhoneInput) {
-        bookingPhoneInput.value = '+7';
+        // Если есть данные пользователя, не перезаписываем
+        if (!userData?.phone) {
+            bookingPhoneInput.value = '+7';
+        }
         bookingPhoneInput.addEventListener('input', function(e) {
             let cursorPos = e.target.selectionStart;
             let oldValue = e.target.value;
@@ -1027,7 +1061,7 @@
                     selectedServices = [];
                     currentStep = 1;
                     clientType = 'individual';
-                    if (bookingPhoneInput) bookingPhoneInput.value = '+7';
+                    if (bookingPhoneInput && !userData?.phone) bookingPhoneInput.value = '+7';
                 }
             } catch (error) {
                 alert('Ошибка отправки. Попробуйте позже.');
