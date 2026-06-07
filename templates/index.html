@@ -51,44 +51,43 @@
 
 <div class="content">
     
-    <!-- ============ НОВОСТИ (СТИЛЬНАЯ КАРУСЕЛЬ) ============ -->
-    <div class="news-carousel-block">
-        <div class="news-carousel-header">
-            <div class="news-header-left">
-                <div class="news-header-badge">
+    <!-- ============ НОВОСТИ (СТИЛЬНЫЙ ПРЕМИУМ-БЛОК) ============ -->
+    <div class="news-premium">
+        <div class="news-premium__header">
+            <div class="news-premium__title-group">
+                <div class="news-premium__icon">
                     <i class="fas fa-newspaper"></i>
-                    <i class="fas fa-bolt"></i>
                 </div>
-                <div class="news-header-text">
+                <div class="news-premium__text">
                     <h2>Актуальные новости</h2>
-                    <p>Следите за главными событиями и турнирами</p>
+                    <p>Будьте в курсе последних событий</p>
                 </div>
             </div>
-            <a href="{{ url_for('news_page') }}" class="news-all-link">
+            <a href="{{ url_for('news_page') }}" class="news-premium__link">
                 <span>Все новости</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
         
-        <div class="news-carousel-wrapper">
-            <div class="news-carousel-container" id="newsCarousel">
-                <div class="news-carousel-track">
-                    <div class="news-carousel-slides" id="carouselSlides">
+        <div class="news-carousel" id="newsCarousel">
+            <div class="news-carousel__container">
+                <div class="news-carousel__track">
+                    <div class="news-carousel__slides" id="carouselSlides">
                         <div class="news-loading">
                             <i class="fas fa-spinner fa-spin"></i>
                             <p>Загрузка новостей...</p>
                         </div>
                     </div>
                     
-                    <button class="carousel-btn carousel-prev" id="carouselPrev">
+                    <button class="news-carousel__nav news-carousel__nav--prev" id="carouselPrev">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="carousel-btn carousel-next" id="carouselNext">
+                    <button class="news-carousel__nav news-carousel__nav--next" id="carouselNext">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                     
-                    <div class="carousel-dots" id="carouselDots"></div>
-                    <div class="carousel-progress" id="carouselProgress"></div>
+                    <div class="news-carousel__dots" id="carouselDots"></div>
+                    <div class="news-carousel__progress" id="carouselProgress"></div>
                 </div>
             </div>
         </div>
@@ -1162,7 +1161,7 @@
     }
     document.addEventListener('DOMContentLoaded', loadPrices);
     
-    // ============ НОВОСТНАЯ КАРУСЕЛЬ ============
+    // ============ НОВОСТНАЯ КАРУСЕЛЬ (ОБНОВЛЕННАЯ) ============
     const carouselNewsData = {{ latest_news | tojson | safe }};
     
     let currentSlide = 0;
@@ -1173,10 +1172,10 @@
         const slidesContainer = document.getElementById('carouselSlides');
         const dotsContainer = document.getElementById('carouselDots');
         
-        if (!slidesContainer || !carouselNewsData.length) {
-            if (slidesContainer) {
-                slidesContainer.innerHTML = '<div class="news-slide active" style="display: flex; align-items: center; justify-content: center;"><div style="text-align: center;"><i class="fas fa-newspaper" style="font-size: 48px; color: #54fdf6;"></i><p style="margin-top: 15px; color: #888;">Новостей пока нет</p></div></div>';
-            }
+        if (!slidesContainer) return;
+        
+        if (!carouselNewsData.length) {
+            slidesContainer.innerHTML = '<div class="news-empty"><i class="fas fa-newspaper"></i><p>Новостей пока нет</p></div>';
             return;
         }
         
@@ -1188,30 +1187,32 @@
             
             let bgStyle = '';
             if (news.image_url) {
-                bgStyle = `background-image: url("{{ url_for('static', filename='uploads/news/') }}${news.image_url}"); background-size: cover; background-position: center;`;
+                bgStyle = `style="background-image: url('{{ url_for('static', filename='uploads/news/') }}${news.image_url}');"`;
+            } else {
+                bgStyle = `style="background: linear-gradient(135deg, rgba(84, 253, 246, 0.1), rgba(255, 104, 255, 0.05));"`;
             }
             
-            let imageHtml = '';
+            let thumbnailHtml = '';
             if (news.image_url) {
-                imageHtml = `<img src="{{ url_for('static', filename='uploads/news/') }}${news.image_url}" class="news-slide-image" alt="${escapeHtml(news.title)}">`;
+                thumbnailHtml = `<img src="{{ url_for('static', filename='uploads/news/') }}${news.image_url}" alt="${escapeHtml(news.title)}">`;
             } else {
-                imageHtml = `<div class="news-slide-image-placeholder">${news.image_emoji || '📢'}</div>`;
+                thumbnailHtml = `<div class="news-slide__thumbnail-placeholder">${news.image_emoji || '📢'}</div>`;
             }
             
             slide.innerHTML = `
-                <div class="news-slide-bg" style="${bgStyle}"></div>
-                <div class="news-slide-overlay">
-                    <div class="news-slide-info">
-                        <div class="news-slide-emoji">${news.image_emoji || '📢'}</div>
-                        <div class="news-slide-date"><i class="far fa-calendar-alt"></i> ${news.date_published}</div>
-                        <div class="news-slide-title">${escapeHtml(news.title)}</div>
-                        <div class="news-slide-excerpt">${escapeHtml(news.excerpt ? news.excerpt.substring(0, 100) : (news.content ? news.content.substring(0, 100) : ''))}${(news.excerpt && news.excerpt.length > 100) || (news.content && news.content.length > 100) ? '...' : ''}</div>
-                        <div class="news-slide-link">
-                            <span>Читать далее</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                <div class="news-slide__bg" ${bgStyle}></div>
+                <div class="news-slide__content">
+                    <div class="news-slide__emoji">${news.image_emoji || '📢'}</div>
+                    <div class="news-slide__date"><i class="far fa-calendar-alt"></i> ${news.date_published}</div>
+                    <div class="news-slide__title">${escapeHtml(news.title)}</div>
+                    <div class="news-slide__excerpt">${escapeHtml(news.excerpt ? news.excerpt.substring(0, 120) : (news.content ? news.content.substring(0, 120) : ''))}${(news.excerpt && news.excerpt.length > 120) || (news.content && news.content.length > 120) ? '...' : ''}</div>
+                    <div class="news-slide__link">
+                        <span>Читать далее</span>
+                        <i class="fas fa-arrow-right"></i>
                     </div>
-                    ${imageHtml}
+                </div>
+                <div class="news-slide__thumbnail">
+                    ${thumbnailHtml}
                 </div>
             `;
             
@@ -1226,7 +1227,7 @@
         dotsContainer.innerHTML = '';
         carouselNewsData.forEach((_, index) => {
             const dot = document.createElement('div');
-            dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+            dot.className = 'news-carousel__dot' + (index === 0 ? ' active' : '');
             dot.addEventListener('click', () => {
                 stopAutoPlay();
                 goToSlide(index);
@@ -1238,7 +1239,7 @@
     
     function updateSlides() {
         const slides = document.querySelectorAll('.news-slide');
-        const dots = document.querySelectorAll('.carousel-dot');
+        const dots = document.querySelectorAll('.news-carousel__dot');
         
         slides.forEach((slide, index) => {
             if (index === currentSlide) {
