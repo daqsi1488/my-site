@@ -64,3 +64,4 @@ wrapt==2.2.1
 yandexcloud==0.392.0
 yarl==1.24.2
 zstandard==0.25.0
+python-dotenv==1.0.0

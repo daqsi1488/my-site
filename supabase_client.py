@@ -1,15 +1,17 @@
+import os
 from supabase import create_client, Client
-import httpx
+from dotenv import load_dotenv
 
-# ВСТАВЬТЕ ВАШИ ДАННЫЕ ПРЯМО СЮДА
-SUPABASE_URL = "https://mcxwvxhifwzzlznnvbze.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeHd2eGhpZnd6emx6bm52YnplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NzMxMTIsImV4cCI6MjA5NTM0OTExMn0.HU_0yuDW5nS9eBdVG7aoUzOrZp_szHF65FrW0fgqDHo"
+# Загружаем переменные из .env файла
+load_dotenv()
 
-# Создаем клиент напрямую через httpx
-http_client = httpx.Client(timeout=httpx.Timeout(30.0, connect=10.0))
+# Теперь берем данные из переменных окружения
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Проверяем, что данные загрузились
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("SUPABASE_URL или SUPABASE_KEY не найдены в .env файле!")
 
 # Создаем клиент Supabase
-supabase: Client = create_client(
-    SUPABASE_URL, 
-    SUPABASE_KEY
-)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
