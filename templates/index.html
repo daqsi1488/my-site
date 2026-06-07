@@ -7,533 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='photos/logo.jpg') }}" type="image/x-icon" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .profile-nav-btn {
-            background: rgba(84, 253, 246, 0.08);
-            border-color: rgba(84, 253, 246, 0.2);
-        }
-        .profile-nav-btn:hover {
-            background: rgba(84, 253, 246, 0.2) !important;
-            color: #54fdf6 !important;
-            border-color: rgba(84, 253, 246, 0.4);
-        }
-        /* Стили для валидации */
-        .form-input.error, .form-textarea.error, select.form-input.error {
-            border-color: #f44336 !important;
-            box-shadow: 0 0 5px rgba(244, 67, 54, 0.3) !important;
-        }
-        .validation-message {
-            font-size: 11px;
-            margin-top: 5px;
-            color: #f44336;
-            display: none;
-        }
-        .validation-message.show {
-            display: block;
-        }
-        .validation-message.valid {
-            color: #4caf50;
-        }
-        .next-btn:disabled, .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        /* Курсор для кликабельных элементов */
-        .logo, .header-title {
-            cursor: pointer;
-        }
-        
-        /* Стили для модального окна услуги */
-        .service-info-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(8px);
-            z-index: 1003;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .service-info-content {
-            background: linear-gradient(135deg, #14142a, #0d0d1f);
-            border-radius: 28px;
-            max-width: 500px;
-            width: 100%;
-            border: 1px solid rgba(84, 253, 246, 0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-        .service-info-header {
-            padding: 25px 25px 15px;
-            border-bottom: 1px solid rgba(84, 253, 246, 0.15);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .service-info-header i {
-            font-size: 48px;
-            color: #54fdf6;
-        }
-        .service-info-header h3 {
-            font-size: 24px;
-            color: #e0e0e0;
-            font-family: 'Russo One', 'Montserrat', sans-serif;
-            margin: 0;
-        }
-        .service-info-body {
-            padding: 25px;
-        }
-        .service-info-price {
-            font-size: 32px;
-            font-weight: 800;
-            color: #ff68ff;
-            margin-bottom: 15px;
-        }
-        .service-info-desc {
-            color: #a0a0a0;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .service-info-persons {
-            color: #54fdf6;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-        .service-info-close {
-            width: 100%;
-            background: linear-gradient(135deg, #54fdf6, #2bb8b2);
-            border: none;
-            padding: 12px;
-            border-radius: 40px;
-            color: #0a0a14;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .service-info-close:hover {
-            transform: translateY(-2px);
-        }
-        
-        /* Переключатель для юр/физ лица */
-        .client-type-switch {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px;
-            border-radius: 50px;
-        }
-        .client-type-btn {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            font-weight: 500;
-            color: #a0a0a0;
-        }
-        .client-type-btn.active {
-            background: linear-gradient(135deg, #54fdf6, #2bb8b2);
-            color: #0a0a14;
-        }
-        
-        /* Стили для количества человек в экскурсии */
-        .persons-counter {
-            background: rgba(84, 253, 246, 0.05);
-            border-radius: 16px;
-            padding: 15px;
-            margin-top: 15px;
-            display: none;
-        }
-        .persons-counter.show {
-            display: block;
-        }
-        .persons-counter label {
-            display: block;
-            margin-bottom: 10px;
-            color: #54fdf6;
-            font-size: 14px;
-        }
-        .counter-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .counter-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(84, 253, 246, 0.1);
-            border: 1px solid rgba(84, 253, 246, 0.3);
-            color: #54fdf6;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .counter-btn:hover {
-            background: rgba(84, 253, 246, 0.2);
-        }
-        .persons-count {
-            font-size: 24px;
-            font-weight: 700;
-            min-width: 60px;
-            text-align: center;
-            color: #e0e0e0;
-        }
-        .persons-price {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #ff68ff;
-        }
-        
-        /* Кликабельные карточки услуг */
-        .service-card {
-            cursor: pointer;
-        }
-        .price-card-modern {
-            cursor: pointer;
-        }
-        
-        /* ============ НОВЫЙ БЛОК НОВОСТЕЙ-КАРУСЕЛЬ С ИЗОБРАЖЕНИЯМИ ============ */
-        .news-carousel-block {
-            margin-bottom: 40px;
-            margin-top: 20px;
-            position: relative;
-        }
-        
-        .news-carousel-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 0 10px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .news-carousel-title-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .news-carousel-title-left i {
-            font-size: 28px;
-            color: #54fdf6;
-        }
-        
-        .news-carousel-title-left h2 {
-            font-size: 24px;
-            font-family: 'Russo One', 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #e0e0e0, #54fdf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin: 0;
-        }
-        
-        .news-carousel-all-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(84, 253, 246, 0.08);
-            padding: 8px 20px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            color: #54fdf6;
-            transition: all 0.3s ease;
-        }
-        
-        .news-carousel-all-link:hover {
-            background: rgba(84, 253, 246, 0.2);
-            gap: 12px;
-        }
-        
-        .news-carousel-container {
-            position: relative;
-            border-radius: 24px;
-            overflow: hidden;
-            background: rgba(10, 10, 20, 0.4);
-            backdrop-filter: blur(4px);
-        }
-        
-        .news-carousel-track {
-            position: relative;
-            height: 360px;
-            overflow: hidden;
-            border-radius: 24px;
-        }
-        
-        .news-carousel-slides {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .news-carousel-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.6s ease-in-out;
-            cursor: pointer;
-            border-radius: 24px;
-            overflow: hidden;
-        }
-        
-        .news-carousel-slide.active {
-            opacity: 1;
-            z-index: 1;
-        }
-        
-        .news-slide-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.5);
-            transform: scale(1.05);
-            transition: transform 0.6s ease;
-        }
-        
-        .news-carousel-slide.active .news-slide-bg {
-            transform: scale(1);
-        }
-        
-        .news-slide-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 20px;
-            padding: 25px 30px;
-            background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 45, 0.95));
-            backdrop-filter: blur(8px);
-            transform: translateY(100%);
-            transition: transform 0.4s ease;
-        }
-        
-        .news-carousel-slide.active .news-slide-content {
-            transform: translateY(0);
-        }
-        
-        .news-slide-info {
-            flex: 1;
-        }
-        
-        .news-slide-emoji {
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
-        
-        .news-slide-date {
-            font-size: 12px;
-            color: #54fdf6;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .news-slide-title {
-            font-size: 22px;
-            font-weight: 700;
-            font-family: 'Russo One', 'Montserrat', sans-serif;
-            color: #e0e0e0;
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-        
-        .news-slide-excerpt {
-            font-size: 14px;
-            color: #b0b0b0;
-            line-height: 1.4;
-            margin-bottom: 12px;
-        }
-        
-        .news-slide-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #ff68ff;
-            font-size: 13px;
-            font-weight: 500;
-            transition: gap 0.3s ease;
-        }
-        
-        .news-slide-link:hover {
-            gap: 12px;
-            color: #54fdf6;
-        }
-        
-        .news-slide-image {
-            width: 140px;
-            height: 140px;
-            border-radius: 16px;
-            object-fit: cover;
-            border: 2px solid rgba(84, 253, 246, 0.3);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .news-slide-image-placeholder {
-            width: 140px;
-            height: 140px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(84, 253, 246, 0.1), rgba(255, 104, 255, 0.1));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
-            border: 2px solid rgba(84, 253, 246, 0.2);
-        }
-        
-        /* Навигационные кнопки карусели */
-        .carousel-nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(84, 253, 246, 0.3);
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            color: #e0e0e0;
-            font-size: 20px;
-        }
-        
-        .carousel-nav-btn:hover {
-            background: rgba(84, 253, 246, 0.3);
-            border-color: rgba(84, 253, 246, 0.7);
-            color: #54fdf6;
-            transform: translateY(-50%) scale(1.05);
-        }
-        
-        .carousel-nav-prev {
-            left: 20px;
-        }
-        
-        .carousel-nav-next {
-            right: 20px;
-        }
-        
-        /* Индикаторы (точки) */
-        .carousel-dots {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            z-index: 10;
-        }
-        
-        .carousel-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .carousel-dot.active {
-            background: #54fdf6;
-            width: 24px;
-            border-radius: 10px;
-        }
-        
-        .carousel-dot:hover {
-            background: #ff68ff;
-        }
-        
-        /* Индикатор загрузки */
-        .carousel-loader {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #54fdf6, #ff68ff);
-            width: 0%;
-            transition: width 0.1s linear;
-            z-index: 10;
-        }
-        
-        @media (max-width: 768px) {
-            .news-carousel-track {
-                height: 420px;
-            }
-            
-            .news-slide-content {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 20px;
-            }
-            
-            .news-slide-image, .news-slide-image-placeholder {
-                width: 100%;
-                height: 180px;
-                margin-top: 10px;
-            }
-            
-            .news-slide-title {
-                font-size: 18px;
-            }
-            
-            .news-slide-excerpt {
-                font-size: 12px;
-            }
-            
-            .carousel-nav-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
-            }
-            
-            .carousel-nav-prev {
-                left: 10px;
-            }
-            
-            .carousel-nav-next {
-                right: 10px;
-            }
-            
-            .news-carousel-title {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .news-carousel-track {
-                height: 480px;
-            }
-        }
-    </style>
 </head>
 <body>
 
@@ -578,146 +51,138 @@
 
 <div class="content">
     
-    <!-- ============ НОВЫЙ БЛОК НОВОСТЕЙ-КАРУСЕЛЬ С ИЗОБРАЖЕНИЕМ ============ -->
+    <!-- ============ НОВОСТИ (СТИЛЬНАЯ КАРУСЕЛЬ) ============ -->
     <div class="news-carousel-block">
-        <div class="news-carousel-title">
-            <div class="news-carousel-title-left">
-                <i class="fas fa-newspaper"></i>
-                <h2>🔥 Актуальные новости</h2>
+        <div class="news-carousel-header">
+            <div class="news-header-left">
+                <div class="news-header-badge">
+                    <i class="fas fa-newspaper"></i>
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="news-header-text">
+                    <h2>Актуальные новости</h2>
+                    <p>Следите за главными событиями и турнирами</p>
+                </div>
             </div>
-            <a href="{{ url_for('news_page') }}" class="news-carousel-all-link">
+            <a href="{{ url_for('news_page') }}" class="news-all-link">
                 <span>Все новости</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
         
-        <div class="news-carousel-container" id="newsCarousel">
-            <div class="news-carousel-track">
-                <div class="news-carousel-slides" id="carouselSlides">
-                    <!-- Слайды будут заполнены динамически через JavaScript -->
-                    <div class="news-carousel-slide-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%;">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #54fdf6;"></i>
+        <div class="news-carousel-wrapper">
+            <div class="news-carousel-container" id="newsCarousel">
+                <div class="news-carousel-track">
+                    <div class="news-carousel-slides" id="carouselSlides">
+                        <div class="news-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Загрузка новостей...</p>
+                        </div>
                     </div>
+                    
+                    <button class="carousel-btn carousel-prev" id="carouselPrev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn carousel-next" id="carouselNext">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    
+                    <div class="carousel-dots" id="carouselDots"></div>
+                    <div class="carousel-progress" id="carouselProgress"></div>
                 </div>
-                
-                <!-- Кнопки навигации -->
-                <button class="carousel-nav-btn carousel-nav-prev" id="carouselPrev">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="carousel-nav-btn carousel-nav-next" id="carouselNext">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                
-                <!-- Индикаторы (точки) -->
-                <div class="carousel-dots" id="carouselDots"></div>
-                
-                <!-- Индикатор загрузки -->
-                <div class="carousel-loader" id="carouselLoader"></div>
             </div>
         </div>
     </div>
-    
-    <div id="about" class="section">
-        <h2>📖 О нас</h2>
-        <p>Фиджитал центр "КиберКачалка" — это современное пространство, объединяющее виртуальный и реальный спорт. У нас вы можете насладиться игрой на PlayStation 5 в FIFA и другие игры, а также поиграть в живой футбол, баскетбол и другие виды спорта. Мы создали уникальную атмосферу для активного отдыха и развития киберспортивных навыков.</p>
-        <p>Наш центр находится в Норильске и ждёт всех, кто желает провести время с пользой и удовольствием!</p>
+
+    <!-- ============ БЛОК О НАС ============ -->
+    <div id="about" class="section about-section">
+        <div class="about-header">
+            <div class="about-icon">
+                <i class="fas fa-dumbbell"></i>
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <h2>О нас</h2>
+            <p class="about-subtitle">Фиджитал центр нового поколения</p>
+        </div>
+        
+        <div class="about-grid">
+            <div class="about-main">
+                <p class="about-lead"><strong>Фиджитал центр "КиберКачалка"</strong> — это уникальное пространство нового поколения, где встречаются киберспорт и реальный спорт. Мы создали место, где каждый найдёт занятие по душе: от киберспортивных поединков на PlayStation 5 до активных игр в мини-футбол и баскетбол.</p>
+                
+                <div class="about-philosophy">
+                    <div class="philosophy-icon">🚀</div>
+                    <div class="philosophy-text">
+                        <h3>Что такое фиджитал-спорт?</h3>
+                        <p>Фиджитал (от англ. physical + digital) — это гармоничный симбиоз классического спорта и современных технологий. Это не просто "поиграть на приставке", а целое направление, где виртуальные навыки переплетаются с реальной физической подготовкой. <strong>Фиджитал-спорт — это будущее, и оно уже наступило в стенах нашей "КиберКачалки".</strong></p>
+                    </div>
+                </div>
+                
+                <div class="about-quote">
+                    <i class="fas fa-quote-left"></i>
+                    <p>Мы считаем, что грань между реальным и виртуальным мирами стирается. В "КиберКачалке" игроки FIFA могут проверить себя в реальном футболе, а баскетболисты — отточить тактику в NBA 2K. Такой подход не только развивает реакцию и стратегическое мышление, но и укрепляет здоровье, учит работать в команде и дарит незабываемые эмоции.</p>
+                    <i class="fas fa-quote-right"></i>
+                </div>
+            </div>
+            
+            <div class="about-features">
+                <h3><i class="fas fa-star-of-life"></i> Почему выбирают нас?</h3>
+                <div class="features-list">
+                    <div class="feature-item"><div class="feature-icon">🎯</div><div class="feature-content"><div class="feature-title">Уникальная концепция</div><div class="feature-desc">Мы одни из первых в Норильске, кто объединил киберспорт и живой спорт</div></div></div>
+                    <div class="feature-item"><div class="feature-icon">💻</div><div class="feature-content"><div class="feature-title">Современное оборудование</div><div class="feature-desc">PlayStation 5, профессиональные 4K-мониторы, качественный инвентарь для спорта</div></div></div>
+                    <div class="feature-item"><div class="feature-icon">🏟️</div><div class="feature-content"><div class="feature-title">Профессиональные площадки</div><div class="feature-desc">Комфортные залы для кибердисциплин и настоящие спортивные зоны</div></div></div>
+                    <div class="feature-item"><div class="feature-icon">🏆</div><div class="feature-content"><div class="feature-title">Турниры и события</div><div class="feature-desc">Регулярные соревнования с ценными призами для всех уровней подготовки</div></div></div>
+                    <div class="feature-item"><div class="feature-icon">💝</div><div class="feature-content"><div class="feature-title">Доступная среда</div><div class="feature-desc">Льготные категории, индивидуальный подход и гибкая система скидок</div></div></div>
+                    <div class="feature-item"><div class="feature-icon">✨</div><div class="feature-content"><div class="feature-title">Атмосфера</div><div class="feature-desc">Уникальный неоновый дизайн, объёмная подсветка и кибер-декор создают настроение</div></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="about-footer">
+            <div class="footer-badge"><i class="fas fa-users"></i><span>Сообщество единомышленников</span></div>
+            <p class="about-call">🏆 <strong>КиберКачалка — больше чем центр.</strong> Это сообщество единомышленников, которые развиваются вместе, соревнуются и отдыхают с пользой.</p>
+            <p class="about-location">📍 Наш центр находится в Норильске и ждёт всех, кто желает провести время с пользой и удовольствием! <strong>Присоединяйтесь к фиджитал-движению — будьте в центре будущего! 🔥</strong></p>
+        </div>
     </div>
 
+    <!-- ============ ПРЕЙСКУРАНТ ============ -->
     <div id="prices" class="section prices-section">
         <div class="prices-header">
             <h2><i class="fas fa-tags"></i> Прейскурант на услуги</h2>
             <p class="prices-subtitle">Актуальные цены фиджитал-центра «Киберкачалка» (кликните на услугу для подробной информации)</p>
         </div>
-        
-        <div class="prices-grid" id="pricesGrid">
-            <div class="price-loading">
-                <i class="fas fa-spinner fa-spin"></i> Загрузка цен...
-            </div>
-        </div>
-        
-        <div class="prices-footer">
-            <div class="discount-badge">
-                <i class="fas fa-star-of-life"></i> Льготные категории
-            </div>
-            <p class="price-note">
-                <i class="fas fa-info-circle"></i> Льготные категории: инвалиды I-III групп, ветераны боевых действий, дети-сироты, многодетные семьи и др. 
-                Для получения льготы необходимо предоставить подтверждающие документы.
-            </p>
-        </div>
+        <div class="prices-grid" id="pricesGrid"><div class="price-loading"><i class="fas fa-spinner fa-spin"></i> Загрузка цен...</div></div>
+        <div class="prices-footer"><div class="discount-badge"><i class="fas fa-star-of-life"></i> Льготные категории</div><p class="price-note"><i class="fas fa-info-circle"></i> Льготные категории: инвалиды I-III групп, ветераны боевых действий, дети-сироты, многодетные семьи и др. Для получения льготы необходимо предоставить подтверждающие документы.</p></div>
     </div>
 
+    <!-- ============ УСЛУГИ ============ -->
     <div id="services" class="section">
         <h2>🎮 Наши услуги</h2>
         <div class="services-grid">
-            <div class="service-card" onclick="showServiceInfo('PS5 Зона', 'Играйте в FIFA, NBA, UFC и другие спортивные игры на современной PlayStation 5 с 4K-мониторами и удобными креслами.', '200 ₽/час', '🎮')">
-                <i class="fas fa-gamepad"></i>
-                <h3>PS5 Зона</h3>
-                <p>Играйте в FIFA, NBA, UFC и другие спортивные игры</p>
-            </div>
-            <div class="service-card" onclick="showServiceInfo('Мини-футбол', 'Живые матчи на профессиональном покрытии. Собирайте команду и приходите! Проводим любительские турниры.', 'от 1 000 ₽/час', '⚽')">
-                <i class="fas fa-futbol"></i>
-                <h3>Мини-футбол</h3>
-                <p>Живые матчи на профессиональном покрытии. Собирайте команду и приходите!</p>
-            </div>
-            <div class="service-card" onclick="showServiceInfo('Баскетбол', 'Играйте в баскетбол с друзьями или участвуйте в турнирах. Профессиональная площадка и инвентарь.', 'от 1 000 ₽/час', '🏀')">
-                <i class="fas fa-basketball-ball"></i>
-                <h3>Баскетбол</h3>
-                <p>Играйте в баскетбол с друзьями или участвуйте в турнирах</p>
-            </div>
-            <div class="service-card" onclick="showServiceInfo('Настольные игры', 'Монополия, Джанга, Шахматы, Шашки, Уно, Мафия и множество других настольных игр для компании любого размера.', 'от 100 ₽/час', '🎲')">
-                <i class="fas fa-chess-board"></i>
-                <h3>Настольные игры</h3>
-                <p>Монополия, Джанга, Шахматы, Шашки, Уно, Мафия и множество других настольных игр</p>
-            </div>
-            <div class="service-card" onclick="showServiceInfo('Турниры', 'Регулярные киберспортивные и спортивные турниры с ценными призами. Следите за анонсами!', 'Участие бесплатно', '🏆')">
-                <i class="fas fa-trophy"></i>
-                <h3>Турниры</h3>
-                <p>Регулярные киберспортивные и спортивные турниры с призами</p>
-            </div>
+            <div class="service-card" onclick="showServiceInfo('PS5 Зона', 'Играйте в FIFA, NBA, UFC и другие спортивные игры на современной PlayStation 5 с 4K-мониторами и удобными креслами.', '200 ₽/час', '🎮')"><i class="fas fa-gamepad"></i><h3>PS5 Зона</h3><p>Играйте в FIFA, NBA, UFC и другие спортивные игры</p></div>
+            <div class="service-card" onclick="showServiceInfo('Мини-футбол', 'Живые матчи на профессиональном покрытии. Собирайте команду и приходите! Проводим любительские турниры.', 'от 1 000 ₽/час', '⚽')"><i class="fas fa-futbol"></i><h3>Мини-футбол</h3><p>Живые матчи на профессиональном покрытии. Собирайте команду и приходите!</p></div>
+            <div class="service-card" onclick="showServiceInfo('Баскетбол', 'Играйте в баскетбол с друзьями или участвуйте в турнирах. Профессиональная площадка и инвентарь.', 'от 1 000 ₽/час', '🏀')"><i class="fas fa-basketball-ball"></i><h3>Баскетбол</h3><p>Играйте в баскетбол с друзьями или участвуйте в турнирах</p></div>
+            <div class="service-card" onclick="showServiceInfo('Настольные игры', 'Монополия, Джанга, Шахматы, Шашки, Уно, Мафия и множество других настольных игр для компании любого размера.', 'от 100 ₽/час', '🎲')"><i class="fas fa-chess-board"></i><h3>Настольные игры</h3><p>Монополия, Джанга, Шахматы, Шашки, Уно, Мафия и множество других настольных игр</p></div>
+            <div class="service-card" onclick="showServiceInfo('Турниры', 'Регулярные киберспортивные и спортивные турниры с ценными призами. Следите за анонсами!', 'Участие бесплатно', '🏆')"><i class="fas fa-trophy"></i><h3>Турниры</h3><p>Регулярные киберспортивные и спортивные турниры с призами</p></div>
         </div>
     </div>
 
+    <!-- ============ КИБЕРЗОНА ============ -->
     <div id="gaming" class="section gaming-section">
-        <div class="gaming-header">
-            <h2><i class="fas fa-desktop"></i> Киберзона (Digital-пространство)</h2>
-            <p>Современное оборудование для погружения в мир киберспорта</p>
-        </div>
-        
+        <div class="gaming-header"><h2><i class="fas fa-desktop"></i> Киберзона (Digital-пространство)</h2><p>Современное оборудование для погружения в мир киберспорта</p></div>
         <div class="gaming-content">
             <div class="gaming-info">
-                <div class="gaming-features">
-                    <div class="feature"><i class="fas fa-playstation"></i><span>PlayStation 5</span></div>
-                    <div class="feature"><i class="fas fa-tv"></i><span>4K-мониторы</span></div>
-                    <div class="feature"><i class="fas fa-headphones"></i><span>Игровая акустика</span></div>
-                    <div class="feature"><i class="fas fa-couch"></i><span>Удобные кресла</span></div>
-                </div>
+                <div class="gaming-features"><div class="feature"><i class="fas fa-playstation"></i><span>PlayStation 5</span></div><div class="feature"><i class="fas fa-tv"></i><span>4K-мониторы</span></div><div class="feature"><i class="fas fa-headphones"></i><span>Игровая акустика</span></div><div class="feature"><i class="fas fa-couch"></i><span>Удобные кресла</span></div></div>
                 <p class="gaming-desc">В нашей киберзоне установлены современные PlayStation 5 с огромным выбором игр. Уютные кресла, мощные 4K-мониторы и отличная акустика создают идеальные условия для погружения в виртуальный мир. Мы регулярно обновляем библиотеку игр и проводим киберспортивные турниры по FIFA, eFootball и другим дисциплинам.</p>
             </div>
             <div class="gaming-prices">
-                <div class="price-card" onclick="showServiceInfo('Аренда интерактивной игровой зоны', 'Аренда телевизора с приставкой PlayStation 5. Включает доступ ко всем играм. Подходит для компании до 8 человек.', '200 ₽/час', '🎮')">
-                    <div class="price-icon"><i class="fas fa-hourglass-half"></i></div>
-                    <div class="price-info">
-                        <div class="price-title">Аренда интерактивной игровой зоны</div>
-                        <div class="price-value">200 ₽<span>/час</span></div>
-                        <div class="price-note-small">до 8 человек</div>
-                    </div>
-                </div>
-                <div class="price-card discount" onclick="showServiceInfo('Льготная аренда интерактивной игровой зоны', 'Льготная аренда для инвалидов I-III групп, ветеранов боевых действий, детей-сирот, многодетных семей.', '100 ₽/час', '💝')">
-                    <div class="price-icon"><i class="fas fa-hand-holding-heart"></i></div>
-                    <div class="price-info">
-                        <div class="price-title">Льготная аренда</div>
-                        <div class="price-value">100 ₽<span>/час</span></div>
-                        <div class="price-note-small">до 8 человек</div>
-                    </div>
-                </div>
+                <div class="price-card" onclick="showServiceInfo('Аренда интерактивной игровой зоны', 'Аренда телевизора с приставкой PlayStation 5. Включает доступ ко всем играм. Подходит для компании до 8 человек.', '200 ₽/час', '🎮')"><div class="price-icon"><i class="fas fa-hourglass-half"></i></div><div class="price-info"><div class="price-title">Аренда интерактивной игровой зоны</div><div class="price-value">200 ₽<span>/час</span></div><div class="price-note-small">до 8 человек</div></div></div>
+                <div class="price-card discount" onclick="showServiceInfo('Льготная аренда интерактивной игровой зоны', 'Льготная аренда для инвалидов I-III групп, ветеранов боевых действий, детей-сирот, многодетных семей.', '100 ₽/час', '💝')"><div class="price-icon"><i class="fas fa-hand-holding-heart"></i></div><div class="price-info"><div class="price-title">Льготная аренда</div><div class="price-value">100 ₽<span>/час</span></div><div class="price-note-small">до 8 человек</div></div></div>
             </div>
         </div>
-        <div class="gaming-hours">
-            <i class="fas fa-clock"></i>
-            <span><strong>Часы работы киберзоны:</strong> Пн-Сб с 15:00 до 20:00</span>
-        </div>
+        <div class="gaming-hours"><i class="fas fa-clock"></i><span><strong>Часы работы киберзоны:</strong> Пн-Сб с 15:00 до 20:00</span></div>
     </div>
 
+    <!-- ============ СПОРТИВНАЯ ЗОНА ============ -->
     <div id="sports" class="section sports-section">
         <h2><i class="fas fa-futbol"></i> Спортивная зона</h2>
         <div class="sports-content">
@@ -731,61 +196,34 @@
                 </div>
             </div>
             <div class="sports-prices">
-                <div class="sport-price-item">
-                    <span class="sport-price-label">Аренда площадки:</span>
-                    <span class="sport-price-value">от 1 000 ₽/час</span>
-                </div>
-                <div class="sport-price-item">
-                    <span class="sport-price-label">Индивидуальное занятие с тренером:</span>
-                    <span class="sport-price-value">1 000 ₽/час</span>
-                </div>
-                <div class="sport-price-item">
-                    <span class="sport-price-label">Спортивные секции:</span>
-                    <span class="sport-price-value">взрослые и детские группы</span>
-                </div>
+                <div class="sport-price-item"><span class="sport-price-label">Аренда площадки:</span><span class="sport-price-value">от 1 000 ₽/час</span></div>
+                <div class="sport-price-item"><span class="sport-price-label">Индивидуальное занятие с тренером:</span><span class="sport-price-value">1 000 ₽/час</span></div>
+                <div class="sport-price-item"><span class="sport-price-label">Спортивные секции:</span><span class="sport-price-value">взрослые и детские группы</span></div>
             </div>
         </div>
     </div>
 
+    <!-- ============ КАРТА ============ -->
     <div id="map" class="section map-section">
         <h2>🗺️ Наше местоположение</h2>
-        <div class="map-title">
-            <i class="fas fa-map-marked-alt"></i>
-            <span>📍 Мы на карте</span>
-        </div>
-        <div class="map-container">
-            <iframe 
-                src="https://yandex.ru/map-widget/v1/?ll=88.215353,69.349858&z=18&pt=88.215353,69.349858,pm2rdm" 
-                allowfullscreen>
-            </iframe>
-        </div>
-        <div class="map-buttons">
-            <a href="https://yandex.ru/maps/?ll=88.215353,69.349858&z=18&pt=88.215353,69.349858&mode=search" class="map-button yandex-btn" target="_blank">
-                <i class="fab fa-yandex"></i>
-                Открыть полную карту в Яндекс.Картах
-                <i class="fas fa-external-link-alt"></i>
-            </a>
-        </div>
+        <div class="map-title"><i class="fas fa-map-marked-alt"></i><span>📍 Мы на карте</span></div>
+        <div class="map-container"><iframe src="https://yandex.ru/map-widget/v1/?ll=88.215353,69.349858&z=18&pt=88.215353,69.349858,pm2rdm" allowfullscreen></iframe></div>
+        <div class="map-buttons"><a href="https://yandex.ru/maps/?ll=88.215353,69.349858&z=18&pt=88.215353,69.349858&mode=search" class="map-button yandex-btn" target="_blank"><i class="fab fa-yandex"></i> Открыть полную карту в Яндекс.Картах <i class="fas fa-external-link-alt"></i></a></div>
     </div>
 
+    <!-- ============ КОНТАКТЫ ============ -->
     <div id="contacts" class="section">
         <h2>Контакты</h2>
         <p><i class="fas fa-map-pin"></i> <strong>Адрес:</strong> г. Норильск, ул. Павлова, 13 (НТПТиС)</p>
-        <p><i class="fas fa-phone"></i> <strong>Телефон:</strong> +7  (913) 531-57-60</p>
+        <p><i class="fas fa-phone"></i> <strong>Телефон:</strong> +7 (913) 531-57-60</p>
         <p><i class="fas fa-envelope"></i> <strong>Email:</strong> pu105ur@mail.ru</p>
         <p><i class="fas fa-clock"></i> <strong>Режим работы:</strong> Понедельник-Суббота: 15:00 - 20:00</p>
         
-        <button class="contact-button" id="showFormBtn" style="margin-top: 30px;">
-            <i class="fas fa-paper-plane"></i>
-            Написать нам
-        </button>
-        
+        <button class="contact-button" id="showFormBtn" style="margin-top: 30px;"><i class="fas fa-paper-plane"></i> Написать нам</button>
         <div id="contactForm" style="display: none;">
             <form class="contact-form" id="feedbackForm">
                 <input type="text" class="form-input" id="contactName" placeholder="Ваше имя" required>
-                <div class="phone-input-wrapper">
-                    <input type="tel" class="form-input" id="contactPhone" placeholder="+7 (___) ___-__-__" required>
-                </div>
+                <div class="phone-input-wrapper"><input type="tel" class="form-input" id="contactPhone" placeholder="+7 (___) ___-__-__" required></div>
                 <div class="validation-message" id="contactPhoneError">Введите корректный номер телефона (+7 XXX XXX-XX-XX)</div>
                 <textarea class="form-textarea" id="contactMessage" placeholder="Ваше сообщение..." required></textarea>
                 <button type="submit" class="submit-btn">Отправить сообщение</button>
@@ -801,252 +239,29 @@
         <div class="footer-row">
             <a href="https://ntptis.ru" class="site-link" target="_blank">сайт НТПТиС</a>
             <div class="social-icons">
-                <a href="https://t.me/fidgital_Norilsk" aria-label="Telegram" target="_blank" rel="noopener">
-                    <i class="fab fa-telegram"></i>
-                </a>
-                <a href="https://vk.com/ntptis_nrk" aria-label="VK" target="_blank" rel="noopener">
-                    <i class="fab fa-vk"></i>
-                </a>
+                <a href="https://t.me/fidgital_Norilsk" aria-label="Telegram" target="_blank" rel="noopener"><i class="fab fa-telegram"></i></a>
+                <a href="https://vk.com/ntptis_nrk" aria-label="VK" target="_blank" rel="noopener"><i class="fab fa-vk"></i></a>
             </div>
         </div>
-        
         <div class="footer-links">
-            <button class="footer-link-btn" onclick="openProcedureModal()">
-                <i class="fas fa-building"></i> Порядок работы ФЦ
-            </button>
-            <button class="footer-link-btn" onclick="openPolicyModal()">
-                <i class="fas fa-shield-alt"></i> Политика конфиденциальности
-            </button>
-            <button class="footer-link-btn" onclick="openTermsModal()">
-                <i class="fas fa-file-contract"></i> Условия пользования
-            </button>
+            <button class="footer-link-btn" onclick="openProcedureModal()"><i class="fas fa-building"></i> Порядок работы ФЦ</button>
+            <button class="footer-link-btn" onclick="openPolicyModal()"><i class="fas fa-shield-alt"></i> Политика конфиденциальности</button>
+            <button class="footer-link-btn" onclick="openTermsModal()"><i class="fas fa-file-contract"></i> Условия пользования</button>
         </div>
-        
         <p class="copyright">&copy; 2026 КиберКачалка. Все права защищены.</p>
     </div>
 </footer>
 
-<!-- Модальные окна (политика, условия, порядок работы) -->
-<div id="policyModal" class="legal-modal">
-    <div class="legal-modal-content">
-        <span class="legal-modal-close" onclick="closePolicyModal()">&times;</span>
-        <div class="legal-modal-header">
-            <i class="fas fa-shield-alt"></i>
-            <h2>Политика конфиденциальности</h2>
-        </div>
-        <div class="legal-modal-body">
-            <p>Настоящая Политика конфиденциальности определяет порядок сбора, использования и защиты персональных данных пользователей Фиджитал центра "КиберКачалка".</p>
-            <h3>1. Собираемая информация</h3>
-            <p>При использовании нашего сайта мы можем собирать следующую информацию: имя, контактный телефон, адрес электронной почты, а также данные о записях на услуги.</p>
-            <h3>2. Использование информации</h3>
-            <p>Собранная информация используется для обработки заявок на запись, связи с вами для подтверждения записи, отправки уведомлений о новостях и акциях, улучшения качества обслуживания.</p>
-            <h3>3. Защита данных</h3>
-            <p>Мы принимаем все необходимые меры для защиты ваших персональных данных от несанкционированного доступа, изменения или уничтожения.</p>
-            <h3>4. Передача третьим лицам</h3>
-            <p>Ваши персональные данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p>
-            <h3>5. Контакты</h3>
-            <p>По вопросам, связанным с обработкой персональных данных, вы можете обратиться по email: privacy@fidgetalcenter.ru</p>
-        </div>
-        <div class="legal-modal-footer">
-            <button class="legal-close-btn" onclick="closePolicyModal()">Закрыть</button>
-        </div>
-    </div>
-</div>
+<!-- ============ МОДАЛЬНЫЕ ОКНА ============ -->
+<div id="policyModal" class="legal-modal"><div class="legal-modal-content"><span class="legal-modal-close" onclick="closePolicyModal()">&times;</span><div class="legal-modal-header"><i class="fas fa-shield-alt"></i><h2>Политика конфиденциальности</h2></div><div class="legal-modal-body"><p>Настоящая Политика конфиденциальности определяет порядок сбора, использования и защиты персональных данных пользователей Фиджитал центра "КиберКачалка".</p><h3>1. Собираемая информация</h3><p>При использовании нашего сайта мы можем собирать следующую информацию: имя, контактный телефон, адрес электронной почты, а также данные о записях на услуги.</p><h3>2. Использование информации</h3><p>Собранная информация используется для обработки заявок на запись, связи с вами для подтверждения записи, отправки уведомлений о новостях и акциях, улучшения качества обслуживания.</p><h3>3. Защита данных</h3><p>Мы принимаем все необходимые меры для защиты ваших персональных данных от несанкционированного доступа, изменения или уничтожения.</p><h3>4. Передача третьим лицам</h3><p>Ваши персональные данные не передаются третьим лицам, за исключением случаев, предусмотренных законодательством РФ.</p><h3>5. Контакты</h3><p>По вопросам, связанным с обработкой персональных данных, вы можете обратиться по email: privacy@fidgetalcenter.ru</p></div><div class="legal-modal-footer"><button class="legal-close-btn" onclick="closePolicyModal()">Закрыть</button></div></div></div>
+<div id="termsModal" class="legal-modal"><div class="legal-modal-content"><span class="legal-modal-close" onclick="closeTermsModal()">&times;</span><div class="legal-modal-header"><i class="fas fa-file-contract"></i><h2>Условия пользования</h2></div><div class="legal-modal-body"><p>Настоящие Условия пользования регулируют порядок использования сайта Фиджитал центра "КиберКачалка".</p><h3>1. Общие положения</h3><p>Используя наш сайт, вы соглашаетесь с данными условиями. Если вы не согласны с какими-либо пунктами, пожалуйста, прекратите использование сайта.</p><h3>2. Правила записи</h3><p>- Запись на услуги осуществляется через форму на сайте или по телефону.<br>- Время бронирования считается подтвержденным после получения уведомления.<br>- Отмена записи возможна не менее чем за 2 часа до начала.</p><h3>3. Оплата услуг</h3><p>Оплата услуг производится на месте после оказания услуги. Возможна предоплата при онлайн-бронировании.</p><h3>4. Правила поведения</h3><p>Посетители обязаны соблюдать правила техники безопасности и уважительно относиться к другим гостям и персоналу центра.</p><h3>5. Ответственность</h3><p>Администрация не несет ответственности за личные вещи, оставленные без присмотра. За порчу оборудования предусмотрена материальная ответственность.</p><h3>6. Изменение условий</h3><p>Администрация оставляет за собой право вносить изменения в условия пользования без предварительного уведомления.</p></div><div class="legal-modal-footer"><button class="legal-close-btn" onclick="closeTermsModal()">Закрыть</button></div></div></div>
+<div id="procedureModal" class="legal-modal"><div class="legal-modal-content"><span class="legal-modal-close" onclick="closeProcedureModal()">&times;</span><div class="legal-modal-header"><i class="fas fa-building"></i><h2>Порядок функционирования ФЦ «Киберкачалка»</h2></div><div class="legal-modal-body" id="procedureModalBody"><p>Загрузка документа...</p></div><div class="legal-modal-footer"><button class="legal-close-btn" onclick="closeProcedureModal()">Закрыть</button></div></div></div>
 
-<div id="termsModal" class="legal-modal">
-    <div class="legal-modal-content">
-        <span class="legal-modal-close" onclick="closeTermsModal()">&times;</span>
-        <div class="legal-modal-header">
-            <i class="fas fa-file-contract"></i>
-            <h2>Условия пользования</h2>
-        </div>
-        <div class="legal-modal-body">
-            <p>Настоящие Условия пользования регулируют порядок использования сайта Фиджитал центра "КиберКачалка".</p>
-            <h3>1. Общие положения</h3>
-            <p>Используя наш сайт, вы соглашаетесь с данными условиями. Если вы не согласны с какими-либо пунктами, пожалуйста, прекратите использование сайта.</p>
-            <h3>2. Правила записи</h3>
-            <p>- Запись на услуги осуществляется через форму на сайте или по телефону.<br>- Время бронирования считается подтвержденным после получения уведомления.<br>- Отмена записи возможна не менее чем за 2 часа до начала.</p>
-            <h3>3. Оплата услуг</h3>
-            <p>Оплата услуг производится на месте после оказания услуги. Возможна предоплата при онлайн-бронировании.</p>
-            <h3>4. Правила поведения</h3>
-            <p>Посетители обязаны соблюдать правила техники безопасности и уважительно относиться к другим гостям и персоналу центра.</p>
-            <h3>5. Ответственность</h3>
-            <p>Администрация не несет ответственности за личные вещи, оставленные без присмотра. За порчу оборудования предусмотрена материальная ответственность.</p>
-            <h3>6. Изменение условий</h3>
-            <p>Администрация оставляет за собой право вносить изменения в условия пользования без предварительного уведомления.</p>
-        </div>
-        <div class="legal-modal-footer">
-            <button class="legal-close-btn" onclick="closeTermsModal()">Закрыть</button>
-        </div>
-    </div>
-</div>
+<!-- ============ МОДАЛЬНОЕ ОКНО ДЛЯ ИНФОРМАЦИИ ОБ УСЛУГЕ ============ -->
+<div id="serviceInfoModal" class="service-info-modal"><div class="service-info-content"><div class="service-info-header"><i class="fas fa-info-circle"></i><h3 id="serviceInfoTitle">Услуга</h3></div><div class="service-info-body"><div class="service-info-price" id="serviceInfoPrice"></div><div class="service-info-desc" id="serviceInfoDesc"></div><div class="service-info-persons" id="serviceInfoPersons"></div><button class="service-info-close" onclick="closeServiceInfoModal()">Закрыть</button></div></div></div>
 
-<div id="procedureModal" class="legal-modal">
-    <div class="legal-modal-content">
-        <span class="legal-modal-close" onclick="closeProcedureModal()">&times;</span>
-        <div class="legal-modal-header">
-            <i class="fas fa-building"></i>
-            <h2>Порядок функционирования ФЦ «Киберкачалка»</h2>
-        </div>
-        <div class="legal-modal-body" id="procedureModalBody">
-            <p>Загрузка документа...</p>
-        </div>
-        <div class="legal-modal-footer">
-            <button class="legal-close-btn" onclick="closeProcedureModal()">Закрыть</button>
-        </div>
-    </div>
-</div>
-
-<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ИНФОРМАЦИИ ОБ УСЛУГЕ -->
-<div id="serviceInfoModal" class="service-info-modal">
-    <div class="service-info-content">
-        <div class="service-info-header">
-            <i class="fas fa-info-circle"></i>
-            <h3 id="serviceInfoTitle">Услуга</h3>
-        </div>
-        <div class="service-info-body">
-            <div class="service-info-price" id="serviceInfoPrice"></div>
-            <div class="service-info-desc" id="serviceInfoDesc"></div>
-            <div class="service-info-persons" id="serviceInfoPersons"></div>
-            <button class="service-info-close" onclick="closeServiceInfoModal()">Закрыть</button>
-        </div>
-    </div>
-</div>
-
-<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ЗАПИСИ -->
-<div id="bookingModal" class="modal">
-    <div class="modal-content modal-large">
-        <span class="modal-close" id="closeModalBtn">&times;</span>
-        <h3><i class="fas fa-calendar-alt"></i> Запись в КиберКачалку</h3>
-        
-        <div class="booking-steps" id="bookingSteps">
-            <div class="step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-label">Контакты</div>
-            </div>
-            <div class="step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-label">Выбор услуг</div>
-            </div>
-            <div class="step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-label">Дата и время</div>
-            </div>
-            <div class="step" data-step="4">
-                <div class="step-number">4</div>
-                <div class="step-label">Подтверждение</div>
-            </div>
-        </div>
-        
-        <form class="booking-form" id="bookingForm">
-            <!-- ШАГ 1: Контактные данные -->
-            <div class="booking-step-content" id="step1">
-                <!-- Переключатель тип клиента -->
-                <div class="client-type-switch">
-                    <div class="client-type-btn active" data-type="individual" onclick="setClientType('individual')">
-                        <i class="fas fa-user"></i> Физическое лицо
-                    </div>
-                    <div class="client-type-btn" data-type="organization" onclick="setClientType('organization')">
-                        <i class="fas fa-building"></i> Юридическое лицо
-                    </div>
-                </div>
-                
-                <div class="form-group" id="nameFieldGroup">
-                    <label id="nameLabel"><i class="fas fa-user"></i> Ваше имя <span class="required">*</span></label>
-                    <input type="text" class="form-input" id="bookingName" placeholder="Иван Иванов" required>
-                    <div class="validation-message" id="nameError">Введите ваше имя</div>
-                </div>
-                <div class="form-group" id="orgFieldGroup" style="display: none;">
-                    <label><i class="fas fa-building"></i> Название организации <span class="required">*</span></label>
-                    <input type="text" class="form-input" id="bookingOrg" placeholder="ООО Ромашка">
-                    <div class="validation-message" id="orgError">Введите название организации</div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Контактный телефон <span class="required">*</span></label>
-                    <input type="tel" class="form-input" id="bookingPhone" placeholder="+7 (___) ___-__-__" required>
-                    <div class="validation-message" id="phoneError">Введите корректный номер телефона</div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email (необязательно)</label>
-                    <input type="email" class="form-input" id="bookingEmail" placeholder="ivan@example.com">
-                    <div class="validation-message" id="emailError">Введите корректный email адрес</div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-comment"></i> Комментарий</label>
-                    <textarea class="form-textarea" id="bookingComment" placeholder="Дополнительная информация..."></textarea>
-                </div>
-            </div>
-            
-            <!-- ШАГ 2: Выбор услуг -->
-            <div class="booking-step-content" id="step2" style="display: none;">
-                <p class="step-description">Кликните на любую услугу, чтобы выбрать её. Можно выбрать несколько.</p>
-                <div class="services-selection" id="servicesSelection">
-                    <div class="services-loading"><i class="fas fa-spinner fa-spin"></i> Загрузка услуг...</div>
-                </div>
-                <div class="selected-services-summary" id="selectedServicesSummary" style="display: none;">
-                    <h4><i class="fas fa-check-circle"></i> Выбранные услуги:</h4>
-                    <div id="selectedServicesList"></div>
-                </div>
-                <div class="validation-message" id="servicesError">Выберите хотя бы одну услугу</div>
-            </div>
-            
-            <!-- ШАГ 3: Дата и время -->
-            <div class="booking-step-content" id="step3" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group half">
-                        <label><i class="fas fa-calendar-day"></i> Дата посещения <span class="required">*</span></label>
-                        <input type="date" class="form-input" id="bookingDate" required>
-                        <div class="validation-message" id="dateError">Выберите дату</div>
-                    </div>
-                    <div class="form-group half">
-                        <label><i class="fas fa-clock"></i> Время <span class="required">*</span></label>
-                        <input type="time" class="form-input" id="bookingTime" required>
-                        <div class="validation-message" id="timeError">Выберите время</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-hourglass-half"></i> Продолжительность (часов)</label>
-                    <select class="form-input" id="bookingDuration">
-                        <option value="1">1 час</option>
-                        <option value="2">2 часа</option>
-                        <option value="3">3 часа</option>
-                        <option value="4">4+ часа (уточнить)</option>
-                    </select>
-                </div>
-                <div class="info-box">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Часы работы: Вторник-Суббота с 15:00 до 20:00</span>
-                </div>
-            </div>
-            
-            <!-- ШАГ 4: Подтверждение -->
-            <div class="booking-step-content" id="step4" style="display: none;">
-                <div class="confirmation-box" id="confirmationBox">
-                    <h4><i class="fas fa-clipboard-list"></i> Проверьте данные записи:</h4>
-                    <div class="confirmation-details">
-                        <div class="confirmation-item"><span class="conf-label">Клиент:</span><span class="conf-value" id="confName">—</span></div>
-                        <div class="confirmation-item"><span class="conf-label">Телефон:</span><span class="conf-value" id="confPhone">—</span></div>
-                        <div class="confirmation-item"><span class="conf-label">Услуги:</span><span class="conf-value" id="confServices">—</span></div>
-                        <div class="confirmation-item"><span class="conf-label">Дата:</span><span class="conf-value" id="confDate">—</span></div>
-                        <div class="confirmation-item"><span class="conf-label">Время:</span><span class="conf-value" id="confTime">—</span></div>
-                        <div class="confirmation-item"><span class="conf-label">Длительность:</span><span class="conf-value" id="confDuration">—</span></div>
-                        <div class="confirmation-item" id="confCommentItem" style="display: none;"><span class="conf-label">Комментарий:</span><span class="conf-value" id="confComment">—</span></div>
-                    </div>
-                </div>
-                <div class="info-box warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>После отправки заявки с вами свяжется администратор для подтверждения.</span>
-                </div>
-            </div>
-            
-            <div class="form-navigation">
-                <button type="button" class="nav-btn prev-btn" id="prevBtn" style="display: none;"><i class="fas fa-arrow-left"></i> Назад</button>
-                <button type="button" class="nav-btn next-btn" id="nextBtn">Далее <i class="fas fa-arrow-right"></i></button>
-                <button type="submit" class="submit-btn" id="submitBtn" style="display: none;"><i class="fas fa-paper-plane"></i> Отправить заявку</button>
-            </div>
-        </form>
-    </div>
-</div>
+<!-- ============ МОДАЛЬНОЕ ОКНО ДЛЯ ЗАПИСИ ============ -->
+<div id="bookingModal" class="modal"><div class="modal-content modal-large"><span class="modal-close" id="closeModalBtn">&times;</span><h3><i class="fas fa-calendar-alt"></i> Запись в КиберКачалку</h3><div class="booking-steps" id="bookingSteps"><div class="step active" data-step="1"><div class="step-number">1</div><div class="step-label">Контакты</div></div><div class="step" data-step="2"><div class="step-number">2</div><div class="step-label">Выбор услуг</div></div><div class="step" data-step="3"><div class="step-number">3</div><div class="step-label">Дата и время</div></div><div class="step" data-step="4"><div class="step-number">4</div><div class="step-label">Подтверждение</div></div></div><form class="booking-form" id="bookingForm"><!-- ШАГ 1 --><div class="booking-step-content" id="step1"><div class="client-type-switch"><div class="client-type-btn active" data-type="individual" onclick="setClientType('individual')"><i class="fas fa-user"></i> Физическое лицо</div><div class="client-type-btn" data-type="organization" onclick="setClientType('organization')"><i class="fas fa-building"></i> Юридическое лицо</div></div><div class="form-group" id="nameFieldGroup"><label id="nameLabel"><i class="fas fa-user"></i> Ваше имя <span class="required">*</span></label><input type="text" class="form-input" id="bookingName" placeholder="Иван Иванов" required><div class="validation-message" id="nameError">Введите ваше имя</div></div><div class="form-group" id="orgFieldGroup" style="display: none;"><label><i class="fas fa-building"></i> Название организации <span class="required">*</span></label><input type="text" class="form-input" id="bookingOrg" placeholder="ООО Ромашка"><div class="validation-message" id="orgError">Введите название организации</div></div><div class="form-group"><label><i class="fas fa-phone"></i> Контактный телефон <span class="required">*</span></label><input type="tel" class="form-input" id="bookingPhone" placeholder="+7 (___) ___-__-__" required><div class="validation-message" id="phoneError">Введите корректный номер телефона</div></div><div class="form-group"><label><i class="fas fa-envelope"></i> Email (необязательно)</label><input type="email" class="form-input" id="bookingEmail" placeholder="ivan@example.com"><div class="validation-message" id="emailError">Введите корректный email адрес</div></div><div class="form-group"><label><i class="fas fa-comment"></i> Комментарий</label><textarea class="form-textarea" id="bookingComment" placeholder="Дополнительная информация..."></textarea></div></div><!-- ШАГ 2 --><div class="booking-step-content" id="step2" style="display: none;"><p class="step-description">Кликните на любую услугу, чтобы выбрать её. Можно выбрать несколько.</p><div class="services-selection" id="servicesSelection"><div class="services-loading"><i class="fas fa-spinner fa-spin"></i> Загрузка услуг...</div></div><div class="selected-services-summary" id="selectedServicesSummary" style="display: none;"><h4><i class="fas fa-check-circle"></i> Выбранные услуги:</h4><div id="selectedServicesList"></div></div><div class="validation-message" id="servicesError">Выберите хотя бы одну услугу</div></div><!-- ШАГ 3 --><div class="booking-step-content" id="step3" style="display: none;"><div class="form-row"><div class="form-group half"><label><i class="fas fa-calendar-day"></i> Дата посещения <span class="required">*</span></label><input type="date" class="form-input" id="bookingDate" required><div class="validation-message" id="dateError">Выберите дату</div></div><div class="form-group half"><label><i class="fas fa-clock"></i> Время <span class="required">*</span></label><input type="time" class="form-input" id="bookingTime" required><div class="validation-message" id="timeError">Выберите время</div></div></div><div class="form-group"><label><i class="fas fa-hourglass-half"></i> Продолжительность (часов)</label><select class="form-input" id="bookingDuration"><option value="1">1 час</option><option value="2">2 часа</option><option value="3">3 часа</option><option value="4">4+ часа (уточнить)</option></select></div><div class="info-box"><i class="fas fa-info-circle"></i><span>Часы работы: Вторник-Суббота с 15:00 до 20:00</span></div></div><!-- ШАГ 4 --><div class="booking-step-content" id="step4" style="display: none;"><div class="confirmation-box" id="confirmationBox"><h4><i class="fas fa-clipboard-list"></i> Проверьте данные записи:</h4><div class="confirmation-details"><div class="confirmation-item"><span class="conf-label">Клиент:</span><span class="conf-value" id="confName">—</span></div><div class="confirmation-item"><span class="conf-label">Телефон:</span><span class="conf-value" id="confPhone">—</span></div><div class="confirmation-item"><span class="conf-label">Услуги:</span><span class="conf-value" id="confServices">—</span></div><div class="confirmation-item"><span class="conf-label">Дата:</span><span class="conf-value" id="confDate">—</span></div><div class="confirmation-item"><span class="conf-label">Время:</span><span class="conf-value" id="confTime">—</span></div><div class="confirmation-item"><span class="conf-label">Длительность:</span><span class="conf-value" id="confDuration">—</span></div><div class="confirmation-item" id="confCommentItem" style="display: none;"><span class="conf-label">Комментарий:</span><span class="conf-value" id="confComment">—</span></div></div></div><div class="info-box warning"><i class="fas fa-exclamation-triangle"></i><span>После отправки заявки с вами свяжется администратор для подтверждения.</span></div></div><div class="form-navigation"><button type="button" class="nav-btn prev-btn" id="prevBtn" style="display: none;"><i class="fas fa-arrow-left"></i> Назад</button><button type="button" class="nav-btn next-btn" id="nextBtn">Далее <i class="fas fa-arrow-right"></i></button><button type="submit" class="submit-btn" id="submitBtn" style="display: none;"><i class="fas fa-paper-plane"></i> Отправить заявку</button></div></form></div></div>
 
 <script>
     // ============ ПЕРЕМЕННЫЕ ============
@@ -1940,7 +1155,7 @@
             let html = '';
             if (rentalServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-building"></i> Аренда помещений</div><div class="price-category-grid">${rentalServices.map(p => `<div class="price-card-modern" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || '—')}', '${Number(p.price).toLocaleString()} ₽/час', '🏢')"><div class="price-card-icon"><i class="fas fa-door-open"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || '—')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
             if (gamingServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-gamepad"></i> Интерактивные зоны</div><div class="price-category-grid">${gamingServices.map(p => `<div class="price-card-modern ${p.service_name && p.service_name.includes('Льготная') ? 'discount-card' : ''}" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || 'Аренда телевизора с приставкой')}', '${Number(p.price).toLocaleString()} ₽/час', '${p.service_name && p.service_name.includes('Льготная') ? '💝' : '🎮'}')"><div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('Льготная') ? 'fa-hand-holding-heart' : 'fa-tv'}"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || 'Аренда телевизора с приставкой')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || 'до 8 человек')}</div></div><div class="price-card-value ${p.service_name && p.service_name.includes('Льготная') ? 'discount-price' : ''}">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
-            if (eventServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-trophy"></i> Мероприятия и турниры</div><div class="price-category-grid">${eventServices.map(p => `<div class="price-card-modern" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || 'Организация и проведение')}', '${Number(p.price).toLocaleString()} ₽', '🏆')"><div class="price-card-icon"><i class="fas fa-calendar-star"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || 'Организация и проведение')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
+            if (eventServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-trophy"></i> Мероприятия и турниры</div><div class="price-category-grid">${eventServices.map(p => `<div class="price-card-modern" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || 'Организация и проведение')}', '${Number(p.price).toLocaleString()} ₽', '🏆')"><div class="price-card-icon"><i class="fas fa-trophy"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || 'Организация и проведение')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
             if (otherServices.length) { html += `<div class="price-category"><div class="price-category-title"><i class="fas fa-ellipsis-h"></i> Дополнительные услуги</div><div class="price-category-grid">${otherServices.map(p => `<div class="price-card-modern" onclick="showServiceInfo('${escapeHtml(p.service_name)}', '${escapeHtml(p.description || '—')}', '${Number(p.price).toLocaleString()} ₽', '📋')"><div class="price-card-icon"><i class="fas ${p.service_name && p.service_name.includes('фуршет') ? 'fa-utensils' : 'fa-chalkboard-user'}"></i></div><div class="price-card-details"><div class="price-card-name">${escapeHtml(p.service_name)}</div><div class="price-card-desc">${escapeHtml(p.description || '—')}</div><div class="price-card-limit"><i class="fas fa-users"></i> ${escapeHtml(p.max_persons || '—')}</div></div><div class="price-card-value">${Number(p.price).toLocaleString()} <span>₽</span></div></div>`).join('')}</div></div>`; }
             container.innerHTML = html;
         } catch (error) { console.error(error); container.innerHTML = '<div class="price-empty">Ошибка загрузки цен</div>'; }
@@ -1948,12 +1163,11 @@
     document.addEventListener('DOMContentLoaded', loadPrices);
     
     // ============ НОВОСТНАЯ КАРУСЕЛЬ ============
-    // Данные новостей для карусели (переданные от Flask)
     const carouselNewsData = {{ latest_news | tojson | safe }};
     
     let currentSlide = 0;
     let autoPlayTimer;
-    let loaderInterval;
+    let progressInterval;
     
     function createSlides() {
         const slidesContainer = document.getElementById('carouselSlides');
@@ -1961,7 +1175,7 @@
         
         if (!slidesContainer || !carouselNewsData.length) {
             if (slidesContainer) {
-                slidesContainer.innerHTML = '<div class="news-carousel-slide active" style="display: flex; align-items: center; justify-content: center;"><div style="text-align: center;"><i class="fas fa-newspaper" style="font-size: 48px; color: #54fdf6;"></i><p style="margin-top: 15px;">Новостей пока нет</p></div></div>';
+                slidesContainer.innerHTML = '<div class="news-slide active" style="display: flex; align-items: center; justify-content: center;"><div style="text-align: center;"><i class="fas fa-newspaper" style="font-size: 48px; color: #54fdf6;"></i><p style="margin-top: 15px; color: #888;">Новостей пока нет</p></div></div>';
             }
             return;
         }
@@ -1969,7 +1183,7 @@
         slidesContainer.innerHTML = '';
         carouselNewsData.forEach((news, index) => {
             const slide = document.createElement('div');
-            slide.className = 'news-carousel-slide' + (index === 0 ? ' active' : '');
+            slide.className = 'news-slide' + (index === 0 ? ' active' : '');
             slide.setAttribute('data-news-id', news.id || index);
             
             let bgStyle = '';
@@ -1986,7 +1200,7 @@
             
             slide.innerHTML = `
                 <div class="news-slide-bg" style="${bgStyle}"></div>
-                <div class="news-slide-content">
+                <div class="news-slide-overlay">
                     <div class="news-slide-info">
                         <div class="news-slide-emoji">${news.image_emoji || '📢'}</div>
                         <div class="news-slide-date"><i class="far fa-calendar-alt"></i> ${news.date_published}</div>
@@ -2023,7 +1237,7 @@
     }
     
     function updateSlides() {
-        const slides = document.querySelectorAll('.news-carousel-slide');
+        const slides = document.querySelectorAll('.news-slide');
         const dots = document.querySelectorAll('.carousel-dot');
         
         slides.forEach((slide, index) => {
@@ -2042,7 +1256,7 @@
             }
         });
         
-        resetLoader();
+        resetProgress();
     }
     
     function goToSlide(index) {
@@ -2063,11 +1277,10 @@
     
     function startAutoPlay() {
         if (autoPlayTimer) clearInterval(autoPlayTimer);
-        if (loaderInterval) clearInterval(loaderInterval);
-        
         autoPlayTimer = setInterval(() => {
             nextSlide();
         }, 6000);
+        resetProgress();
     }
     
     function stopAutoPlay() {
@@ -2075,29 +1288,30 @@
             clearInterval(autoPlayTimer);
             autoPlayTimer = null;
         }
-        if (loaderInterval) {
-            clearInterval(loaderInterval);
-            loaderInterval = null;
+        if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
         }
-        const loader = document.getElementById('carouselLoader');
-        if (loader) loader.style.width = '0%';
+        const progress = document.getElementById('carouselProgress');
+        if (progress) progress.style.width = '0%';
     }
     
-    function resetLoader() {
-        const loader = document.getElementById('carouselLoader');
-        if (!loader) return;
+    function resetProgress() {
+        const progress = document.getElementById('carouselProgress');
+        if (!progress) return;
         
-        if (loaderInterval) clearInterval(loaderInterval);
-        loader.style.width = '0%';
+        if (progressInterval) clearInterval(progressInterval);
+        progress.style.width = '0%';
         
         let width = 0;
-        loaderInterval = setInterval(() => {
+        progressInterval = setInterval(() => {
             width += 100 / 60;
             if (width >= 100) {
                 width = 100;
-                clearInterval(loaderInterval);
+                clearInterval(progressInterval);
+                progressInterval = null;
             }
-            loader.style.width = width + '%';
+            progress.style.width = width + '%';
         }, 100);
     }
     
@@ -2131,7 +1345,7 @@
     initCarousel();
 </script>
 
-<!-- ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ -->
+<!-- ============ ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ПО БОКАМ ============ -->
 <div class="side-border-right"></div>
 <div class="side-border-inner"></div>
 <div class="corner-decoration corner-tl"></div>
