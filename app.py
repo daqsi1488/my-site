@@ -47,7 +47,7 @@ ALLOWED_MIMES = {'image/jpeg', 'image/png', 'image/gif', 'image/webp'}
 
 # Папка для загрузок (вне static, для безопасности)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads', 'news')
+UPLOAD_FOLDER = os.path.join(BASE_DIR,'static', 'uploads', 'news')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB максимум
 
@@ -737,7 +737,7 @@ def profile():
 # БЕЗОПАСНАЯ ОТДАЧА ИЗОБРАЖЕНИЙ
 # ============================================
 
-@app.route('/uploads/news/<filename>')
+@app.route('/static/uploads/news/<filename>')
 def serve_news_image(filename):
     """Безопасная отдача изображений новостей"""
     # Защита от path traversal атак
